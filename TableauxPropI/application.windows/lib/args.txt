@@ -1,3 +1,0 @@
-
-TableauxPropI
-TableauxPropI.jar,core.jar,interfascia.jar
