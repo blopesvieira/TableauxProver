@@ -54,17 +54,18 @@ public void Tableaux(int value) {
 }
 
 void startTableaux(String formula) {
-  if(validInputFormula(removeWhiteSpace(formula).toUpperCase())){
-      txtInputFormula.setColorBackground(defaultColor);
-      formula = changeSymbol(formula, '(', '[');
-      formula = changeSymbol(formula, ')', ']');
-      MobileRectangle re = new MobileRectangle(100, 120, "F" + formula + "0", 250, 0, 250, 10);
-      nos.add(re);
-      border[0] = re;
-      ramos[0][0] = re.label;
-      maxnos = 1;
-      println("setup"+" h "+ height );
-      countramos++;
+  //if(validInputFormula(removeWhiteSpace(formula).toUpperCase())) {
+  if(validInputFormula(formula.toUpperCase())) {
+    txtInputFormula.setColorBackground(defaultColor);
+    formula = changeSymbol(formula, '(', '[');
+    formula = changeSymbol(formula, ')', ']');
+    MobileRectangle re = new MobileRectangle(100, 120, "F" + formula.toUpperCase() + "0", 250, 0, 250, 10);
+    nos.add(re);
+    border[0] = re;
+    ramos[0][0] = re.label;
+    maxnos = 1;
+    println("setup"+" h "+ height );
+    countramos++;
   }
   else {
     txtInputFormula.setColorBackground(color(90, 0, 0));
@@ -83,7 +84,6 @@ boolean validInputFormula(String formula) {
       case '&' :
       case '|' :
       case '~' :
-      case ',' :
       case ')' : return false;
     }
     i = 2;
@@ -104,7 +104,8 @@ boolean validInputFormula(String formula) {
   }
   else {
     if(formula.substring(1, 4).equals("ALL")) {
-      switch(formula.charAt(4)) {
+      if(formula.charAt(4) != ' ') return false;
+      switch(formula.charAt(5)) {
         case '=' :
         case '&' :
         case '|' :
@@ -112,8 +113,8 @@ boolean validInputFormula(String formula) {
         case ',' :
         case ')' : return false;
       }
-      i = 5;
-      if(formula.charAt(5) == '(') {
+      i = 6;
+      if(formula.charAt(6) == '(') {
         count = 1;
         do {
           i++;
@@ -124,21 +125,21 @@ boolean validInputFormula(String formula) {
           }
           if(i > l) return false;
         } while(count > 0);
-        if(!validInputFormula(formula.substring(5, i + 1))) return false;
+        if(!validInputFormula(formula.substring(6, i + 1))) return false;
       }
       if(i + 1 != l) return false;
     }
     else if(formula.substring(1, 3).equals("EX")) {
-           switch(formula.charAt(3)) {
+           if(formula.charAt(3) != ' ') return false;
+           switch(formula.charAt(4)) {
              case '=' :
              case '&' :
              case '|' :
              case '~' :
-             case ',' :
              case ')' : return false;
            }
-           i = 4;
-           if(formula.charAt(4) == '(') {
+           i = 5;
+           if(formula.charAt(5) == '(') {
              count = 1;
              do {
                i++;
@@ -149,14 +150,13 @@ boolean validInputFormula(String formula) {
                }
                if(i > l) return false;
              } while(count > 0);
-             if(!validInputFormula(formula.substring(4, i + 1))) return false;
+             if(!validInputFormula(formula.substring(5, i + 1))) return false;
            }
            if(i + 1 != l) return false;
          }
          else {
             if(formula.charAt(1) == '=' || formula.charAt(1) == '&' || formula.charAt(1) == '|' ) {
-              if(formula.charAt(2) != ',') return false;
-              switch(formula.charAt(3)) {
+              switch(formula.charAt(2)) {
                 case '=' :
                 case '&' :
                 case '|' :
@@ -164,7 +164,7 @@ boolean validInputFormula(String formula) {
                 case ')' : return false;
               }
               i = 3;
-              if(formula.charAt(3) == '(') {
+              if(formula.charAt(2) == '(') {
                 count = 1;
                 do {
                   i++;
@@ -175,17 +175,16 @@ boolean validInputFormula(String formula) {
                   }
                   if(i > l) return false;
                 } while(count > 0);
-                print(formula.substring(3, i + 1));
-                if(!validInputFormula(formula.substring(3, i + 1))) return false;
+                print(formula.substring(2, i + 1));
+                if(!validInputFormula(formula.substring(2, i + 1))) return false;
               }
-              if(formula.charAt(i + 1) != ',') return false;
-              switch(formula.charAt(i + 2)) {
+              switch(formula.charAt(i + 1)) {
                 case '=' :
                 case '&' :
                 case '|' :
                 case ')' : return false;
               }
-              j = i += 2;
+              j = i += 1;
               if(formula.charAt(j) == '(') {
                 count = 1;
                 do {
@@ -202,7 +201,8 @@ boolean validInputFormula(String formula) {
               if (j + 1 != l) return false;
             }
             else {
-              switch(formula.charAt(2)) {
+              if(formula.charAt(2) != ' ') return false;
+              switch(formula.charAt(3)) {
                 case '=' :
                 case '&' :
                 case '|' :
@@ -210,7 +210,7 @@ boolean validInputFormula(String formula) {
                 case '(' :
                 case ')' : return false;
               }
-              if(l > 4) return false;
+              if(l > 5) return false;
             }
          }
        }
@@ -274,9 +274,9 @@ class Formula {
  
  
  class MobileRectangle {
-   int x,y,x1,x2,y1,y2;
-   float l1,l2;
-   color c,c1;
+   int x, y, x1, x2, y1, y2;
+   float l1, l2;
+   color c, c1;
    String s;
    Formula f;
    int label;
@@ -296,7 +296,7 @@ class Formula {
    }
    
    void marcado() {
-     c=cm;
+     c = cm;
    }
   
    void update(int X,int Y) {
