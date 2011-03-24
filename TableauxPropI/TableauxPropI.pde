@@ -18,6 +18,7 @@ char implies = '=';
 String exists = "EX";
 String forall = "ALL";
 color cm = color(128,0,0);
+color cf = color(50, 0, 70);
 
 int alt = 10;
 float ratiobin = 0.75;
@@ -54,12 +55,12 @@ public void Tableaux(int value) {
 }
 
 void startTableaux(String formula) {
-  //if(validInputFormula(removeWhiteSpace(formula).toUpperCase())) {
-  if(validInputFormula(formula.toUpperCase())) {
+  formula = removeWhiteSpace(formula.toUpperCase());
+  if(validInputFormula(formula)) {
     txtInputFormula.setColorBackground(defaultColor);
     formula = changeSymbol(formula, '(', '[');
     formula = changeSymbol(formula, ')', ']');
-    MobileRectangle re = new MobileRectangle(100, 120, "F" + formula.toUpperCase() + "0", 250, 0, 250, 10);
+    MobileRectangle re = new MobileRectangle(100, 120, "F" + formula + "0", 250, 0, 250, 10);
     nos.add(re);
     border[0] = re;
     ramos[0][0] = re.label;
@@ -163,7 +164,7 @@ boolean validInputFormula(String formula) {
                 case '~' :
                 case ')' : return false;
               }
-              i = 3;
+              i = 2;
               if(formula.charAt(2) == '(') {
                 count = 1;
                 do {
@@ -175,7 +176,6 @@ boolean validInputFormula(String formula) {
                   }
                   if(i > l) return false;
                 } while(count > 0);
-                print(formula.substring(2, i + 1));
                 if(!validInputFormula(formula.substring(2, i + 1))) return false;
               }
               switch(formula.charAt(i + 1)) {
@@ -214,14 +214,27 @@ boolean validInputFormula(String formula) {
             }
          }
        }
+  println("Formula " + formula + "is ok!");
   return true;
 }
 
 String removeWhiteSpace(String input) {
   int l = input.length();
   int i = 0;
+  boolean remove = false;
   while(i < l) {
     if(input.charAt(i) == ' ') {
+      if(i > 4) {
+        if((input.charAt(i - 2) != '(' | (input.charAt(i - 1) == '=' & input.charAt(i - 1) == '&' & input.charAt(i - 1) == '|' & input.charAt(i - 1) == '~')) & !input.substring(i - 3, i).equals("ALL") & !input.substring(i - 2, i).equals("EX")) remove = true;
+      }
+      else if(i == 2) {
+        if((input.charAt(i - 2) != '(' | (input.charAt(i - 1) == '=' & input.charAt(i - 1) == '&' & input.charAt(i - 1) == '|' & input.charAt(i - 1) == '~'))) remove = true;
+        else if(i == 3) {
+          if((input.charAt(i - 2) != '(' | (input.charAt(i - 1) == '=' & input.charAt(i - 1) == '&' & input.charAt(i - 1) == '|' & input.charAt(i - 1) == '~')) & !input.substring(i - 2, i).equals("EX")) remove = true;
+        }
+      }
+    }
+    if(remove) {
       if(i > 0 & i < l - 1) input = input.substring(0, i) + input.substring(i + 1, l);
       else if(i == 0) input = input.substring(i + 1, l);
            else if(i == l - 1) input = input.substring(0, l - 1);
@@ -229,7 +242,7 @@ String removeWhiteSpace(String input) {
     }
     else i++;
   }
-  println(input);
+  println("Input space normalized: " + input);
   return input;
 }
 
@@ -242,6 +255,7 @@ String changeSymbol(String input, char from, char to) {
       if(input.charAt(i) == from) input = input.substring(0, i) + to + input.substring(i + 1, l);
     if(input.charAt(l - 1) == from) input = input.substring(0, l - 1) + to;
   }
+  println("Changing " + from + " to " + to + ": " + input);
   return input;
 }
 
@@ -256,168 +270,168 @@ void draw() {
   }
 }
 
-class Formula {
-  String Content;
-  Formula Esq;
-  Formula Dir;
-  Formula(String c, Formula e, Formula d) {
-    this.Content = c;
-    this.Esq = e;
-    this.Dir = d;
+class MobileRectangle {
+  int x, y, x1, x2, y1, y2;
+  float l1, l2;
+  color c, c1;
+  String s;
+  int label;
+  int instancesCounter;
+  boolean expanded;
+ 
+  MobileRectangle(int x, int y, String t, int x1, int y1, int x2, int y2) {
+    this.x1 = x1;
+    this.y1 = y1;
+    this.x2 = x2;
+    this.y2 = y2;
+    this.c1 = color(0, 128, 128);
+    this.x = x;
+    this.y = y;
+    this.c = color(128, 128, 0);
+    this.s = t;
+    countnos++; 
+    this.label = countnos;
+    this.instancesCounter = 0;
+    this.expanded = false;
   }
-  String infix() {
-   if(Content == "~") return( "~" + Dir.infix());
-   if((Content == "&") || (Content == "|")) return(Esq.infix() + Content + Dir.infix());
-     else return(Content);
-   }
- }
- 
- 
- class MobileRectangle {
-   int x, y, x1, x2, y1, y2;
-   float l1, l2;
-   color c, c1;
-   String s;
-   Formula f;
-   int label;
-   int instancesCounter;
 
-  
-   MobileRectangle(int x, int y, String t,int x1,int y1,int x2,int y2) {
-     this.x1=x1;this.y1=y1;this.x2=x2;this.y2=y2;
-     this.c1=color(0,128,128);
-     this.x = x;
-     this.y = y;
-     this.c = color(128,128,0);
-     this.s = t;
-     countnos++; 
-     this.label=countnos;
-     this.instancesCounter=0;
-   }
-   
-   void marcado() {
-     c = cm;
-   }
-  
-   void update(int X,int Y) {
-     this.x = X-round(l1/2);
-     this.y = Y-round(l2/2);
-   }
-  
-   void display() {
-//     noStroke();
-     fill(c);
-     stroke(c1);
-//     rect(x,y,l1,l2);
-     textFont(myfont);
-     text(label+" "+s, x, y);
-     line(x1,y1,x2,y2);
-   }
- }
+  void expandNode() {
+    this.expanded = true;
+  }
+
+  boolean canExpand() {
+    return !this.expanded;
+  }
+
+  void marcado() {
+    c = cm;
+  }
+
+  void finished() {
+    c = defaultColor;
+  }
+
+  void update(int X,int Y) {
+    this.x = X - round(l1/2);
+    this.y = Y - round(l2/2);
+  }
+
+  void display() {
+    fill(c);
+    stroke(c1);
+    textFont(myfont);
+    text(label + " " + s, x, y);
+    line(x1, y1, x2, y2);
+  }
+}
 
 void mousePressed() {
   MobileRectangle folha;
- //    println( "X = "+ mouseX + " Y= "+mouseY);
- //    println( " logbin = maxnos = "+ maxnos + " countramos= "+ countramos); 
- //    for (int k=0;k<countramos; k++) {println ( "border k ="+ border[k].label + " k=" +k); } 
   exibedados();
   int indice=-1; 
   println("nos.size " + nos.size());
-  for(int i=0; i<nos.size(); i++) {
+  for(int i=0; i < nos.size(); i++) {
     MobileRectangle re = (MobileRectangle) nos.get(i);
-    println("dados do no: re.x re.y re.s" + re.x + " " + re.y + " " + re.s + " " + re.s.length()+ " " + mouseX + " " + mouseY);
+    println("Node data: re.x re.y re.s" + re.x + " " + re.y + " " + re.s + " " + re.s.length()+ " " + mouseX + " " + mouseY);
     if((re.x < mouseX) && (mouseX < re.x+12 * (re.s.length())) && (re.y - alt < mouseY) && (mouseY < re.y+alt)) {
-      println("achou indicie = " + i);
+      println("Index found = " + i);
       indice = i;
     }
   }
-  if (indice != -1) {   
-    println("indice " + indice);
+  if (indice != -1) {
+    println("Index " + indice);
     nopressed = (MobileRectangle) nos.get(indice);
-    println("nopressed "+ nopressed.s + " " + nopressed.y + " "+ nopressed.label); 
-    if(mouseButton == RIGHT) {
-      int totalramos = countramos;
-      for (int i = 0; i < totalramos; i++) {
-        println(" entrou no if "+ " logbin = maxnos = "+ maxnos + " countramos= " + totalramos);
-        int maximonosramo = maxnos;
-        for(int j=0;j<=maximonosramo; j++) {
-          println("ramos[][] = " + ramos[i][j] + " i="+i+" j=" + j);
-          if(ramos[i][j] == nopressed.label) {
-            if(branches(nopressed.s)) {
-              nopressed.marcado();
-              folha = border[i];
-              println(" No da border = " + folha.label + " i= " + i);
-              MobileRectangle um= new MobileRectangle(folha.x - 6 * (folha.s).length(), folha.y + 40, res1(nopressed.s) + nopressed.label, folha.x, folha.y, folha.x-3 * (folha.s).length(), folha.y + 35);
-              nos.add(um);
-              MobileRectangle dois = new MobileRectangle(folha.x + 6 * (folha.s).length(), folha.y + 40, res2(nopressed.s) + nopressed.label, folha.x, folha.y, folha.x + 3 * (folha.s).length(), folha.y + 35);
-              nos.add(dois);
-              ramos[i][maxnos+1]=um.label;
-              border[i]=um;
-              for (int k =0 ; k<= maxnos; k++) {
-                ramos[countramos][k] = ramos[i][k];
-              };
-              ramos[countramos][maxnos+1] = dois.label;
-              border[countramos] = dois;
-              countramos++;
-              maxnos++;
-            }
-            else {
-              if(notbranches(nopressed.s)) {
+    if(nopressed.canExpand()) {
+      println("Ok, first time on this node... expanding!");
+      nopressed.expandNode();
+      println("nopressed "+ nopressed.s + " " + nopressed.y + " "+ nopressed.label); 
+      if(mouseButton == RIGHT) {
+        int totalramos = countramos;
+        for(int i = 0; i < totalramos; i++) {
+          println("Entering if statement: "+ " logbin = maxnos = "+ maxnos + " countramos= " + totalramos);
+          int maximonosramo = maxnos;
+          for(int j = 0; j <= maximonosramo; j++) {
+            println("ramos[][] = " + ramos[i][j] + " i="+i+" j=" + j);
+            if(ramos[i][j] == nopressed.label) {
+              if(branches(nopressed.s)) {
                 nopressed.marcado();
                 folha = border[i];
-                println(" No da border = " + folha.label + " i= " + i);
-                MobileRectangle um= new MobileRectangle(folha.x, folha.y + 40, res1(nopressed.s) + nopressed.label, folha.x, folha.y, folha.x, folha.y + 40);
+                println("Border node = " + folha.label + " i= " + i);
+                MobileRectangle um= new MobileRectangle(folha.x - 6 * (folha.s).length(), folha.y + 40, res1(nopressed.s) + nopressed.label, folha.x, folha.y, folha.x-3 * (folha.s).length(), folha.y + 35);
                 nos.add(um);
-                MobileRectangle dois = new MobileRectangle(folha.x, folha.y + 80, res2(nopressed.s) + nopressed.label, folha.x, folha.y + 40, folha.x, folha.y + 80);
+                MobileRectangle dois = new MobileRectangle(folha.x + 6 * (folha.s).length(), folha.y + 40, res2(nopressed.s) + nopressed.label, folha.x, folha.y, folha.x + 3 * (folha.s).length(), folha.y + 35);
                 nos.add(dois);
                 ramos[i][maxnos+1]=um.label;
-                ramos[i][maxnos+2]=dois.label;
-                border[i]=dois;
-                maxnos++;                         
+                border[i]=um;
+                for (int k =0 ; k<= maxnos; k++) {
+                  ramos[countramos][k] = ramos[i][k];
+                }
+                ramos[countramos][maxnos+1] = dois.label;
+                border[countramos] = dois;
+                countramos++;
                 maxnos++;
-              }                   
+              }
               else {
-                if (existential(nopressed.s)) {
+                if(notbranches(nopressed.s)) {
                   nopressed.marcado();
-                  print("existencial");
                   folha = border[i];
-                  MobileRectangle um = new MobileRectangle(folha.x, folha.y + 40, exist(nopressed.s) + nopressed.label, folha.x, folha.y, folha.x, folha.y + 40);
+                  println(" No da border = " + folha.label + " i= " + i);
+                  MobileRectangle um= new MobileRectangle(folha.x, folha.y + 40, res1(nopressed.s) + nopressed.label, folha.x, folha.y, folha.x, folha.y + 40);
                   nos.add(um);
+                  MobileRectangle dois = new MobileRectangle(folha.x, folha.y + 80, res2(nopressed.s) + nopressed.label, folha.x, folha.y + 40, folha.x, folha.y + 80);
+                  nos.add(dois);
                   ramos[i][maxnos+1] = um.label;
-                  border[i] = um;
-                  maxnos++; 
-                }                          
-                else{
-                  if (universal(nopressed.s)) {
-                    print("universal");
+                  ramos[i][maxnos+2] = dois.label;
+                  border[i] = dois;
+                  maxnos++;                         
+                  maxnos++;
+                }                   
+                else {
+                  if (existential(nopressed.s)) {
+                    nopressed.marcado();
+                    print("existencial");
                     folha = border[i];
-                    MobileRectangle um = new MobileRectangle(folha.x, folha.y + 40, forall(nopressed.s, nopressed) + nopressed.label, folha.x, folha.y, folha.x, folha.y + 40);
+                    MobileRectangle um = new MobileRectangle(folha.x, folha.y + 40, exist(nopressed.s) + nopressed.label, folha.x, folha.y, folha.x, folha.y + 40);
                     nos.add(um);
                     ramos[i][maxnos+1] = um.label;
                     border[i] = um;
                     maxnos++; 
-                  }
+                  }                          
                   else{
-                    if(negation(nopressed.s)) {
-                      nopressed.marcado();
+                    if (universal(nopressed.s)) {
+                      print("universal");
                       folha = border[i];
-                      println(" No da border = "+folha.label + " i= "+i);
-                      MobileRectangle um = new MobileRectangle(folha.x, folha.y+40, uno(nopressed.s) + nopressed.label, folha.x, folha.y, folha.x, folha.y + 40);
+                      MobileRectangle um = new MobileRectangle(folha.x, folha.y + 40, forall(nopressed.s, nopressed) + nopressed.label, folha.x, folha.y, folha.x, folha.y + 40);
                       nos.add(um);
                       ramos[i][maxnos+1] = um.label;
-                      border[i] = um; 
-                      maxnos++;
+                      border[i] = um;
+                      maxnos++; 
+                    }
+                    else{
+                      if(negation(nopressed.s)) {
+                        nopressed.marcado();
+                        folha = border[i];
+                        println(" No da border = "+folha.label + " i= "+i);
+                        MobileRectangle um = new MobileRectangle(folha.x, folha.y+40, uno(nopressed.s) + nopressed.label, folha.x, folha.y, folha.x, folha.y + 40);
+                        nos.add(um);
+                        ramos[i][maxnos+1] = um.label;
+                        border[i] = um; 
+                        maxnos++;
+                      } else nopressed.finished();
                     }
                   }
                 }
               }
             }
+            exibedados();
           }
-          exibedados();
         }
       }
-    }  
-    else { }
+    }
+    else {
+      println("Node already expanded... nothing more to do.");
+      nopressed.finished();
+    }
   }
 }
    
@@ -469,11 +483,11 @@ boolean notbranches(String s) {
   if(m!=null) {
     println("casou no notbranches");    
     if(((m[1].equals("V")) && (m[2].equals("&"))) || ((m[1].equals("F")) &&(m[2].equals("|"))) || ((m[1].equals("F")) &&(m[2].equals("=")))) {
-      return (true);
+      return true;
     }
-    else return (false);
+    else return false;
   }
-    else return (false);
+    else return false;
 }
 
 String uno(String s) {
@@ -531,10 +545,10 @@ String res1(String s) {
     i++;
   } 
   String [] m = match(s, "(.)\\[(.)(\\[.+\\]|.)(\\[.+\\]|.)\\]");
-  if (m[2].equals("|")){return (m[1]+arg1);}
-  if (m[2].equals("&")){return (m[1]+arg1);}
-  if (m[2].equals("=")){return (inv(m[1])+arg1);}
-  else {return null;}   
+  if (m[2].equals("|")) return(m[1] + arg1);
+  if (m[2].equals("&")) return(m[1] + arg1);
+  if (m[2].equals("=")) return(inv(m[1]) + arg1);
+  else return null;  
 }
  
 String inv(String c) {
@@ -557,7 +571,7 @@ String res2(String s) {
     arg2 = "]" + arg2;
     i = i - 1;
   }
-  println("=> " + s.substring(1, i + 1) +" " + arg2 + " " + p + " i=" + i);
+  println("=> " + s.substring(1, i + 1) + " " + arg2 + " " + p + " i=" + i);
   while(p != 0) {
     if (s.charAt(i)==']') p++;
     else if(s.charAt(i) == '[') p = p - 1;
@@ -585,15 +599,18 @@ void exibedados() {
 }
 
 void mouseDragged() {
-  nopressed.y=mouseY;nopressed.x=mouseX;nopressed.x2=mouseX;nopressed.y2=mouseY;
+  nopressed.y=mouseY;
+  nopressed.x=mouseX;
+  nopressed.x2=mouseX;
+  nopressed.y2=mouseY;
   for(int i=0; i < countramos; i++) {
     for(int j = 0; j <= maxnos; j++) {
       if(ramos[i][j] == nopressed.label) {
         for(int k = 0; k < nos.size(); k++) {
           MobileRectangle re = (MobileRectangle) nos.get(k);
           if(re.label == ramos[i][j+1]) {
-            re.x1=mouseX;
-            re.y1=mouseY;
+            re.x1 = mouseX;
+            re.y1 = mouseY;
           }
         }
       }
