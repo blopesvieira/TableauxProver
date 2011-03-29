@@ -8,7 +8,7 @@ int maxnos = 0;
 int countramos = 0;
 int constParam = -1;
 ArrayList constantesCriadas = new ArrayList();
-PFont myfont=createFont("Ariel", 12);
+PFont myfont=createFont("Arial", 12);
 MobileRectangle[] border = new MobileRectangle[20];
 MobileRectangle nopressed;
 char and = '&';
