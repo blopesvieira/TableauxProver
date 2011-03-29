@@ -9,4 +9,10 @@ Copyright:
 Bruno Lopes <bvieira@inf.puc-rio.br>
 Edward Hermann <hermann@inf.puc-rio.br>
 
-http://www.tecmf.inf.puc-rio.br
+http://www.tecmf.inf.puc-rio.br/TableauxProver
+
+
+Revision history
+
+ * 0.2 support to first order classical logic
+ * 0.1 support to zero order classical logic
