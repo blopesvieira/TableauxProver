@@ -3,9 +3,9 @@ import controlP5.*;
 ArrayList nos = new ArrayList();
 ArrayList linhas = new ArrayList();
 int[][] ramos = new int[25][25];
-int countnos=0;
-int maxnos=0;
-int countramos=0;
+int countnos = 0;
+int maxnos = 0;
+int countramos = 0;
 int constParam = -1;
 ArrayList constantesCriadas = new ArrayList();
 PFont myfont=createFont("Ariel", 12);
@@ -57,6 +57,14 @@ public void Tableaux(int value) {
 void startTableaux(String formula) {
   formula = removeWhiteSpace(formula.toUpperCase());
   if(validInputFormula(formula)) {
+    nos = new ArrayList();
+    linhas = new ArrayList();
+    ramos = new int[25][25];
+    countnos = 0;
+    maxnos = 0;
+    countramos = 0;
+    constParam = -1;
+    constantesCriadas = new ArrayList();
     txtInputFormula.setColorBackground(defaultColor);
     formula = changeSymbol(formula, '(', '[');
     formula = changeSymbol(formula, ')', ']');
@@ -323,6 +331,7 @@ class MobileRectangle {
     text(label + " " + s, x, y);
     line(x1, y1, x2, y2);
   }
+
 }
 
 void mousePressed() {
@@ -343,7 +352,7 @@ void mousePressed() {
     nopressed = (MobileRectangle) nos.get(indice);
     if(nopressed.canExpand()) {
       println("Ok, first time on this node... expanding!");
-      nopressed.expandNode();
+      if(!existential(nopressed.s) & !universal(nopressed.s) & branches(nopressed.s)) nopressed.expandNode();
       println("nopressed "+ nopressed.s + " " + nopressed.y + " "+ nopressed.label); 
       if(mouseButton == RIGHT) {
         int totalramos = countramos;
@@ -351,13 +360,13 @@ void mousePressed() {
           println("Entering if statement: "+ " logbin = maxnos = "+ maxnos + " countramos= " + totalramos);
           int maximonosramo = maxnos;
           for(int j = 0; j <= maximonosramo; j++) {
-            println("ramos[][] = " + ramos[i][j] + " i="+i+" j=" + j);
+            println("ramos[][] = " + ramos[i][j] + " i=" + i + " j=" + j);
             if(ramos[i][j] == nopressed.label) {
               if(branches(nopressed.s)) {
                 nopressed.marcado();
                 folha = border[i];
                 println("Border node = " + folha.label + " i= " + i);
-                MobileRectangle um= new MobileRectangle(folha.x - 6 * (folha.s).length(), folha.y + 40, res1(nopressed.s) + nopressed.label, folha.x, folha.y, folha.x-3 * (folha.s).length(), folha.y + 35);
+                MobileRectangle um = new MobileRectangle(folha.x - 6 * (folha.s).length(), folha.y + 40, res1(nopressed.s) + nopressed.label, folha.x, folha.y, folha.x-3 * (folha.s).length(), folha.y + 35);
                 nos.add(um);
                 MobileRectangle dois = new MobileRectangle(folha.x + 6 * (folha.s).length(), folha.y + 40, res2(nopressed.s) + nopressed.label, folha.x, folha.y, folha.x + 3 * (folha.s).length(), folha.y + 35);
                 nos.add(dois);
@@ -387,7 +396,7 @@ void mousePressed() {
                   maxnos++;
                 }                   
                 else {
-                  if (existential(nopressed.s)) {
+                  if(existential(nopressed.s)) {
                     nopressed.marcado();
                     print("existencial");
                     folha = border[i];
@@ -398,7 +407,7 @@ void mousePressed() {
                     maxnos++; 
                   }                          
                   else{
-                    if (universal(nopressed.s)) {
+                    if(universal(nopressed.s)) {
                       print("universal");
                       folha = border[i];
                       MobileRectangle um = new MobileRectangle(folha.x, folha.y + 40, forall(nopressed.s, nopressed) + nopressed.label, folha.x, folha.y, folha.x, folha.y + 40);
@@ -407,7 +416,7 @@ void mousePressed() {
                       border[i] = um;
                       maxnos++; 
                     }
-                    else{
+                    else {
                       if(negation(nopressed.s)) {
                         nopressed.marcado();
                         folha = border[i];
@@ -599,11 +608,11 @@ void exibedados() {
 }
 
 void mouseDragged() {
-  nopressed.y=mouseY;
-  nopressed.x=mouseX;
-  nopressed.x2=mouseX;
-  nopressed.y2=mouseY;
-  for(int i=0; i < countramos; i++) {
+  nopressed.y = mouseY;
+  nopressed.x = mouseX;
+  nopressed.x2 = mouseX;
+  nopressed.y2 = mouseY;
+  for(int i = 0; i < countramos; i++) {
     for(int j = 0; j <= maxnos; j++) {
       if(ramos[i][j] == nopressed.label) {
         for(int k = 0; k < nos.size(); k++) {

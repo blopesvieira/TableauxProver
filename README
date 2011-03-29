@@ -2,6 +2,8 @@ TableauxProver
 
 A web-based theorem prover on Tableaux
 
+version 0.2b
+
 Copyright:
 
 Bruno Lopes <bvieira@inf.puc-rio.br>
