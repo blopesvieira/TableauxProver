@@ -232,21 +232,25 @@ String removeWhiteSpace(String input) {
   boolean remove = false;
   while(i < l) {
     if(input.charAt(i) == ' ') {
-      if(i > 4) {
-        if((input.charAt(i - 2) != '(' | (input.charAt(i - 1) == '=' & input.charAt(i - 1) == '&' & input.charAt(i - 1) == '|' & input.charAt(i - 1) == '~')) & !input.substring(i - 3, i).equals("ALL") & !input.substring(i - 2, i).equals("EX")) remove = true;
+      if(i >= 4) {
+        if((input.charAt(i - 2) != '(' | (input.charAt(i - 1) == '=' | input.charAt(i - 1) == '&' | input.charAt(i - 1) == '|' | input.charAt(i - 1) == '~')) & !input.substring(i - 3, i).equals("ALL") & !input.substring(i - 2, i).equals("EX")) remove = true;
       }
-      else if(i == 2) {
-        if((input.charAt(i - 2) != '(' | (input.charAt(i - 1) == '=' & input.charAt(i - 1) == '&' & input.charAt(i - 1) == '|' & input.charAt(i - 1) == '~'))) remove = true;
-        else if(i == 3) {
-          if((input.charAt(i - 2) != '(' | (input.charAt(i - 1) == '=' & input.charAt(i - 1) == '&' & input.charAt(i - 1) == '|' & input.charAt(i - 1) == '~')) & !input.substring(i - 2, i).equals("EX")) remove = true;
+      else if(i < 2) {
+        remove = true;
+      }
+        else if(i == 2) {
+          if((input.charAt(i - 2) != '(' | (input.charAt(i - 1) == '=' | input.charAt(i - 1) == '&' | input.charAt(i - 1) == '|' | input.charAt(i - 1) == '~'))) remove = true;
         }
-      }
+          else if(i == 3) {
+            if((input.charAt(i - 2) != '(' | (input.charAt(i - 1) == '=' | input.charAt(i - 1) == '&' | input.charAt(i - 1) == '|' | input.charAt(i - 1) == '~')) & !input.substring(i - 2, i).equals("EX")) remove = true;
+          }
     }
     if(remove) {
       if(i > 0 & i < l - 1) input = input.substring(0, i) + input.substring(i + 1, l);
       else if(i == 0) input = input.substring(i + 1, l);
            else if(i == l - 1) input = input.substring(0, l - 1);
       l = input.length();
+      remove = false;
     }
     else i++;
   }
