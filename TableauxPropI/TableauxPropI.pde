@@ -8,7 +8,7 @@ int maxnos = 0;
 int countramos = 0;
 int constParam = -1;
 ArrayList constantesCriadas = new ArrayList();
-PFont myfont=createFont("Arial", 12);
+PFont myfont = createFont("Arial", 12);
 MobileRectangle[] border = new MobileRectangle[20];
 MobileRectangle nopressed;
 char and = '&';
@@ -20,6 +20,17 @@ String forall = "ALL";
 color cm = color(128,0,0);
 color cf = color(50, 0, 70);
 
+ArrayList nosUndo = new ArrayList();
+ArrayList linhasUndo = new ArrayList();
+int[][] ramosUndo = new int[25][25];
+int countnosUndo = 0;
+int maxnosUndo = 0;
+int countramosUndo = 0;
+int constParamUndo = -1;
+ArrayList constantesCriadasUndo = new ArrayList();
+MobileRectangle[] borderUndo = new MobileRectangle[20];
+MobileRectangle undo;
+
 int alt = 10;
 float ratiobin = 0.75;
 float vertsep = 1.7;
@@ -28,6 +39,7 @@ int labelnos = 0;
 ControlP5 controlP5;
 Textfield txtInputFormula;
 Button btnTableaux;
+Button btnUndo;
 public int inputColor = 200;
 public int backgroundColor = 100;
 int defaultColor;
@@ -39,6 +51,7 @@ void setup() {
   controlP5 = new ControlP5(this);
   txtInputFormula = controlP5.addTextfield("Formula", 10, 15, 380, 16);
   btnTableaux = controlP5.addButton("Tableaux", 0, 400, 15, 45, 19);
+  btnUndo = controlP5.addButton("Undo", 0, 450, 15, 45, 19);
   txtInputFormula.setFocus(true);
   txtInputFormula.setAutoClear(false);
   defaultColor = txtInputFormula.getColor().getBackground();
@@ -52,6 +65,57 @@ public void Formula(String textField) {
 public void Tableaux(int value) {
   println("Button command");
   startTableaux(txtInputFormula.getText());
+}
+
+public void Undo(int value) {
+  println("Undoing last expansion...");
+  nos = new ArrayList();
+  for(int i = 0; i < nosUndo.size(); i++) nos.add(nosUndo.get(i));
+  linhas = new ArrayList();
+  for(int i = 0; i < linhasUndo.size(); i++) linhas.add(linhasUndo.get(i));
+  ramos = new int[25][25];
+  for(int i = 0; i < countramosUndo; i++) {
+    for(int j = 0; j <= maxnosUndo; j++) {
+      ramos[i][j] = ramosUndo[i][j];
+    }
+  }
+  border = new MobileRectangle[20];
+  for(int i = 0; i < countramosUndo; i++) {
+    border[i] = borderUndo[i];
+  }
+  countnos = countnosUndo;
+  maxnos = maxnosUndo;
+  countramos = countramosUndo;
+  constParam = constParamUndo;
+  constantesCriadas = new ArrayList();
+  for(int i = 0; i < constantesCriadasUndo.size(); i++) constantesCriadas.add(constantesCriadasUndo.get(i));
+  undo.undo();
+  //exibedados();
+}
+
+void undoAdd(MobileRectangle node) {
+  nosUndo = new ArrayList(nos.size());
+  for(int i = 0; i < nos.size(); i++) nosUndo.add(nos.get(i));
+  linhasUndo = new ArrayList(linhas.size());
+  for(int i = 0; i < linhas.size(); i++) linhasUndo.add(linhas.get(i));
+  ramosUndo = new int[25][25];
+  for(int i = 0; i < countramos; i++) {
+    for(int j = 0; j <= maxnos; j++) {
+      ramosUndo[i][j] = ramos[i][j];
+    }
+  }
+  borderUndo = new MobileRectangle[20];
+  for(int i = 0; i < countramos; i++) {
+    borderUndo[i] = border[i];
+  }
+  countnosUndo = countnos;
+  maxnosUndo = maxnos;
+  countramosUndo = countramos;
+  constParamUndo = constParam;
+  constantesCriadasUndo = new ArrayList(constantesCriadas.size());
+  for(int i = 0; i < constantesCriadas.size(); i++) constantesCriadasUndo.add(constantesCriadas.get(i));
+  undo = nopressed;
+  println("Old status saved for undo...");
 }
 
 void startTableaux(String formula) {
@@ -89,11 +153,12 @@ boolean validInputFormula(String formula) {
   if(formula.charAt(0) != '(' || formula.charAt(l) != ')') return false;
   if(formula.charAt(1) == '~') {
     switch(formula.charAt(2)) {
-      case '=' :
-      case '&' :
-      case '|' :
-      case '~' :
-      case ')' : return false;
+    case '=' :
+    case '&' :
+    case '|' :
+    case '~' :
+    case ')' : 
+      return false;
     }
     i = 2;
     if(formula.charAt(2) == '(') {
@@ -101,12 +166,15 @@ boolean validInputFormula(String formula) {
       do {
         i++;
         switch(formula.charAt(i)) {
-          case '(' : count++;
-                     break;
-          case ')' : count--;
+        case '(' : 
+          count++;
+          break;
+        case ')' : 
+          count--;
         }
         if(i > l) return false;
-      } while(count > 0);
+      } 
+      while(count > 0);
       if(!validInputFormula(formula.substring(2, i + 1))) return false;
     }
     if(i + 1 != l) return false;
@@ -115,12 +183,13 @@ boolean validInputFormula(String formula) {
     if(formula.substring(1, 4).equals("ALL")) {
       if(formula.charAt(4) != ' ') return false;
       switch(formula.charAt(5)) {
-        case '=' :
-        case '&' :
-        case '|' :
-        case '~' :
-        case ',' :
-        case ')' : return false;
+      case '=' :
+      case '&' :
+      case '|' :
+      case '~' :
+      case ',' :
+      case ')' : 
+        return false;
       }
       i = 6;
       if(formula.charAt(6) == '(') {
@@ -128,100 +197,116 @@ boolean validInputFormula(String formula) {
         do {
           i++;
           switch(formula.charAt(i)) {
-            case '(' : count++;
-                       break;
-            case ')' : count--;
+          case '(' : 
+            count++;
+            break;
+          case ')' : 
+            count--;
           }
           if(i > l) return false;
-        } while(count > 0);
+        } 
+        while(count > 0);
         if(!validInputFormula(formula.substring(6, i + 1))) return false;
       }
       if(i + 1 != l) return false;
     }
     else if(formula.substring(1, 3).equals("EX")) {
-           if(formula.charAt(3) != ' ') return false;
-           switch(formula.charAt(4)) {
-             case '=' :
-             case '&' :
-             case '|' :
-             case '~' :
-             case ')' : return false;
-           }
-           i = 5;
-           if(formula.charAt(5) == '(') {
-             count = 1;
-             do {
-               i++;
-               switch(formula.charAt(i)) {
-                  case '(' : count++;
-                            break;
-                 case ')' : count--;
-               }
-               if(i > l) return false;
-             } while(count > 0);
-             if(!validInputFormula(formula.substring(5, i + 1))) return false;
-           }
-           if(i + 1 != l) return false;
-         }
-         else {
-            if(formula.charAt(1) == '=' || formula.charAt(1) == '&' || formula.charAt(1) == '|' ) {
-              switch(formula.charAt(2)) {
-                case '=' :
-                case '&' :
-                case '|' :
-                case '~' :
-                case ')' : return false;
-              }
-              i = 2;
-              if(formula.charAt(2) == '(') {
-                count = 1;
-                do {
-                  i++;
-                  switch(formula.charAt(i)) {
-                    case '(' : count++;
-                               break;
-                    case ')' : count--;
-                  }
-                  if(i > l) return false;
-                } while(count > 0);
-                if(!validInputFormula(formula.substring(2, i + 1))) return false;
-              }
-              switch(formula.charAt(i + 1)) {
-                case '=' :
-                case '&' :
-                case '|' :
-                case ')' : return false;
-              }
-              j = i += 1;
-              if(formula.charAt(j) == '(') {
-                count = 1;
-                do {
-                  j++;
-                  switch(formula.charAt(j)) {
-                    case '(' : count++;
-                               break;
-                    case ')' : count--;
-                  }
-                  if(j > l) return false;
-                } while(count > 0);
-                if(!validInputFormula(formula.substring(i, j + 1))) return false;
-              }
-              if (j + 1 != l) return false;
+      if(formula.charAt(3) != ' ') return false;
+      switch(formula.charAt(4)) {
+      case '=' :
+      case '&' :
+      case '|' :
+      case '~' :
+      case ')' : 
+        return false;
+      }
+      i = 5;
+      if(formula.charAt(5) == '(') {
+        count = 1;
+        do {
+          i++;
+          switch(formula.charAt(i)) {
+          case '(' : 
+            count++;
+            break;
+          case ')' : 
+            count--;
+          }
+          if(i > l) return false;
+        } 
+        while(count > 0);
+        if(!validInputFormula(formula.substring(5, i + 1))) return false;
+      }
+      if(i + 1 != l) return false;
+    }
+    else {
+      if(formula.charAt(1) == '=' || formula.charAt(1) == '&' || formula.charAt(1) == '|' ) {
+        switch(formula.charAt(2)) {
+        case '=' :
+        case '&' :
+        case '|' :
+        case '~' :
+        case ')' : 
+          return false;
+        }
+        i = 2;
+        if(formula.charAt(2) == '(') {
+          count = 1;
+          do {
+            i++;
+            switch(formula.charAt(i)) {
+            case '(' : 
+              count++;
+              break;
+            case ')' : 
+              count--;
             }
-            else {
-              if(formula.charAt(2) != ' ') return false;
-              switch(formula.charAt(3)) {
-                case '=' :
-                case '&' :
-                case '|' :
-                case '~' :
-                case '(' :
-                case ')' : return false;
-              }
-              if(l > 5) return false;
+            if(i > l) return false;
+          } 
+          while(count > 0);
+          if(!validInputFormula(formula.substring(2, i + 1))) return false;
+        }
+        switch(formula.charAt(i + 1)) {
+        case '=' :
+        case '&' :
+        case '|' :
+        case ')' : 
+          return false;
+        }
+        j = i += 1;
+        if(formula.charAt(j) == '(') {
+          count = 1;
+          do {
+            j++;
+            switch(formula.charAt(j)) {
+            case '(' : 
+              count++;
+              break;
+            case ')' : 
+              count--;
             }
-         }
-       }
+            if(j > l) return false;
+          } 
+          while(count > 0);
+          if(!validInputFormula(formula.substring(i, j + 1))) return false;
+        }
+        if (j + 1 != l) return false;
+      }
+      else {
+        if(formula.charAt(2) != ' ') return false;
+        switch(formula.charAt(3)) {
+        case '=' :
+        case '&' :
+        case '|' :
+        case '~' :
+        case '(' :
+        case ')' : 
+          return false;
+        }
+        if(l > 5) return false;
+      }
+    }
+  }
   println("Formula " + formula + "is ok!");
   return true;
 }
@@ -238,17 +323,17 @@ String removeWhiteSpace(String input) {
       else if(i < 2) {
         remove = true;
       }
-        else if(i == 2) {
-          if((input.charAt(i - 2) != '(' || (input.charAt(i - 1) == '=' || input.charAt(i - 1) == '&' || input.charAt(i - 1) == '|' || input.charAt(i - 1) == '~'))) remove = true;
-        }
-          else if(i == 3) {
-            if((input.charAt(i - 2) != '(' || (input.charAt(i - 1) == '=' || input.charAt(i - 1) == '&' || input.charAt(i - 1) == '|' || input.charAt(i - 1) == '~')) && !input.substring(i - 2, i).equals("EX")) remove = true;
-          }
+      else if(i == 2) {
+        if((input.charAt(i - 2) != '(' || (input.charAt(i - 1) == '=' || input.charAt(i - 1) == '&' || input.charAt(i - 1) == '|' || input.charAt(i - 1) == '~'))) remove = true;
+      }
+      else if(i == 3) {
+        if((input.charAt(i - 2) != '(' || (input.charAt(i - 1) == '=' || input.charAt(i - 1) == '&' || input.charAt(i - 1) == '|' || input.charAt(i - 1) == '~')) && !input.substring(i - 2, i).equals("EX")) remove = true;
+      }
     }
     if(remove) {
       if(i > 0 && i < l - 1) input = input.substring(0, i) + input.substring(i + 1, l);
       else if(i == 0) input = input.substring(i + 1, l);
-           else if(i == l - 1) input = input.substring(0, l - 1);
+      else if(i == l - 1) input = input.substring(0, l - 1);
       l = input.length();
       remove = false;
     }
@@ -278,7 +363,7 @@ void draw() {
   rect(0, 0, width, 100);
   for(int i = 0; i < nos.size(); i++) { 
     MobileRectangle re = (MobileRectangle) nos.get(i); 
-    re.display(); 
+    re.display();
   }
 }
 
@@ -291,7 +376,7 @@ class MobileRectangle {
   int instancesCounter;
   boolean expanded;
   boolean first;
- 
+
   MobileRectangle(int x, int y, String t, int x1, int y1, int x2, int y2, boolean first) {
     this.x1 = x1;
     this.y1 = y1;
@@ -318,11 +403,16 @@ class MobileRectangle {
   }
 
   void marcado() {
-    c = cm;
+    this.c = cm;
   }
 
   void finished() {
-    if(!this.isFirst()) c = defaultColor;
+    if(!this.isFirst()) this.c = defaultColor;
+  }
+
+  void undo() {
+    this.c = color(128, 128, 0);
+    this.expanded = false;
   }
 
   void update(int X, int Y) {
@@ -341,13 +431,12 @@ class MobileRectangle {
   boolean isFirst() {
     return this.first;
   }
-
 }
 
 void mousePressed() {
   MobileRectangle folha;
   exibedados();
-  int indice=-1; 
+  int indice = -1; 
   println("nos.size " + nos.size());
   for(int i = 0; i < nos.size(); i++) {
     MobileRectangle re = (MobileRectangle) nos.get(i);
@@ -360,6 +449,7 @@ void mousePressed() {
   if(indice != -1) {
     println("Index " + indice);
     nopressed = (MobileRectangle) nos.get(indice);
+    undoAdd(nopressed);
     if(nopressed.canExpand()) {
       println("Ok, first time on this node... expanding!");
       if(!existential(nopressed.s) && !universal(nopressed.s) && (branches(nopressed.s) || nopressed.isFirst())) nopressed.expandNode();
@@ -381,8 +471,8 @@ void mousePressed() {
                 MobileRectangle dois = new MobileRectangle(folha.x + 6 * (folha.s).length(), folha.y + 40, res2(nopressed.s) + nopressed.label, folha.x, folha.y, folha.x + 3 * (folha.s).length(), folha.y + 35, false);
                 nos.add(dois);
                 ramos[i][maxnos+1] = um.label;
-                border[i]=um;
-                for (int k =0 ; k<= maxnos; k++) {
+                border[i] = um;
+                for (int k = 0 ; k<= maxnos; k++) {
                   ramos[countramos][k] = ramos[i][k];
                 }
                 ramos[countramos][maxnos+1] = dois.label;
@@ -404,7 +494,7 @@ void mousePressed() {
                   border[i] = dois;
                   maxnos++;                         
                   maxnos++;
-                }                   
+                }
                 else {
                   if(existential(nopressed.s)) {
                     nopressed.marcado();
@@ -414,9 +504,9 @@ void mousePressed() {
                     nos.add(um);
                     ramos[i][maxnos+1] = um.label;
                     border[i] = um;
-                    maxnos++; 
-                  }                          
-                  else{
+                    maxnos++;
+                  }
+                  else {
                     if(universal(nopressed.s)) {
                       print("universal");
                       folha = border[i];
@@ -436,7 +526,8 @@ void mousePressed() {
                         ramos[i][maxnos+1] = um.label;
                         border[i] = um; 
                         maxnos++;
-                      } else nopressed.finished();
+                      } 
+                      else nopressed.finished();
                     }
                   }
                 }
@@ -453,8 +544,8 @@ void mousePressed() {
     }
   }
 }
-   
-boolean existential(String s){
+
+boolean existential(String s) {
   print("testando exist");
   String[] m = match(s, "(.)\\[(EX|ALL)\\s+([^\\s])\\s*(\\[.+\\]|.)\\]");
   if(m != null) {
@@ -464,7 +555,7 @@ boolean existential(String s){
   }
   else return false;
 }   
-     
+
 boolean negation(String s) {
   print("testando negation");
   String[] m = match(s, "(.)\\[(~).+\\]");
@@ -506,7 +597,7 @@ boolean notbranches(String s) {
     }
     else return false;
   }
-    else return false;
+  else return false;
 }
 
 String uno(String s) {
@@ -515,7 +606,7 @@ String uno(String s) {
   if(m[2].equals("~")) return (inv(m[1]) + m[3]);
   else return null;
 }
-   
+
 String exist(String s) {
   String[] m = match(s, "(.)\\[(EX|ALL)\\s+([^\\s])\\s*(\\[.+\\]|.)\\]");
   println(m[0] + "1" + m[1] + "2" + m[2] + "3" + m[3] + "4" + m[4]);
@@ -544,7 +635,7 @@ String forall(String s, MobileRectangle originalFormula) {
       originalFormula.instancesCounter++;
       return(m[1] + m[4].replace(m[3], "c" + instance));
     }
-  }                
+  }
 }    
 
 String res1(String s) {
@@ -567,9 +658,9 @@ String res1(String s) {
   if (m[2].equals("|")) return(m[1] + arg1);
   if (m[2].equals("&")) return(m[1] + arg1);
   if (m[2].equals("=")) return(inv(m[1]) + arg1);
-  else return null;  
+  else return null;
 }
- 
+
 String inv(String c) {
   if(c.equals("V")) return "F";
   else return "V";
@@ -602,9 +693,9 @@ String res2(String s) {
   if(m[2].equals("|")) return(m[1] + arg2);
   if(m[2].equals("&")) return(m[1] + arg2);
   if(m[2].equals("=")) return(m[1] + arg2);
-  return null;   
+  return null;
 }
-  
+
 void exibedados() {
   println("SAIDA ==>"+ " maxnos = "+ maxnos + " countramos= "+ countramos);
   for(int i = 0; i < countramos; i++) {
@@ -614,7 +705,7 @@ void exibedados() {
   } 
   for(int k = 0; k < countramos; k++) {
     println("border com " + " k=" + k + " =" + border[k].label);
-  } 
+  }
 }
 
 void mouseDragged() {
@@ -638,3 +729,4 @@ void mouseDragged() {
     }
   }
 }
+
