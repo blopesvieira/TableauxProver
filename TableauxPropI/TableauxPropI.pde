@@ -71,30 +71,31 @@ public void Tableaux(int value) {
 }
 
 public void Undo(int value) {
-  if(undoPos >= 0) {
+  int pos = undoPos--;
+  while (pos > maxUndo) pos = pos - maxUndo;
+  if(pos >= 0) {
     println("Undoing last expansion...");
     nos = new ArrayList();
-    for(int i = 0; i < nosUndo[undoPos].size(); i++) nos.add(nosUndo[undoPos].get(i));
+    for(int i = 0; i < nosUndo[pos].size(); i++) nos.add(nosUndo[pos].get(i));
     linhas = new ArrayList();
-    for(int i = 0; i < linhasUndo[undoPos].size(); i++) linhas.add(linhasUndo[undoPos].get(i));
+    for(int i = 0; i < linhasUndo[pos].size(); i++) linhas.add(linhasUndo[pos].get(i));
     ramos = new int[25][25];
-    for(int i = 0; i < countramosUndo[undoPos]; i++) {
-      for(int j = 0; j <= maxnosUndo[undoPos]; j++) {
-        ramos[i][j] = ramosUndo[undoPos][i][j];
+    for(int i = 0; i < countramosUndo[pos]; i++) {
+      for(int j = 0; j <= maxnosUndo[pos]; j++) {
+        ramos[i][j] = ramosUndo[pos][i][j];
       }
     }
     border = new MobileRectangle[20];
-    for(int i = 0; i < countramosUndo[undoPos]; i++) {
-      border[i] = borderUndo[undoPos][i];
+    for(int i = 0; i < countramosUndo[pos]; i++) {
+      border[i] = borderUndo[pos][i];
     }
-    countnos = countnosUndo[undoPos];
-    maxnos = maxnosUndo[undoPos];
-    countramos = countramosUndo[undoPos];
-    constParam = constParamUndo[undoPos];
+    countnos = countnosUndo[pos];
+    maxnos = maxnosUndo[pos];
+    countramos = countramosUndo[pos];
+    constParam = constParamUndo[pos];
     constantesCriadas = new ArrayList();
-    for(int i = 0; i < constantesCriadasUndo[undoPos].size(); i++) constantesCriadas.add(constantesCriadasUndo[undoPos].get(i));
-    undo[undoPos].undo();
-    undoPos--;
+    for(int i = 0; i < constantesCriadasUndo[pos].size(); i++) constantesCriadas.add(constantesCriadasUndo[pos].get(i));
+    undo[pos].undo();
   }
   else println("Nothing to undo...");
 }
