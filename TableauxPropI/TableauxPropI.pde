@@ -20,16 +20,19 @@ String forall = "ALL";
 color cm = color(128,0,0);
 color cf = color(50, 0, 70);
 
-ArrayList nosUndo = new ArrayList();
-ArrayList linhasUndo = new ArrayList();
-int[][] ramosUndo = new int[25][25];
-int countnosUndo = 0;
-int maxnosUndo = 0;
-int countramosUndo = 0;
-int constParamUndo = -1;
-ArrayList constantesCriadasUndo = new ArrayList();
-MobileRectangle[] borderUndo = new MobileRectangle[20];
-MobileRectangle undo;
+int maxUndo = 30;
+
+ArrayList[] nosUndo = new ArrayList[maxUndo];
+ArrayList[] linhasUndo = new ArrayList[maxUndo];
+int[][][] ramosUndo = new int[maxUndo][25][25];
+int[] countnosUndo = new int[maxUndo];
+int[] maxnosUndo = new int[maxUndo];
+int[] countramosUndo = new int[maxUndo];
+int[] constParamUndo = new int[maxUndo];
+ArrayList[] constantesCriadasUndo = new ArrayList[maxUndo];
+MobileRectangle[][] borderUndo = new MobileRectangle[maxUndo][20];
+MobileRectangle[] undo = new MobileRectangle[maxUndo];
+int undoPos = -1;
 
 int alt = 10;
 float ratiobin = 0.75;
@@ -68,53 +71,58 @@ public void Tableaux(int value) {
 }
 
 public void Undo(int value) {
-  println("Undoing last expansion...");
-  nos = new ArrayList();
-  for(int i = 0; i < nosUndo.size(); i++) nos.add(nosUndo.get(i));
-  linhas = new ArrayList();
-  for(int i = 0; i < linhasUndo.size(); i++) linhas.add(linhasUndo.get(i));
-  ramos = new int[25][25];
-  for(int i = 0; i < countramosUndo; i++) {
-    for(int j = 0; j <= maxnosUndo; j++) {
-      ramos[i][j] = ramosUndo[i][j];
+  if(undoPos >= 0) {
+    println("Undoing last expansion...");
+    nos = new ArrayList();
+    for(int i = 0; i < nosUndo[undoPos].size(); i++) nos.add(nosUndo[undoPos].get(i));
+    linhas = new ArrayList();
+    for(int i = 0; i < linhasUndo[undoPos].size(); i++) linhas.add(linhasUndo[undoPos].get(i));
+    ramos = new int[25][25];
+    for(int i = 0; i < countramosUndo[undoPos]; i++) {
+      for(int j = 0; j <= maxnosUndo[undoPos]; j++) {
+        ramos[i][j] = ramosUndo[undoPos][i][j];
+      }
     }
+    border = new MobileRectangle[20];
+    for(int i = 0; i < countramosUndo[undoPos]; i++) {
+      border[i] = borderUndo[undoPos][i];
+    }
+    countnos = countnosUndo[undoPos];
+    maxnos = maxnosUndo[undoPos];
+    countramos = countramosUndo[undoPos];
+    constParam = constParamUndo[undoPos];
+    constantesCriadas = new ArrayList();
+    for(int i = 0; i < constantesCriadasUndo[undoPos].size(); i++) constantesCriadas.add(constantesCriadasUndo[undoPos].get(i));
+    undo[undoPos].undo();
+    undoPos--;
   }
-  border = new MobileRectangle[20];
-  for(int i = 0; i < countramosUndo; i++) {
-    border[i] = borderUndo[i];
-  }
-  countnos = countnosUndo;
-  maxnos = maxnosUndo;
-  countramos = countramosUndo;
-  constParam = constParamUndo;
-  constantesCriadas = new ArrayList();
-  for(int i = 0; i < constantesCriadasUndo.size(); i++) constantesCriadas.add(constantesCriadasUndo.get(i));
-  undo.undo();
-  //exibedados();
+  else println("Nothing to undo...");
 }
 
 void undoAdd(MobileRectangle node) {
-  nosUndo = new ArrayList(nos.size());
-  for(int i = 0; i < nos.size(); i++) nosUndo.add(nos.get(i));
-  linhasUndo = new ArrayList(linhas.size());
-  for(int i = 0; i < linhas.size(); i++) linhasUndo.add(linhas.get(i));
-  ramosUndo = new int[25][25];
+  int pos = ++undoPos;
+  while (pos > maxUndo) pos = pos - maxUndo;
+  nosUndo[pos] = new ArrayList(nos.size());
+  for(int i = 0; i < nos.size(); i++) nosUndo[pos].add(nos.get(i));
+  linhasUndo[pos] = new ArrayList(linhas.size());
+  for(int i = 0; i < linhas.size(); i++) linhasUndo[pos].add(linhas.get(i));
+  ramosUndo[pos] = new int[25][25];
   for(int i = 0; i < countramos; i++) {
     for(int j = 0; j <= maxnos; j++) {
-      ramosUndo[i][j] = ramos[i][j];
+      ramosUndo[pos][i][j] = ramos[i][j];
     }
   }
-  borderUndo = new MobileRectangle[20];
+  borderUndo[pos] = new MobileRectangle[20];
   for(int i = 0; i < countramos; i++) {
-    borderUndo[i] = border[i];
+    borderUndo[pos][i] = border[i];
   }
-  countnosUndo = countnos;
-  maxnosUndo = maxnos;
-  countramosUndo = countramos;
-  constParamUndo = constParam;
-  constantesCriadasUndo = new ArrayList(constantesCriadas.size());
-  for(int i = 0; i < constantesCriadas.size(); i++) constantesCriadasUndo.add(constantesCriadas.get(i));
-  undo = nopressed;
+  countnosUndo[pos] = countnos;
+  maxnosUndo[pos] = maxnos;
+  countramosUndo[pos] = countramos;
+  constParamUndo[pos] = constParam;
+  constantesCriadasUndo[pos] = new ArrayList(constantesCriadas.size());
+  for(int i = 0; i < constantesCriadas.size(); i++) constantesCriadasUndo[pos].add(constantesCriadas.get(i));
+  undo[pos] = nopressed;
   println("Old status saved for undo...");
 }
 
