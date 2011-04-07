@@ -21,7 +21,6 @@ color cm = color(128,0,0);
 color cf = color(50, 0, 70);
 
 int maxUndo = 30;
-
 ArrayList[] nosUndo = new ArrayList[maxUndo];
 ArrayList[] linhasUndo = new ArrayList[maxUndo];
 int[][][] ramosUndo = new int[maxUndo][25][25];
@@ -46,9 +45,11 @@ Button btnUndo;
 public int inputColor = 200;
 public int backgroundColor = 100;
 int defaultColor;
+int sizeX = 800;
+int sizeY = 800;
 
 void setup() {
-  size(800,800);
+  size(sizeX,sizeY);
   smooth();
   frameRate(25);
   controlP5 = new ControlP5(this);
@@ -97,7 +98,10 @@ public void Undo(int value) {
     for(int i = 0; i < constantesCriadasUndo[pos].size(); i++) constantesCriadas.add(constantesCriadasUndo[pos].get(i));
     undo[pos].undo();
   }
-  else println("Nothing to undo...");
+  else {
+    undoPos = -1;
+    println("Nothing to undo...");
+  }
 }
 
 void undoAdd(MobileRectangle node) {
@@ -128,7 +132,7 @@ void undoAdd(MobileRectangle node) {
 }
 
 void startTableaux(String formula) {
-  formula = removeWhiteSpace(formula.toUpperCase());
+  formula = removeWhiteSpace(formula);
   if(validInputFormula(formula)) {
     nos = new ArrayList();
     linhas = new ArrayList();
@@ -392,8 +396,11 @@ class MobileRectangle {
     this.x2 = x2;
     this.y2 = y2;
     this.c1 = color(0, 128, 128);
-    this.x = x;
-    this.y = y;
+    if(x > 0 && x < sizeX - 30) this.x = x;
+    else if(x < 0) this.x = 0;
+      else this.x = sizeX - 30;
+    if(y < sizeY - 30) this.y = y;
+    else this.y = sizeY - 30;
     this.c = color(128, 128, 0);
     this.s = t;
     countnos++; 
@@ -430,10 +437,12 @@ class MobileRectangle {
   }
 
   void display() {
+    String t = new String();
     fill(c);
     stroke(c1);
     textFont(myfont);
-    text(label + " " + s, x, y);
+    t = changeSymbol(changeSymbol(s.substring(0, 1) + ": " + s.substring(1, s.length() - 1) + " " + s.substring(s.length() - 1, s.length()), '[', '('), ']', ')');
+    text(label + " - " + t, x, y);
     line(x1, y1, x2, y2);
   }
 
@@ -458,10 +467,10 @@ void mousePressed() {
   if(indice != -1) {
     println("Index " + indice);
     nopressed = (MobileRectangle) nos.get(indice);
-    undoAdd(nopressed);
     if(nopressed.canExpand()) {
       println("Ok, first time on this node... expanding!");
-      if(!existential(nopressed.s) && !universal(nopressed.s) && (branches(nopressed.s) || nopressed.isFirst())) nopressed.expandNode();
+      undoAdd(nopressed);
+      if(!existential(nopressed.s) && !universal(nopressed.s)) nopressed.expandNode();
       println("nopressed "+ nopressed.s + " " + nopressed.y + " "+ nopressed.label); 
       if(mouseButton == RIGHT) {
         int totalramos = countramos;
