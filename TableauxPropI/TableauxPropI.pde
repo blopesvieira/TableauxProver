@@ -143,8 +143,6 @@ void startTableaux(String formula) {
     constParam = -1;
     constantesCriadas = new ArrayList();
     txtInputFormula.setColorBackground(defaultColor);
-    formula = changeSymbol(formula, '(', '[');
-    formula = changeSymbol(formula, ')', ']');
     MobileRectangle re = new MobileRectangle(300, 120, "F" + formula + "0", 250, 0, 250, 10, true);
     nos.add(re);
     border[0] = re;
@@ -356,19 +354,6 @@ String removeWhiteSpace(String input) {
   return input;
 }
 
-String changeSymbol(String input, char from, char to) {
-  int i;
-  int l = input.length();
-  if(l > 0) {
-    if(input.charAt(0) == from && l > 1) input =  to + input.substring(1, l);
-    for(i = 1; i < l - 1; i++)
-      if(input.charAt(i) == from) input = input.substring(0, i) + to + input.substring(i + 1, l);
-    if(input.charAt(l - 1) == from) input = input.substring(0, l - 1) + to;
-  }
-  println("Changing " + from + " to " + to + ": " + input);
-  return input;
-}
-
 void draw() {
   background(0);
   textFont(myfont);
@@ -441,7 +426,7 @@ class MobileRectangle {
     fill(c);
     stroke(c1);
     textFont(myfont);
-    t = changeSymbol(changeSymbol(s.substring(0, 1) + ": " + s.substring(1, s.length() - 1) + " " + s.substring(s.length() - 1, s.length()), '[', '('), ']', ')');
+    t = s.substring(0, 1) + ": " + s.substring(1, s.length() - 1) + " " + s.substring(s.length() - 1, s.length());
     text(label + " - " + t, x, y);
     line(x1, y1, x2, y2);
   }
@@ -565,7 +550,7 @@ void mousePressed() {
 
 boolean existential(String s) {
   print("testando exist");
-  String[] m = match(s, "(.)\\[(EX|ALL)\\s+([^\\s])\\s*(\\[.+\\]|.)\\]");
+  String[] m = match(s, "(.)\\((EX|ALL)\\s+([^\\s])\\s*(\\(.+\\)|.)\\)");
   if(m != null) {
     println(m[0] + "1" + m[1] + "2" + m[2] + "3" + m[3] + "4" + m[4]);
     if(((m[1].equals("F")) && (m[2].equals("ALL"))) || ((m[1].equals("V")) &&(m[2].equals("EX")))) return (true);
@@ -576,7 +561,7 @@ boolean existential(String s) {
 
 boolean negation(String s) {
   print("testando negation");
-  String[] m = match(s, "(.)\\[(~).+\\]");
+  String[] m = match(s, "(.)\\((~).+\\)");
   if(m!=null) {
     println(m[0] + "1" + m[1]);
     return true;
@@ -586,7 +571,7 @@ boolean negation(String s) {
 
 boolean universal(String s) {
   print("testando universal");
-  String[] m = match(s, "(.)\\[(EX|ALL)\\s+([^\\s])\\s*(\\[.+\\]|.)\\]");
+  String[] m = match(s, "(.)\\((EX|ALL)\\s+([^\\s])\\s*(\\(.+\\)|.)\\)");
   if(m!=null) {
     println(m[0] + "1" + m[1] + "2" + m[2] + "3" + m[3] + "4" + m[4]);
     if (((m[1].equals("V")) && (m[2].equals("ALL"))) || ((m[1].equals("F")) &&(m[2].equals("EX")))) return (true);
@@ -596,7 +581,7 @@ boolean universal(String s) {
 }        
 
 boolean branches(String s) { 
-  String[] m = match(s, "(.)\\[(.)(\\[.+\\]|.)(\\[.+\\]|.)\\]");
+  String[] m = match(s, "(.)\\((.)(\\(.+\\)|.)(\\(.+\\)|.)\\)");
   if(m!=null) {
     if(((m[1].equals("F")) && (m[2].equals("&"))) || ((m[1].equals("V")) &&(m[2].equals("|"))) || ((m[1].equals("V")) &&(m[2].equals("=")))) {
       return true;
@@ -607,7 +592,7 @@ boolean branches(String s) {
 }   
 
 boolean notbranches(String s) {
-  String [] m = match(s, "(.)\\[(&|\\||=).+");
+  String [] m = match(s, "(.)\\((&|\\||=).+");
   if(m!=null) {
     println("casou no notbranches");    
     if(((m[1].equals("V")) && (m[2].equals("&"))) || ((m[1].equals("F")) &&(m[2].equals("|"))) || ((m[1].equals("F")) &&(m[2].equals("=")))) {
@@ -619,14 +604,14 @@ boolean notbranches(String s) {
 }
 
 String uno(String s) {
-  String[] m = match(s, "(.)\\[(.)(.+)\\]");
+  String[] m = match(s, "(.)\\((.)(.+)\\)");
   println(m[0] + "1" + m[1] + "2" + m[2] + "3" + m[3]);
   if(m[2].equals("~")) return (inv(m[1]) + m[3]);
   else return null;
 }
 
 String exist(String s) {
-  String[] m = match(s, "(.)\\[(EX|ALL)\\s+([^\\s])\\s*(\\[.+\\]|.)\\]");
+  String[] m = match(s, "(.)\\((EX|ALL)\\s+([^\\s])\\s*(\\(.+\\)|.)\\)");
   println(m[0] + "1" + m[1] + "2" + m[2] + "3" + m[3] + "4" + m[4]);
   constParam++;
   constantesCriadas.add("c" + constParam);
@@ -634,7 +619,7 @@ String exist(String s) {
 }
 
 String forall(String s, MobileRectangle originalFormula) {
-  String[] m = match(s, "(.)\\[(EX|ALL)\\s+([^\\s])\\s*(\\[.+\\]|.)\\]");
+  String[] m = match(s, "(.)\\((EX|ALL)\\s+([^\\s])\\s*(\\(.+\\)|.)\\)");
   println(m[0] + "1" + m[1] + "2" + m[2] + "3" + m[3] + "4" + m[4]);
   if (constantesCriadas.size() == 0) {
     constParam++;
@@ -660,19 +645,19 @@ String res1(String s) {
   int i = 4;
   String arg1 = "";
   int p = 0;
-  if(s.charAt(3) != '[') arg1 = s.substring(3, 4);
+  if(s.charAt(3) != '(') arg1 = s.substring(3, 4);
   else {
     p = 1;
-    arg1 = arg1 + "[";
+    arg1 = arg1 + "(";
   }
   println("=> " + s + " " + arg1 + " " + p);
   while(p != 0) {
-    if(s.charAt(i) == '[') p++;
-    else if (s.charAt(i)==']') p = p - 1;
+    if(s.charAt(i) == '(') p++;
+    else if (s.charAt(i)==')') p = p - 1;
     arg1 = arg1+s.charAt(i);
     i++;
   } 
-  String [] m = match(s, "(.)\\[(.)(\\[.+\\]|.)(\\[.+\\]|.)\\]");
+  String [] m = match(s, "(.)\\((.)(\\(.+\\)|.)(\\(.+\\)|.)\\)");
   if (m[2].equals("|")) return(m[1] + arg1);
   if (m[2].equals("&")) return(m[1] + arg1);
   if (m[2].equals("=")) return(inv(m[1]) + arg1);
@@ -685,13 +670,13 @@ String inv(String c) {
 }
 
 String res2(String s) {
-  String [] k = match(s, "(.+)\\][0-9]+");
+  String [] k = match(s, "(.+)\\)[0-9]+");
   s = k[1];
   println("s -->"+s);
   int i = s.length() - 1;
   String arg2 = "";
   int p = 0;
-  if(s.charAt(i) != ']') {
+  if(s.charAt(i) != ')') {
     arg2=s.substring(i, i + 1);
   }
   else {
@@ -701,13 +686,13 @@ String res2(String s) {
   }
   println("=> " + s.substring(1, i + 1) + " " + arg2 + " " + p + " i=" + i);
   while(p != 0) {
-    if (s.charAt(i)==']') p++;
-    else if(s.charAt(i) == '[') p = p - 1;
+    if (s.charAt(i)==')') p++;
+    else if(s.charAt(i) == '(') p = p - 1;
     arg2 = s.charAt(i) + arg2;
     i = i - 1;
     println(s.substring(1, i + 1) + " p=" + p + " char=" + s.charAt(i));
   };
-  String[] m = match(s, "(.)\\[(.).+");
+  String[] m = match(s, "(.)\\((.).+");
   if(m[2].equals("|")) return(m[1] + arg2);
   if(m[2].equals("&")) return(m[1] + arg2);
   if(m[2].equals("=")) return(m[1] + arg2);
