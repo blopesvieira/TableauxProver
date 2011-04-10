@@ -146,10 +146,11 @@ void Notation(int id) {
 
 void startTableaux(String formula) {
   if(!prefix) {
+    formula = removeWhiteSpaceInfix(formula);
     formula = infix2prefix(formula);
     println("New formula = " + formula);
   }
-  formula = removeWhiteSpace(formula);
+  else formula = removeWhiteSpace(formula);
   if(validInputFormula(formula)) {
     nos = new ArrayList();
     linhas = new ArrayList();
@@ -373,6 +374,38 @@ boolean validInputFormula(String formula) {
   return true;
 }
 
+String removeWhiteSpaceInfix(String input) {
+  int l = input.length();
+  int i = 0;
+  boolean remove = false;
+  while(i < l - 1) {
+    if(input.charAt(i) == ' ') {
+      if(i < l + 1) {
+        if(i > 5) {
+          if((input.charAt(i - 2) != '(' || (input.charAt(i + 1) == implies || input.charAt(i + 1) == and || input.charAt(i + 1) == or)) && !input.substring(i - 3, i).equals(forall) && !input.substring(i - 2, i).equals(exists)) remove = true;
+          else if(i == 2) {
+            if((input.charAt(i - 2) != '(' || (input.charAt(i + 1) == implies || input.charAt(i + 1) == and || input.charAt(i + 1) == or))) remove = true;
+          }
+          else if(i == 3) {
+            if((input.charAt(i - 2) != '(' || (input.charAt(i + 1) == implies || input.charAt(i + 1) == and || input.charAt(i + 1) == or)) && !input.substring(i - 2, i).equals(exists)) remove = true;
+          }
+        }
+        else remove = true;
+      }
+    }
+    if(remove) {
+      if(i > 0 && i < l - 1) input = input.substring(0, i) + input.substring(i + 1, l);
+      else if(i == 0) input = input.substring(i + 1, l);
+      else if(i == l - 1) input = input.substring(0, l - 1);
+      l = input.length();
+      remove = false;
+    }
+    else i++;
+  }
+  println("Input space normalized: " + input);
+  return input;
+}
+
 String removeWhiteSpace(String input) {
   int l = input.length();
   int i = 0;
@@ -380,16 +413,16 @@ String removeWhiteSpace(String input) {
   while(i < l) {
     if(input.charAt(i) == ' ') {
       if(i >= 4) {
-        if((input.charAt(i - 2) != '(' || (input.charAt(i - 1) == '=' || input.charAt(i - 1) == '&' || input.charAt(i - 1) == '|' || input.charAt(i - 1) == '~')) && !input.substring(i - 3, i).equals("ALL") && !input.substring(i - 2, i).equals("EX")) remove = true;
+        if((input.charAt(i - 2) != '(' || (input.charAt(i - 1) == implies || input.charAt(i - 1) == and || input.charAt(i - 1) == or || input.charAt(i - 1) == '~')) && !input.substring(i - 3, i).equals(forall) && !input.substring(i - 2, i).equals(exists)) remove = true;
       }
       else if(i < 2) {
         remove = true;
       }
       else if(i == 2) {
-        if((input.charAt(i - 2) != '(' || (input.charAt(i - 1) == '=' || input.charAt(i - 1) == '&' || input.charAt(i - 1) == '|' || input.charAt(i - 1) == '~'))) remove = true;
+        if((input.charAt(i - 2) != '(' || (input.charAt(i - 1) == implies || input.charAt(i - 1) == and || input.charAt(i - 1) == or || input.charAt(i - 1) == '~'))) remove = true;
       }
       else if(i == 3) {
-        if((input.charAt(i - 2) != '(' || (input.charAt(i - 1) == '=' || input.charAt(i - 1) == '&' || input.charAt(i - 1) == '|' || input.charAt(i - 1) == '~')) && !input.substring(i - 2, i).equals("EX")) remove = true;
+        if((input.charAt(i - 2) != '(' || (input.charAt(i - 1) == implies || input.charAt(i - 1) == and || input.charAt(i - 1) == or || input.charAt(i - 1) == '~')) && !input.substring(i - 2, i).equals(exists)) remove = true;
       }
     }
     if(remove) {
