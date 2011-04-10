@@ -42,6 +42,8 @@ ControlP5 controlP5;
 Textfield txtInputFormula;
 Button btnTableaux;
 Button btnUndo;
+Radio rdoNotation;
+public boolean prefix;
 public int inputColor = 200;
 public int backgroundColor = 100;
 int defaultColor;
@@ -56,6 +58,10 @@ void setup() {
   txtInputFormula = controlP5.addTextfield("Formula", 10, 15, 380, 16);
   btnTableaux = controlP5.addButton("Tableaux", 0, 400, 15, 45, 19);
   btnUndo = controlP5.addButton("Undo", 0, 450, 15, 45, 19);
+  rdoNotation = controlP5.addRadio("Notation", 10, 60);
+  rdoNotation.add("Infix", 0);
+  rdoNotation.add("Prefix", 1);
+  prefix = false;
   txtInputFormula.setFocus(true);
   txtInputFormula.setAutoClear(false);
   defaultColor = txtInputFormula.getColor().getBackground();
@@ -131,7 +137,18 @@ void undoAdd(MobileRectangle node) {
   println("Old status saved for undo...");
 }
 
+void Notation(int id) {
+  switch(id) {
+    case 0: prefix = false;
+    case 1: prefix = true;
+  }
+}
+
 void startTableaux(String formula) {
+  if(!prefix) {
+    formula = infix2prefix(formula);
+    println("New formula = " + formula);
+  }
   formula = removeWhiteSpace(formula);
   if(validInputFormula(formula)) {
     nos = new ArrayList();
@@ -156,11 +173,45 @@ void startTableaux(String formula) {
   }
 }
 
+String infix2prefix (String formula) {
+  int i = 1;
+  int j, k;
+  int count;
+  String left, right;
+  if(formula.charAt(i) == '~') {
+    if(formula.charAt(i + 1) == '(') return("(~" + infix2prefix(formula.substring(i + 1, formula.length() - 1)) + ")");
+    else return(formula);
+  }
+  j = i + 1;
+  if(formula.charAt(i) == '(') {
+    count = 1;
+    while(count > 0) {
+      if(formula.charAt(j) == ')') count--;
+      else if(formula.charAt(j) == '(') count++;
+      j++;
+    }
+    left = infix2prefix(formula.substring(i, j));
+  }
+  else left = formula.substring(i, j);
+  i = j + 1;
+  k = i + 1;
+  if(formula.charAt(i) == '(') {
+    count = 1;
+    while(count > 0) {
+      if(formula.charAt(k) == ')') count--;
+      else if(formula.charAt(k) == '(') count++;
+      k++;
+    }
+    right = infix2prefix(formula.substring(i, k));
+  }
+  else right = formula.substring(i, k);
+  return("(" + formula.substring(j, j + 1) + left + right + ")");
+}
+
 boolean validInputFormula(String formula) {
   int l = formula.length() - 1;
   int count;
   int i, j;
-
   if(formula.charAt(0) != '(' || formula.charAt(l) != ')') return false;
   if(formula.charAt(1) == '~') {
     switch(formula.charAt(2)) {
@@ -323,6 +374,38 @@ boolean validInputFormula(String formula) {
 }
 
 String removeWhiteSpace(String input) {
+  int l = input.length();
+  int i = 0;
+  boolean remove = false;
+  while(i < l) {
+    if(input.charAt(i) == ' ') {
+      if(i >= 4) {
+        if((input.charAt(i - 2) != '(' || (input.charAt(i - 1) == '=' || input.charAt(i - 1) == '&' || input.charAt(i - 1) == '|' || input.charAt(i - 1) == '~')) && !input.substring(i - 3, i).equals("ALL") && !input.substring(i - 2, i).equals("EX")) remove = true;
+      }
+      else if(i < 2) {
+        remove = true;
+      }
+      else if(i == 2) {
+        if((input.charAt(i - 2) != '(' || (input.charAt(i - 1) == '=' || input.charAt(i - 1) == '&' || input.charAt(i - 1) == '|' || input.charAt(i - 1) == '~'))) remove = true;
+      }
+      else if(i == 3) {
+        if((input.charAt(i - 2) != '(' || (input.charAt(i - 1) == '=' || input.charAt(i - 1) == '&' || input.charAt(i - 1) == '|' || input.charAt(i - 1) == '~')) && !input.substring(i - 2, i).equals("EX")) remove = true;
+      }
+    }
+    if(remove) {
+      if(i > 0 && i < l - 1) input = input.substring(0, i) + input.substring(i + 1, l);
+      else if(i == 0) input = input.substring(i + 1, l);
+      else if(i == l - 1) input = input.substring(0, l - 1);
+      l = input.length();
+      remove = false;
+    }
+    else i++;
+  }
+  println("Input space normalized: " + input);
+  return input;
+}
+
+String removeWhiteSpacePrefix(String input) {
   int l = input.length();
   int i = 0;
   boolean remove = false;
@@ -681,7 +764,7 @@ String res2(String s) {
   }
   else {
     p = 1;
-    arg2 = "]" + arg2;
+    arg2 = ")" + arg2;
     i = i - 1;
   }
   println("=> " + s.substring(1, i + 1) + " " + arg2 + " " + p + " i=" + i);
