@@ -174,7 +174,7 @@ void startTableaux(String formula) {
   }
 }
 
-String infix2prefix (String formula) {
+String infix2prefix(String formula) {
   int i = 1;
   int j, k;
   int count;
@@ -207,6 +207,42 @@ String infix2prefix (String formula) {
   }
   else right = formula.substring(i, k);
   return("(" + formula.substring(j, j + 1) + left + right + ")");
+}
+
+String prefix2infix(String formula) {
+  int i = 1;
+  int j, k;
+  int count;
+  String left, right;
+  if(formula.charAt(i) == '~') {
+    if(formula.charAt(i + 1) == '(') return("(~" + prefix2infix(formula.substring(i + 1, formula.length() - 1)) + ")");
+    else return(formula);
+  }
+  i++;
+  j = i + 1;
+  if(formula.charAt(i) == '(') {
+    count = 1;
+    while(count > 0) {
+      if(formula.charAt(j) == ')') count--;
+      else if(formula.charAt(j) == '(') count++;
+      j++;
+    }
+    left = prefix2infix(formula.substring(i, j));
+  }
+  else left = formula.substring(i, j);
+  i = j;
+  k = i + 1;
+  if(formula.charAt(i) == '(') {
+    count = 1;
+    while(count > 0) {
+      if(formula.charAt(k) == ')') count--;
+      else if(formula.charAt(k) == '(') count++;
+      k++;
+    }
+    right = prefix2infix(formula.substring(i, k));
+  }
+  else right = formula.substring(i, k);
+  return("(" + left + formula.substring(1, 2) + right + ")");
 }
 
 boolean validInputFormula(String formula) {
@@ -370,7 +406,7 @@ boolean validInputFormula(String formula) {
       }
     }
   }
-  println("Formula " + formula + "is ok!");
+  println("Formula " + formula + " is ok!");
   return true;
 }
 
@@ -438,38 +474,6 @@ String removeWhiteSpace(String input) {
   return input;
 }
 
-String removeWhiteSpacePrefix(String input) {
-  int l = input.length();
-  int i = 0;
-  boolean remove = false;
-  while(i < l) {
-    if(input.charAt(i) == ' ') {
-      if(i >= 4) {
-        if((input.charAt(i - 2) != '(' || (input.charAt(i - 1) == '=' || input.charAt(i - 1) == '&' || input.charAt(i - 1) == '|' || input.charAt(i - 1) == '~')) && !input.substring(i - 3, i).equals("ALL") && !input.substring(i - 2, i).equals("EX")) remove = true;
-      }
-      else if(i < 2) {
-        remove = true;
-      }
-      else if(i == 2) {
-        if((input.charAt(i - 2) != '(' || (input.charAt(i - 1) == '=' || input.charAt(i - 1) == '&' || input.charAt(i - 1) == '|' || input.charAt(i - 1) == '~'))) remove = true;
-      }
-      else if(i == 3) {
-        if((input.charAt(i - 2) != '(' || (input.charAt(i - 1) == '=' || input.charAt(i - 1) == '&' || input.charAt(i - 1) == '|' || input.charAt(i - 1) == '~')) && !input.substring(i - 2, i).equals("EX")) remove = true;
-      }
-    }
-    if(remove) {
-      if(i > 0 && i < l - 1) input = input.substring(0, i) + input.substring(i + 1, l);
-      else if(i == 0) input = input.substring(i + 1, l);
-      else if(i == l - 1) input = input.substring(0, l - 1);
-      l = input.length();
-      remove = false;
-    }
-    else i++;
-  }
-  println("Input space normalized: " + input);
-  return input;
-}
-
 void draw() {
   background(0);
   textFont(myfont);
@@ -486,6 +490,7 @@ class MobileRectangle {
   float l1, l2;
   color c, c1;
   String s;
+  String infix;
   int label;
   int instancesCounter;
   boolean expanded;
@@ -504,6 +509,8 @@ class MobileRectangle {
     else this.y = sizeY - 30;
     this.c = color(128, 128, 0);
     this.s = t;
+    if(t.length() > 3) this.infix = prefix2infix(t.substring(1, t.length() - 1));
+    else this.infix = t.substring(1, 2);
     countnos++; 
     this.label = countnos;
     this.instancesCounter = 0;
@@ -538,11 +545,12 @@ class MobileRectangle {
   }
 
   void display() {
-    String t = new String();
+    String t;
     fill(c);
     stroke(c1);
     textFont(myfont);
-    t = s.substring(0, 1) + ": " + s.substring(1, s.length() - 1) + " " + s.substring(s.length() - 1, s.length());
+    if(prefix) t = s.substring(0, 1) + ": " + s.substring(1, s.length() - 1) + " " + s.substring(s.length() - 1, s.length());
+    else t = s.substring(0, 1) + ": " + infix + " " + s.substring(s.length() - 1, s.length());
     text(label + " - " + t, x, y);
     line(x1, y1, x2, y2);
   }
