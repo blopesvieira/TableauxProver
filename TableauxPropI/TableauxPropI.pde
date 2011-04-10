@@ -145,6 +145,7 @@ void Notation(int id) {
 }
 
 void startTableaux(String formula) {
+  MobileRectangle re;
   if(!prefix) {
     formula = removeWhiteSpaceInfix(formula);
     formula = infix2prefix(formula);
@@ -161,7 +162,7 @@ void startTableaux(String formula) {
     constParam = -1;
     constantesCriadas = new ArrayList();
     txtInputFormula.setColorBackground(defaultColor);
-    MobileRectangle re = new MobileRectangle(300, 120, "F" + formula + "0", 250, 0, 250, 10, true);
+    re = new MobileRectangle(300, 120, "F" + formula + "0", 250, 0, 250, 10, true);
     nos.add(re);
     border[0] = re;
     ramos[0][0] = re.label;
@@ -579,18 +580,18 @@ void mousePressed() {
     if(nopressed.canExpand()) {
       println("Ok, first time on this node... expanding!");
       undoAdd(nopressed);
-      if(!existential(nopressed.s) && !universal(nopressed.s)) nopressed.expandNode();
       println("nopressed "+ nopressed.s + " " + nopressed.y + " "+ nopressed.label); 
       if(mouseButton == RIGHT) {
         int totalramos = countramos;
         for(int i = 0; i < totalramos; i++) {
-          println("Entering if statement: "+ " logbin = maxnos = "+ maxnos + " countramos= " + totalramos);
+          println("Entering if statement: " + " logbin = maxnos = "+ maxnos + " countramos= " + totalramos);
           int maximonosramo = maxnos;
           for(int j = 0; j <= maximonosramo; j++) {
             println("ramos[][] = " + ramos[i][j] + " i=" + i + " j=" + j);
             if(ramos[i][j] == nopressed.label) {
               if(branches(nopressed.s)) {
                 nopressed.marcado();
+                nopressed.expandNode();
                 folha = border[i];
                 println("Border node = " + folha.label + " i= " + i);
                 MobileRectangle um = new MobileRectangle(folha.x - 6 * (folha.s).length(), folha.y + 40, res1(nopressed.s) + nopressed.label, folha.x, folha.y, folha.x-3 * (folha.s).length(), folha.y + 35, false);
@@ -610,6 +611,7 @@ void mousePressed() {
               else {
                 if(notbranches(nopressed.s)) {
                   nopressed.marcado();
+                  nopressed.expandNode();
                   folha = border[i];
                   println(" No da border = " + folha.label + " i= " + i);
                   MobileRectangle um= new MobileRectangle(folha.x, folha.y + 40, res1(nopressed.s) + nopressed.label, folha.x, folha.y, folha.x, folha.y + 40, false);
@@ -646,6 +648,7 @@ void mousePressed() {
                     else {
                       if(negation(nopressed.s)) {
                         nopressed.marcado();
+                        nopressed.expandNode();
                         folha = border[i];
                         println(" No da border = "+folha.label + " i= "+i);
                         MobileRectangle um = new MobileRectangle(folha.x, folha.y+40, uno(nopressed.s) + nopressed.label, folha.x, folha.y, folha.x, folha.y + 40, false);
