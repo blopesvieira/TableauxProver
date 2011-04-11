@@ -546,12 +546,13 @@ class MobileRectangle {
   }
 
   void display() {
-    String t;
+    String t, a;
     fill(c);
     stroke(c1);
     textFont(myfont);
-    if(prefix) t = s.substring(0, 1) + ": " + s.substring(1, s.length() - 1) + " " + s.substring(s.length() - 1, s.length());
-    else t = s.substring(0, 1) + ": " + infix + " " + s.substring(s.length() - 1, s.length());
+    a = removeFromLabel(s);
+    if(prefix) t = a.substring(0, 1) + ": " + a.substring(1, a.length()) + " " + fromLabel(s);
+    else t = s.substring(0, 1) + ": " + infix + " " + fromLabel(s);
     text(label + " - " + t, x, y);
     line(x1, y1, x2, y2);
   }
@@ -559,6 +560,102 @@ class MobileRectangle {
   boolean isFirst() {
     return this.first;
   }
+
+  private String removeFromLabel(String formula) {
+    if(formula.length() > 1) {
+      int i = formula.length() - 2;
+      while(formula.charAt(i) == '0' || formula.charAt(i) == '1' || formula.charAt(i) == '2' || formula.charAt(i) == '3' || formula.charAt(i) == '4' || formula.charAt(i) == '5' || formula.charAt(i) == '6' || formula.charAt(i) == '7' || formula.charAt(i) == '8' || formula.charAt(i) == '9') i--;
+      return formula.substring(0, i);
+    }
+    return "";
+  }
+
+  private String fromLabel(String formula) {
+    if(formula.length() > 2) {
+      int i = formula.length() - 1;
+      while(formula.charAt(i) == '0' || formula.charAt(i) == '1' || formula.charAt(i) == '2' || formula.charAt(i) == '3' || formula.charAt(i) == '4' || formula.charAt(i) == '5' || formula.charAt(i) == '6' || formula.charAt(i) == '7' || formula.charAt(i) == '8' || formula.charAt(i) == '9') i--;
+      return formula.substring(i + 1, formula.length());
+    }
+    return "";
+  }
+
+  String latex() {
+    String formula = new String();
+    String change = new String();
+    String a = removeFromLabel(s);
+    int i = 3;
+    int clen = 1;
+    int alen = 1;
+    if(prefix) formula = a.substring(0, 1) + ": " + a.substring(1, s.length()) + " " + fromLabel(s);
+    else formula = s.substring(0, 1) + ": " + infix + " " + fromLabel(s);
+    while(i < formula.length() - 4) {
+      switch(formula.charAt(i)) {
+        case '&': change = "$\\wedge$";
+                  clen = 1;
+                  alen = 7;
+                  break;
+        case '|': change = "$\\vee$";
+                  clen = 1;
+                  alen = 5;
+                  break;
+        case '=': change = "$\\to$";
+                  clen = 1;
+                  alen = 4;
+                  break;
+        case '~': change = "$\\neg$";
+                  clen = 5;
+                  break;
+        case 'E': if(formula.charAt(i + 1) == 'X') {
+                    change = "$\\exists$";
+                    clen = 2;
+                    alen = 8;
+                  }
+                  break;
+        case 'A': if(formula.charAt(i + 1) == 'L') {
+                    change = "$\\forall$";
+                    clen = 3;
+                    alen = 8;
+                  }
+                  break;
+        default: change = "";
+                 clen = 0;
+                 alen = 1;
+      }
+      if(clen > 0) formula = formula.substring(0, i) + change + formula.substring(i + clen, formula.length());
+      i += alen;
+    }
+    return formula;
+  }
+}
+
+String fromLabel(String formula) {
+  int i = formula.length() - 2;
+  while(formula.charAt(i) == '0' || formula.charAt(i) == '1' || formula.charAt(i) == '2' || formula.charAt(i) == '3' || formula.charAt(i) == '4' || formula.charAt(i) == '5' || formula.charAt(i) == '6' || formula.charAt(i) == '7' || formula.charAt(i) == '8' || formula.charAt(i) == '9') i--;
+  return formula.substring(i + 1, formula.length());
+}
+
+String qtree(int index) {
+  String qtreeL = new String();
+  String qtreeR = new String();
+  if(index == 0) {
+    MobileRectangle formulaF = ((MobileRectangle) nos.get(index));
+    qtreeL = "[." + formulaF.latex();
+    qtreeR = " ]";
+    index++;
+  }
+  for(int i = index; i < nos.size() - 1; i++) {
+    MobileRectangle formula1 = ((MobileRectangle) nos.get(i));
+    MobileRectangle formula2 = ((MobileRectangle) nos.get(i + 1));
+    MobileRectangle formula3 = ((MobileRectangle) nos.get(i - 1));
+    int f1 = int(fromLabel(formula1.s));
+    int f2 = int(fromLabel(formula2.s));
+    int f3 = int(fromLabel(formula3.s));
+    if(f1 + 1 == f2) {}
+    if(f1 == f2) {}
+    else {
+    }
+  }
+  return qtreeL + qtreeR;
 }
 
 void mousePressed() {
@@ -576,6 +673,7 @@ void mousePressed() {
   }
   if(indice != -1) {
     println("Index " + indice);
+    println("AQUIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIII:    " + Integer.parseInt("123"));
     nopressed = (MobileRectangle) nos.get(indice);
     if(nopressed.canExpand()) {
       println("Ok, first time on this node... expanding!");
