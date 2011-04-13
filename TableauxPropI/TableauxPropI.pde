@@ -149,7 +149,7 @@ void startTableaux(String formula) {
   if(!prefix) {
     formula = removeWhiteSpaceInfix(formula);
     formula = infix2prefix(formula);
-    println("New formula = " + formula);
+    println("Prefix formula = " + formula);
   }
   else formula = removeWhiteSpace(formula);
   if(validInputFormula(formula)) {
@@ -180,10 +180,15 @@ String infix2prefix(String formula) {
   int j, k;
   int count;
   String left, right;
-  if(formula.charAt(i) == '~') {
-    if(formula.charAt(i + 1) == '(') return("(~" + infix2prefix(formula.substring(i + 1, formula.length() - 1)) + ")");
+  if(formula.charAt(i) == not) {
+    if(formula.charAt(i + 1) == '(') return("(" + not + infix2prefix(formula.substring(i + 1, formula.length() - 1)) + formula.substring(formula.length() - 1, formula.length()));
     else return(formula);
   }
+  if(formula.length() > 6) {
+    if(formula.substring(1, 4).equals(forall)) return(infix2prefix(formula.substring(6, formula.length() - 1)));
+    if(formula.substring(1, 3).equals(exists)) return(infix2prefix(formula.substring(5, formula.length() - 1)));
+  }
+  if(formula.length() == 5 && (formula.indexOf(str(implies)) == -1 && formula.indexOf(str(and)) == -1 && formula.indexOf(str(or)) == -1)) return(formula);
   j = i + 1;
   if(formula.charAt(i) == '(') {
     count = 1;
@@ -216,7 +221,7 @@ String prefix2infix(String formula) {
   int count;
   String left, right;
   if(formula.charAt(i) == '~') {
-    if(formula.charAt(i + 1) == '(') return("(~" + prefix2infix(formula.substring(i + 1, formula.length() - 1)) + ")");
+    if(formula.charAt(i + 1) == '(') return("(" + not + prefix2infix(formula.substring(i + 1, formula.length() - 1)) + ")");
     else return(formula);
   }
   i++;
@@ -280,7 +285,7 @@ boolean validInputFormula(String formula) {
     if(i + 1 != l) return false;
   }
   else {
-    if(formula.substring(1, 4).equals("ALL")) {
+    if(formula.substring(1, 4).equals(forall)) {
       if(formula.charAt(4) != ' ') return false;
       switch(formula.charAt(5)) {
       case '=' :
@@ -310,7 +315,7 @@ boolean validInputFormula(String formula) {
       }
       if(i + 1 != l) return false;
     }
-    else if(formula.substring(1, 3).equals("EX")) {
+    else if(formula.substring(1, 3).equals(exists)) {
       if(formula.charAt(3) != ' ') return false;
       switch(formula.charAt(4)) {
       case '=' :
@@ -417,12 +422,12 @@ String removeWhiteSpaceInfix(String input) {
   boolean remove = false;
   while(i < l - 1) {
     if(input.charAt(i) == ' ') {
-      if(i < l + 1) {
-        if(i > 5) {
+      if(i < l - 1) {
+        if(i > 3) {
           if((input.charAt(i - 2) != '(' || (input.charAt(i + 1) == implies || input.charAt(i + 1) == and || input.charAt(i + 1) == or)) && !input.substring(i - 3, i).equals(forall) && !input.substring(i - 2, i).equals(exists)) remove = true;
-          else if(i == 2) {
-            if((input.charAt(i - 2) != '(' || (input.charAt(i + 1) == implies || input.charAt(i + 1) == and || input.charAt(i + 1) == or))) remove = true;
-          }
+        }
+        else if(i == 2) {
+          if((input.charAt(i - 2) != '(' || (input.charAt(i + 1) == implies || input.charAt(i + 1) == and || input.charAt(i + 1) == or))) remove = true;
           else if(i == 3) {
             if((input.charAt(i - 2) != '(' || (input.charAt(i + 1) == implies || input.charAt(i + 1) == and || input.charAt(i + 1) == or)) && !input.substring(i - 2, i).equals(exists)) remove = true;
           }
@@ -565,7 +570,7 @@ class MobileRectangle {
     if(formula.length() > 1) {
       int i = formula.length() - 2;
       while(formula.charAt(i) == '0' || formula.charAt(i) == '1' || formula.charAt(i) == '2' || formula.charAt(i) == '3' || formula.charAt(i) == '4' || formula.charAt(i) == '5' || formula.charAt(i) == '6' || formula.charAt(i) == '7' || formula.charAt(i) == '8' || formula.charAt(i) == '9') i--;
-      return formula.substring(0, i);
+      return formula.substring(0, i + 1);
     }
     return "";
   }
