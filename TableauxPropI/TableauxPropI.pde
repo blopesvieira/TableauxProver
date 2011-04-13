@@ -1,4 +1,4 @@
-import controlP5.*;
+import interfascia.*;
 
 ArrayList nos = new ArrayList();
 ArrayList linhas = new ArrayList();
@@ -38,15 +38,17 @@ float ratiobin = 0.75;
 float vertsep = 1.7;
 int labelnos = 0;
 
-ControlP5 controlP5;
-Textfield txtInputFormula;
-Button btnTableaux;
-Button btnUndo;
-Radio rdoNotation;
+GUIController c;
+IFTextField txtInputFormula;
+IFLabel lblInputFormula;
+IFButton btnTableaux, btnUndo;
+IFLookAndFeel defaultLook, inputError;
+IFRadioController rdcNotation;
+IFRadioButton rdoInfix, rdoPrefix;
+
 public boolean prefix;
-public int inputColor = 200;
 public int backgroundColor = 100;
-int defaultColor;
+color blue = color(0, 102, 153);
 int sizeX = 800;
 int sizeY = 800;
 
@@ -54,30 +56,48 @@ void setup() {
   size(sizeX,sizeY);
   smooth();
   frameRate(25);
-  controlP5 = new ControlP5(this);
-  txtInputFormula = controlP5.addTextfield("Formula", 10, 15, 380, 16);
-  btnTableaux = controlP5.addButton("Tableaux", 0, 400, 15, 45, 19);
-  btnUndo = controlP5.addButton("Undo", 0, 450, 15, 45, 19);
-  rdoNotation = controlP5.addRadio("Notation", 10, 60);
-  rdoNotation.add("Infix", 0);
-  rdoNotation.add("Prefix", 1);
+  c = new GUIController(this);
+  lblInputFormula = new IFLabel("Formula:", 25, 20);
+  txtInputFormula = new IFTextField("inputFormula", 80, 15, 400);
+  btnTableaux = new IFButton("Tableau!", 490, 18, 60, 17);
+  btnUndo = new IFButton("Undo", 560, 18, 60, 17);
+  rdcNotation = new IFRadioController("Formulae notation");
+  rdoInfix = new IFRadioButton("infix", 25, 55, rdcNotation);
+  rdoPrefix = new IFRadioButton("prefix", 25, 75, rdcNotation);
+  txtInputFormula.addActionListener(this);
+  c.add(txtInputFormula);
+  c.add(lblInputFormula);
+  btnTableaux.addActionListener(this);
+  c.add(btnTableaux);
+  btnUndo.addActionListener(this);
+  c.add(btnUndo);
+  c.add(rdoInfix);
+  c.add(rdoPrefix);
+  rdcNotation.addActionListener(this);
+  defaultLook = new IFLookAndFeel(this, IFLookAndFeel.DEFAULT);
+  inputError = new IFLookAndFeel(this, IFLookAndFeel.DEFAULT);
+  inputError.textColor = color(128, 0, 0);
   prefix = false;
-  txtInputFormula.setFocus(true);
-  txtInputFormula.setAutoClear(false);
-  defaultColor = txtInputFormula.getColor().getBackground();
 }
 
-public void Formula(String textField) {
-  println("Textfield command");
-  startTableaux(txtInputFormula.getText());
+void actionPerformed(GUIEvent e) {
+  int i;
+  int l = txtInputFormula.getValue().length();
+  if(e.getSource() == btnTableaux || e.getMessage().equals("Completed")) {
+    startTableaux(txtInputFormula.getValue());
+  }
+  else if(e.getSource() == btnUndo) {
+    undo();
+  }
+  else if(e.getSource() == rdoPrefix) {
+    prefix = true;
+  }
+  else if(e.getSource() == rdoInfix) {
+    prefix = false;
+  }
 }
 
-public void Tableaux(int value) {
-  println("Button command");
-  startTableaux(txtInputFormula.getText());
-}
-
-public void Undo(int value) {
+void undo() {
   int pos = undoPos--;
   while (pos > maxUndo) pos = pos - maxUndo;
   if(pos >= 0) {
@@ -161,7 +181,7 @@ void startTableaux(String formula) {
     countramos = 0;
     constParam = -1;
     constantesCriadas = new ArrayList();
-    txtInputFormula.setColorBackground(defaultColor);
+    txtInputFormula.setLookAndFeel(defaultLook);
     re = new MobileRectangle(300, 120, "F" + formula + "0", 250, 0, 250, 10, true);
     nos.add(re);
     border[0] = re;
@@ -171,7 +191,7 @@ void startTableaux(String formula) {
     countramos++;
   }
   else {
-    txtInputFormula.setColorBackground(color(90, 0, 0));
+    txtInputFormula.setLookAndFeel(inputError);
   }
 }
 
@@ -212,7 +232,7 @@ String infix2prefix(String formula) {
     right = infix2prefix(formula.substring(i, k));
   }
   else right = formula.substring(i, k);
-  return("(" + formula.substring(j, j + 1) + left + right + ")");
+  return(formula.substring(0, 1) + formula.substring(j, j + 1) + left + right + formula.substring(formula.length() - 1, formula.length()));
 }
 
 String prefix2infix(String formula) {
@@ -537,7 +557,7 @@ class MobileRectangle {
   }
 
   void finished() {
-    if(!this.isFirst()) this.c = defaultColor;
+    if(!this.isFirst()) this.c = blue;
   }
 
   void undo() {
@@ -678,7 +698,6 @@ void mousePressed() {
   }
   if(indice != -1) {
     println("Index " + indice);
-    println("AQUIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIII:    " + Integer.parseInt("123"));
     nopressed = (MobileRectangle) nos.get(indice);
     if(nopressed.canExpand()) {
       println("Ok, first time on this node... expanding!");
