@@ -17,8 +17,7 @@ char not = '~';
 char implies = '=';
 String exists = "EX";
 String forall = "ALL";
-color cm = color(128,0,0);
-color cf = color(50, 0, 70);
+color cm = color(128, 0, 0);
 
 int maxUndo = 30;
 ArrayList[] nosUndo = new ArrayList[maxUndo];
@@ -261,10 +260,7 @@ String prefix2infix(String formula) {
     }
     left = prefix2infix(formula.substring(i, j));
   }
-  else {
-    while(formula.charAt(j) != implies && formula.charAt(j) != and && formula.charAt(j) != or && formula.charAt(j) != ')') j++;
-    left = formula.substring(i, j);
-  }
+  else left = formula.substring(i, j);
   i = j;
   k = i + 1;
   if(formula.charAt(i) == '(') {
@@ -277,7 +273,6 @@ String prefix2infix(String formula) {
     right = prefix2infix(formula.substring(i, k));
   }
   else if(formula.charAt(i) != ')') {
-    while(formula.charAt(k) != implies && formula.charAt(k) != and && formula.charAt(k) != or && formula.charAt(k) != ')') k++;
     right = formula.substring(i, k);
   }
   else right = "";
