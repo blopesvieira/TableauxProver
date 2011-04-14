@@ -200,13 +200,14 @@ String infix2prefix(String formula) {
   int j, k;
   int count;
   String left, right;
+  if(formula.indexOf(str(implies)) == -1 && formula.indexOf(str(and)) == -1 && formula.indexOf(str(or)) == -1 && formula.indexOf(str(not)) == -1) return(formula);
   if(formula.charAt(i) == not) {
     if(formula.charAt(i + 1) == '(') return("(" + not + infix2prefix(formula.substring(i + 1, formula.length() - 1)) + formula.substring(formula.length() - 1, formula.length()));
     else return(formula);
   }
   if(formula.length() > 6) {
-    if(formula.substring(1, 4).equals(forall)) return(infix2prefix(formula.substring(6, formula.length() - 1)));
-    if(formula.substring(1, 3).equals(exists)) return(infix2prefix(formula.substring(5, formula.length() - 1)));
+    if(formula.substring(1, 4).equals(forall)) return(formula.substring(0, 6) + infix2prefix(formula.substring(6, formula.length() - 1)) + formula.substring(formula.length() - 1, formula.length()));
+    if(formula.substring(1, 3).equals(exists)) return(formula.substring(0, 5) + infix2prefix(formula.substring(5, formula.length() - 1)) + formula.substring(formula.length() - 1, formula.length()));
   }
   if(formula.length() == 5 && (formula.indexOf(str(implies)) == -1 && formula.indexOf(str(and)) == -1 && formula.indexOf(str(or)) == -1)) return(formula);
   j = i + 1;
@@ -240,9 +241,14 @@ String prefix2infix(String formula) {
   int j, k;
   int count;
   String left, right;
+  if(formula.indexOf(str(implies)) == -1 && formula.indexOf(str(and)) == -1 && formula.indexOf(str(or)) == -1 && formula.indexOf(str(not)) == -1) return(formula);
   if(formula.charAt(i) == '~') {
     if(formula.charAt(i + 1) == '(') return("(" + not + prefix2infix(formula.substring(i + 1, formula.length() - 1)) + ")");
     else return(formula);
+  }
+  if(formula.length() > 6) {
+    if(formula.substring(1, 4).equals(forall)) return("(" + forall + prefix2infix(formula.substring(6, formula.length() - 1)) + ")");
+    else if(formula.substring(1, 3).equals(exists)) return("(" + exists + prefix2infix(formula.substring(5, formula.length() - 1)) + ")");
   }
   i++;
   j = i + 1;
@@ -255,7 +261,10 @@ String prefix2infix(String formula) {
     }
     left = prefix2infix(formula.substring(i, j));
   }
-  else left = formula.substring(i, j);
+  else {
+    while(formula.charAt(j) != implies && formula.charAt(j) != and && formula.charAt(j) != or && formula.charAt(j) != ')') j++;
+    left = formula.substring(i, j);
+  }
   i = j;
   k = i + 1;
   if(formula.charAt(i) == '(') {
@@ -267,7 +276,11 @@ String prefix2infix(String formula) {
     }
     right = prefix2infix(formula.substring(i, k));
   }
-  else right = formula.substring(i, k);
+  else if(formula.charAt(i) != ')') {
+    while(formula.charAt(k) != implies && formula.charAt(k) != and && formula.charAt(k) != or && formula.charAt(k) != ')') k++;
+    right = formula.substring(i, k);
+  }
+  else right = "";
   return("(" + left + formula.substring(1, 2) + right + ")");
 }
 
@@ -275,6 +288,7 @@ boolean validInputFormula(String formula) {
   int l = formula.length() - 1;
   int count;
   int i, j;
+  if(l < 3) return false;
   if(formula.charAt(0) != '(' || formula.charAt(l) != ')') return false;
   if(formula.charAt(1) == '~') {
     switch(formula.charAt(2)) {
@@ -305,64 +319,68 @@ boolean validInputFormula(String formula) {
     if(i + 1 != l) return false;
   }
   else {
-    if(formula.substring(1, 4).equals(forall)) {
-      if(formula.charAt(4) != ' ') return false;
-      switch(formula.charAt(5)) {
-      case '=' :
-      case '&' :
-      case '|' :
-      case '~' :
-      case ',' :
-      case ')' : 
-        return false;
+    if(l > 6) {
+      if(formula.substring(1, 4).equals(forall)) {
+        if(formula.charAt(4) != ' ') return false;
+        switch(formula.charAt(5)) {
+        case '=' :
+        case '&' :
+        case '|' :
+        case '~' :
+        case ',' :
+        case ')' : 
+          return false;
+        }
+        i = 6;
+        if(formula.charAt(6) == '(') {
+          count = 1;
+          do {
+            i++;
+            switch(formula.charAt(i)) {
+            case '(' : 
+              count++;
+              break;
+            case ')' : 
+              count--;
+            }
+            if(i > l) return false;
+          } 
+          while(count > 0);
+          if(!validInputFormula(formula.substring(6, i + 1))) return false;
+        }
+        if(i + 1 != l) return false;
       }
-      i = 6;
-      if(formula.charAt(6) == '(') {
-        count = 1;
-        do {
-          i++;
-          switch(formula.charAt(i)) {
-          case '(' : 
-            count++;
-            break;
-          case ')' : 
-            count--;
-          }
-          if(i > l) return false;
-        } 
-        while(count > 0);
-        if(!validInputFormula(formula.substring(6, i + 1))) return false;
-      }
-      if(i + 1 != l) return false;
     }
-    else if(formula.substring(1, 3).equals(exists)) {
-      if(formula.charAt(3) != ' ') return false;
-      switch(formula.charAt(4)) {
-      case '=' :
-      case '&' :
-      case '|' :
-      case '~' :
-      case ')' : 
-        return false;
+    else if(l > 5) {
+      if(formula.substring(1, 3).equals(exists)) {
+        if(formula.charAt(3) != ' ') return false;
+        switch(formula.charAt(4)) {
+        case '=' :
+        case '&' :
+        case '|' :
+        case '~' :
+        case ')' : 
+          return false;
+        }
+        i = 5;
+        if(formula.charAt(5) == '(') {
+          count = 1;
+          do {
+            i++;
+            switch(formula.charAt(i)) {
+            case '(' : 
+              count++;
+              break;
+            case ')' : 
+              count--;
+            }
+            if(i > l) return false;
+          } 
+          while(count > 0);
+          if(!validInputFormula(formula.substring(5, i + 1))) return false;
+        }
+        if(i + 1 != l) return false;
       }
-      i = 5;
-      if(formula.charAt(5) == '(') {
-        count = 1;
-        do {
-          i++;
-          switch(formula.charAt(i)) {
-          case '(' : 
-            count++;
-            break;
-          case ')' : 
-            count--;
-          }
-          if(i > l) return false;
-        } 
-        while(count > 0);
-        if(!validInputFormula(formula.substring(5, i + 1))) return false;
-      }
-      if(i + 1 != l) return false;
     }
     else {
       if(formula.charAt(1) == '=' || formula.charAt(1) == '&' || formula.charAt(1) == '|' ) {
