@@ -1,5 +1,15 @@
 import interfascia.*;
 
+/**************************************************************************
+Reserved space to set logic rules priority!
+The priorities must be different each other.
+**************************************************************************/
+int IMPLIES = 0;
+int AND = 1;
+int OR = 2;
+int NOT = 3;
+/*************************************************************************/
+
 ArrayList nos = new ArrayList();
 ArrayList linhas = new ArrayList();
 int[][] ramos = new int[25][25];
@@ -31,6 +41,8 @@ ArrayList[] constantesCriadasUndo = new ArrayList[maxUndo];
 MobileRectangle[][] borderUndo = new MobileRectangle[maxUndo][20];
 MobileRectangle[] undo = new MobileRectangle[maxUndo];
 int undoPos = -1;
+int step = 0;
+int stepLimit = 100;
 
 int alt = 10;
 float ratiobin = 0.75;
@@ -39,8 +51,10 @@ int labelnos = 0;
 
 GUIController c;
 IFTextField txtInputFormula;
+IFTextField txtLaTeXOutput;
 IFLabel lblInputFormula;
-IFButton btnTableaux, btnUndo;
+IFLabel lblLaTeXOutput;
+IFButton btnTableaux, btnUndo, btnResolve;
 IFLookAndFeel defaultLook, inputError;
 IFRadioController rdcNotation;
 IFRadioButton rdoInfix, rdoPrefix;
@@ -58,11 +72,15 @@ void setup() {
   c = new GUIController(this);
   lblInputFormula = new IFLabel("Formula:", 25, 20);
   txtInputFormula = new IFTextField("inputFormula", 80, 15, 400);
-  btnTableaux = new IFButton("Tableau!", 490, 18, 60, 17);
+  //btnTableaux = new IFButton("Step", 490, 18, 60, 17);
+  btnTableaux = new IFButton("Tableu!", 490, 18, 60, 17);
   btnUndo = new IFButton("Undo", 560, 18, 60, 17);
+  btnResolve = new IFButton("Resolve!", 630, 18, 60, 17);
   rdcNotation = new IFRadioController("Formulae notation");
   rdoInfix = new IFRadioButton("infix", 25, 55, rdcNotation);
   rdoPrefix = new IFRadioButton("prefix", 25, 75, rdcNotation);
+  lblLaTeXOutput = new IFLabel("LaTeX qTree code:", 100, 65);
+  txtLaTeXOutput = new IFTextField("outputLaTeX", 205, 60, 416);
   txtInputFormula.addActionListener(this);
   c.add(txtInputFormula);
   c.add(lblInputFormula);
@@ -70,9 +88,13 @@ void setup() {
   c.add(btnTableaux);
   btnUndo.addActionListener(this);
   c.add(btnUndo);
+  btnResolve.addActionListener(this);
+  //c.add(btnResolve);
   c.add(rdoInfix);
   c.add(rdoPrefix);
   rdcNotation.addActionListener(this);
+  c.add(lblLaTeXOutput);
+  //c.add(txtLaTeXOutput);
   defaultLook = new IFLookAndFeel(this, IFLookAndFeel.DEFAULT);
   inputError = new IFLookAndFeel(this, IFLookAndFeel.DEFAULT);
   inputError.textColor = color(128, 0, 0);
@@ -88,12 +110,25 @@ void actionPerformed(GUIEvent e) {
   else if(e.getSource() == btnUndo) {
     undo();
   }
+  else if(e.getSource() == btnResolve) {
+    resolve();
+  }
   else if(e.getSource() == rdoPrefix) {
     prefix = true;
   }
   else if(e.getSource() == rdoInfix) {
     prefix = false;
   }
+}
+
+void resolve() {
+  int i = 0;
+  startTableaux(txtInputFormula.getValue());
+  println("Full tableau resolution...");
+  while(i < nos.size() && i <= stepLimit) step(i++);
+  println("Done!");
+  println("Primeiro: " + nos.size());
+  println(countnos);
 }
 
 void undo() {
@@ -122,6 +157,7 @@ void undo() {
     constantesCriadas = new ArrayList();
     for(int i = 0; i < constantesCriadasUndo[pos].size(); i++) constantesCriadas.add(constantesCriadasUndo[pos].get(i));
     undo[pos].undo();
+    step--;
   }
   else {
     undoPos = -1;
@@ -522,6 +558,7 @@ void draw() {
     MobileRectangle re = (MobileRectangle) nos.get(i); 
     re.display();
   }
+  txtLaTeXOutput.setValue(qtree(0));
 }
 
 class MobileRectangle {
@@ -534,6 +571,8 @@ class MobileRectangle {
   int instancesCounter;
   boolean expanded;
   boolean first;
+  boolean constCreated = false;
+  int constC = 0;
 
   MobileRectangle(int x, int y, String t, int x1, int y1, int x2, int y2, boolean first) {
     this.x1 = x1;
@@ -561,8 +600,24 @@ class MobileRectangle {
     this.expanded = true;
   }
 
+  void constCreated() {
+    this.constCreated = true;
+  }
+
+  boolean haveConstCreated() {
+    return this.constCreated;
+  }
+
   boolean canExpand() {
     return !this.expanded;
+  }
+
+  void setConst(int constC) {
+    this.constC = constC;
+  }
+
+  int getConst() {
+    return this.constC;
   }
 
   void marcado() {
@@ -672,43 +727,72 @@ String fromLabel(String formula) {
   return formula.substring(i + 1, formula.length());
 }
 
+String removeFromLabel(String formula) {
+  if(formula.length() > 1) {
+    int i = formula.length() - 2;
+    while(formula.charAt(i) == '0' || formula.charAt(i) == '1' || formula.charAt(i) == '2' || formula.charAt(i) == '3' || formula.charAt(i) == '4' || formula.charAt(i) == '5' || formula.charAt(i) == '6' || formula.charAt(i) == '7' || formula.charAt(i) == '8' || formula.charAt(i) == '9') i--;
+    return formula.substring(0, i + 1);
+  }
+  return "";
+}
+
 String qtree(int index) {
   String qtreeL = new String();
-  String qtreeR = new String();
-  if(index == 0) {
-    MobileRectangle formulaF = ((MobileRectangle) nos.get(index));
-    qtreeL = "[." + formulaF.latex();
+  String qtreeR = new String();/*
+  if(nos.size() > 0 && index < nos.size()) {
+    MobileRectangle formulaI = ((MobileRectangle) nos.get(index));
+    qtreeL = "[." + removeFromLabel(formulaI.latex()) + " ";
     qtreeR = " ]";
     index++;
-  }
-  for(int i = index; i < nos.size() - 1; i++) {
-    MobileRectangle formula1 = ((MobileRectangle) nos.get(i));
-    MobileRectangle formula2 = ((MobileRectangle) nos.get(i + 1));
-    MobileRectangle formula3 = ((MobileRectangle) nos.get(i - 1));
-    int f1 = int(fromLabel(formula1.s));
-    int f2 = int(fromLabel(formula2.s));
-    int f3 = int(fromLabel(formula3.s));
-    if(f1 + 1 == f2) {}
-    if(f1 == f2) {}
-    else {
+    while(index < nos.size() - 1) {
+      MobileRectangle formula1 = ((MobileRectangle) nos.get(index));
+      MobileRectangle formula2 = ((MobileRectangle) nos.get(index + 1));
+      int f1 = int(fromLabel(formula1.s));
+      int f2 = int(fromLabel(formula2.s));
+      if(f1 == f2) {
+        int i = -1;
+        int j = f1;
+        while(j != f1 - 1) {
+          i++;
+          MobileRectangle formula3 = ((MobileRectangle) nos.get(i));
+          j = int(fromLabel(formula3.s));
+        }
+        return (qtreeL + qtree(f1 + 1) + " " + qtree(f2 + 2) + qtreeR);
+      }
+      else {
+        if(f1 + 1 == f2) {
+          qtreeL += "[." + removeFromLabel(formula1.latex()) + " ";
+          qtreeR = " ]" + qtreeL;
+        }
+      }
+      index++;
     }
-  }
+    if(index < nos.size()) {
+      MobileRectangle formulaF = ((MobileRectangle) nos.get(index));
+      qtreeL += "[." + removeFromLabel(formulaF.latex()) + " ";
+      qtreeR = " ]" + qtreeL;
+    }
+  }*/
   return qtreeL + qtreeR;
 }
 
 void mousePressed() {
-  MobileRectangle folha;
-  exibedados();
   int indice = -1; 
   println("nos.size " + nos.size());
   for(int i = 0; i < nos.size(); i++) {
     MobileRectangle re = (MobileRectangle) nos.get(i);
-    println("Node data: re.x re.y re.s" + re.x + " " + re.y + " " + re.s + " " + re.s.length()+ " " + mouseX + " " + mouseY);
-    if((re.x < mouseX) && (mouseX < re.x+12 * (re.s.length())) && (re.y - alt < mouseY) && (mouseY < re.y+alt)) {
+    println("Node data: re.x re.y re.s" + re.x + " " + re.y + " " + re.s + " " + re.s.length() + " " + mouseX + " " + mouseY);
+    if((re.x < mouseX) && (mouseX < re.x+12 * (re.s.length())) && (re.y - alt < mouseY) && (mouseY < re.y + alt)) {
       println("Index found = " + i);
       indice = i;
     }
   }
+  step(indice);
+}
+
+void step(int indice) {
+  MobileRectangle folha;
+  exibedados();
   if(indice != -1) {
     println("Index " + indice);
     nopressed = (MobileRectangle) nos.get(indice);
@@ -724,6 +808,7 @@ void mousePressed() {
           for(int j = 0; j <= maximonosramo; j++) {
             println("ramos[][] = " + ramos[i][j] + " i=" + i + " j=" + j);
             if(ramos[i][j] == nopressed.label) {
+              step++;
               if(branches(nopressed.s)) {
                 nopressed.marcado();
                 nopressed.expandNode();
@@ -749,7 +834,7 @@ void mousePressed() {
                   nopressed.expandNode();
                   folha = border[i];
                   println(" No da border = " + folha.label + " i= " + i);
-                  MobileRectangle um= new MobileRectangle(folha.x, folha.y + 40, res1(nopressed.s) + nopressed.label, folha.x, folha.y, folha.x, folha.y + 40, false);
+                  MobileRectangle um = new MobileRectangle(folha.x, folha.y + 40, res1(nopressed.s) + nopressed.label, folha.x, folha.y, folha.x, folha.y + 40, false);
                   nos.add(um);
                   MobileRectangle dois = new MobileRectangle(folha.x, folha.y + 80, res2(nopressed.s) + nopressed.label, folha.x, folha.y + 40, folha.x, folha.y + 80, false);
                   nos.add(dois);
@@ -761,10 +846,14 @@ void mousePressed() {
                 }
                 else {
                   if(existential(nopressed.s)) {
+                    if(!nopressed.haveConstCreated()) {
+                      constParam++;
+                      constantesCriadas.add("c" + constParam);
+                    }
                     nopressed.marcado();
                     print("existencial");
                     folha = border[i];
-                    MobileRectangle um = new MobileRectangle(folha.x, folha.y + 40, exist(nopressed.s) + nopressed.label, folha.x, folha.y, folha.x, folha.y + 40, false);
+                    MobileRectangle um = new MobileRectangle(folha.x, folha.y + 40, exist(nopressed.s, nopressed.getConst()) + nopressed.label, folha.x, folha.y, folha.x, folha.y + 40, false);
                     nos.add(um);
                     ramos[i][maxnos+1] = um.label;
                     border[i] = um;
@@ -772,9 +861,13 @@ void mousePressed() {
                   }
                   else {
                     if(universal(nopressed.s)) {
+                      if(!nopressed.haveConstCreated()) {
+                        constParam++;
+                        constantesCriadas.add("c" + constParam);
+                      }
                       print("universal");
                       folha = border[i];
-                      MobileRectangle um = new MobileRectangle(folha.x, folha.y + 40, forall(nopressed.s, nopressed) + nopressed.label, folha.x, folha.y, folha.x, folha.y + 40, false);
+                      MobileRectangle um = new MobileRectangle(folha.x, folha.y + 40, forall(nopressed.s, nopressed, nopressed.getConst()) + nopressed.label, folha.x, folha.y, folha.x, folha.y + 40, false);
                       nos.add(um);
                       ramos[i][maxnos+1] = um.label;
                       border[i] = um;
@@ -872,20 +965,16 @@ String uno(String s) {
   else return null;
 }
 
-String exist(String s) {
+String exist(String s, int constParam) {
   String[] m = match(s, "(.)\\((EX|ALL)\\s+([^\\s])\\s*(\\(.+\\)|.)\\)");
   println(m[0] + "1" + m[1] + "2" + m[2] + "3" + m[3] + "4" + m[4]);
-  constParam++;
-  constantesCriadas.add("c" + constParam);
   return(m[1] + m[4].replace(m[3], "c" + constParam));
 }
 
-String forall(String s, MobileRectangle originalFormula) {
+String forall(String s, MobileRectangle originalFormula, int constParam) {
   String[] m = match(s, "(.)\\((EX|ALL)\\s+([^\\s])\\s*(\\(.+\\)|.)\\)");
   println(m[0] + "1" + m[1] + "2" + m[2] + "3" + m[3] + "4" + m[4]);
   if (constantesCriadas.size() == 0) {
-    constParam++;
-    constantesCriadas.add("c" + 0);
     return(m[1] + m[4].replace(m[3], "c" + 0));
   }
   else {

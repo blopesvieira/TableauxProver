@@ -15,6 +15,7 @@ Licensed under a Creative Commons Attribution 3.0 Unported License
 http://creativecommons.org/licenses/by/3.0/
 
 Revision history
+ * 0.5   fixed bug on first order logic variable creator
  * 0.4   back to interfascia toolkit (controlP5 not working under Linux) and parser bug fixes
  * 0.3   support to infix notation
  * 0.2-1 undo action, many bug fixes and new formulae display
