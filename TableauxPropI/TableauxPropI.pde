@@ -73,7 +73,7 @@ void setup() {
   lblInputFormula = new IFLabel("Formula:", 25, 20);
   txtInputFormula = new IFTextField("inputFormula", 80, 15, 400);
   //btnTableaux = new IFButton("Step", 490, 18, 60, 17);
-  btnTableaux = new IFButton("Tableu!", 490, 18, 60, 17);
+  btnTableaux = new IFButton("Tableau!", 490, 18, 60, 17);
   btnUndo = new IFButton("Undo", 560, 18, 60, 17);
   btnResolve = new IFButton("Resolve!", 630, 18, 60, 17);
   rdcNotation = new IFRadioController("Formulae notation");
