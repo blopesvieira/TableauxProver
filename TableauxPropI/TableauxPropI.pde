@@ -93,7 +93,7 @@ void setup() {
   c.add(rdoInfix);
   c.add(rdoPrefix);
   rdcNotation.addActionListener(this);
-  c.add(lblLaTeXOutput);
+  //c.add(lblLaTeXOutput);
   //c.add(txtLaTeXOutput);
   defaultLook = new IFLookAndFeel(this, IFLookAndFeel.DEFAULT);
   inputError = new IFLookAndFeel(this, IFLookAndFeel.DEFAULT);
