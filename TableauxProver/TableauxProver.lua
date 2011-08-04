@@ -96,6 +96,32 @@ function tableauStepUndo()
 	end
 end
 
+function tableauClosed()
+	noOpenBranch = true
+	tableauClosedI = #formulaIndex
+	while noOpenBranch and tableauClosedI > 0 do
+		if formulaLeaf[tableauClosedI] then
+			tableuClosedJ = tableauClosedI
+			noContradiction = true
+			while noContradiction and tableauClosedJ > 0 do
+				tableauClosedK = formulaIndex[tableauClosedJ]
+				while noConstradiction and tableauClosedK > 0 do
+					if formulaOperator[tableauClosedJ] == formulaOperator[tableauClosedK] and formulaRight[tableauClosedJ] == formulaRight[tableauClosedK] and formulaLeft[tableauClosedJ] == formulaLeft[tableauClosedK] and formulaValue[tableauClosedJ] ~= formulaValue[tableauClosedK] then
+						noConstradiction = false
+					else
+						tableauClosedK = tableauClosedK - 1
+					end
+				end
+			end
+			if not noContradiction then
+				noOpenBranch = false
+			end
+		end
+		tableauClosedI = tableauClosedI - 1
+	end
+	return noOpenBranch
+end
+
 function tableauFinished()
 	open = false
 	for i = 1, #formulaIndex do
@@ -110,6 +136,9 @@ function tableauSolve()
 	i = 1
 	canExpand = true
 	while canExpand do
+		if formulaOperator[i] == opEx or formulaOperator[i] == opAll and formulaConstantsUsed[i] > 100 then
+			canExpand = false
+		end
 		expandFormula(i)
 		i = i + 1
 		if i > #formulaIndex then
