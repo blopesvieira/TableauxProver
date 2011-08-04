@@ -9,6 +9,7 @@ formulaOpenPar = "("
 formulaClosePar = ")"
 windowWidth = 800
 windowHeight = 600
+variableExpansionLimit = 100
 
 newConst = "x"
 
@@ -123,20 +124,22 @@ function tableauClosed()
 end
 
 function tableauFinished()
-	open = false
-	for i = 1, #formulaIndex do
+	finished = true
+	tableauFinishedI = 1
+	while finished and tableauFinishedI <= #formulaIndex do
 		if not formulaExpanded[i] then
-			open = true
+			finished = false
 		end
+		tableauFinishedI = tableauFinishedI + 1
 	end
-	return not open
+	return finished
 end
 
 function tableauSolve()
 	i = 1
 	canExpand = true
 	while canExpand do
-		if formulaOperator[i] == opEx or formulaOperator[i] == opAll and formulaConstantsUsed[i] > 100 then
+		if formulaOperator[i] == opEx or formulaOperator[i] == opAll and formulaConstantsUsed[i] > variableExpansionLimit then
 			canExpand = false
 		end
 		expandFormula(i)
