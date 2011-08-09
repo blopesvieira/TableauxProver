@@ -36,7 +36,7 @@ function insertFormula(operator, left, right, index, value, expanded, x, y)
 		x = windowWidth - 30
 	end
 	if y > windowHeight - 30 then
-		y = windowWidth - 30
+		y = windowHeight - 30
 	end
 	formulaX[#formulaX + 1] = x
 	formulaY[#formulaY + 1] = y

@@ -1,9 +1,8 @@
 require 'TableauxProver'
 
+
 --insertFormula(opOr, opAnd .. "(a" .. formulaSep .. "b)", opAnd .. "(b" .. formulaSep .. "a)", 1, false, false, 100, 100)
 insertFormula(opEx, "x", "P x", 1, false, false, 100, 100)
-
-love.graphics.setMode(windowWidth, windowHeight, false, false, 0)
 
 function love.draw()
 	expandSelectedNode()
@@ -63,8 +62,11 @@ function expandSelectedNode()
 		if pos ~= nil then
 			expandFormula(pos)
 		end
+		love.timer.sleep(150)
 	end
-	love.timer.sleep(200)
+	--screen = love.image.newImageData(800, 600)
+	--BMPScreen = love.image.newEncodedImageData(screen, "bmp")
+	--love.filesystem.write("proof.bmp", BMPScreen)
 end
 
 function dragFormula()
