@@ -1,10 +1,38 @@
 require 'TableauxProver'
 
 
---insertFormula(opOr, opAnd .. "(a" .. formulaSep .. "b)", opAnd .. "(b" .. formulaSep .. "a)", 1, false, false, 100, 100)
-insertFormula(opEx, "x", "P x", 1, false, false, 100, 100)
+insertFormula(opOr, opAnd .. "(a" .. formulaSep .. "b)", opAnd .. "(b" .. formulaSep .. "a)", 1, false, false, 100, 100)
+--insertFormula(opEx, "x", "P x", 1, false, false, 100, 100)
+
+function stepButton()
+	xPos = windowWidth - 60
+	yPos = 5
+	xLen = 55
+	yLen = 30
+	love.graphics.rectangle("fill", xPos, yPos, xLen, yLen)
+	love.graphics.printf("Step", xPos + 30, yPos - 5, 0, "center")
+	if love.mouse.isDown("l") and love.mouse.getX() >= xPos and love.mouse.getX() <= xPos + xLen and love.mouse.getY() >= yPos and love.mouse.getY() <= yPos + yLen then
+		tableauStep()
+		love.timer.sleep(150)
+	end
+end
+
+function tableauButton()
+	xPos = windowWidth - 60
+	yPos = 40
+	xLen = 55
+	yLen = 30
+	love.graphics.rectangle("fill", xPos, yPos, xLen, yLen)
+	love.graphics.printf("Tableau", xPos + 30, yPos - 5, 0, "center")
+	if love.mouse.isDown("l") and love.mouse.getX() >= xPos and love.mouse.getX() <= xPos + xLen and love.mouse.getY() >= yPos and love.mouse.getY() <= yPos + yLen then
+		tableauSolve()
+		love.timer.sleep(150)
+	end
+end
 
 function love.draw()
+	stepButton()
+	tableauButton()
 	expandSelectedNode()
 	dragFormula()
 	linkFormulae()

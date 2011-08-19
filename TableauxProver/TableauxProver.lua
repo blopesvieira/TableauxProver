@@ -10,6 +10,7 @@ formulaClosePar = ")"
 windowWidth = 800
 windowHeight = 600
 variableExpansionLimit = 100
+defaultInputFile = "formula.p9"
 
 newConst = "x"
 
@@ -51,9 +52,17 @@ function insertFormula(operator, left, right, index, value, expanded, x, y)
 end
 
 function tableauStep()
-	if not formulaExpanded[#formulaExpanded] then
-		expandFormula(#formulaExpanded)
+	stepNotFound = true
+	tableauStepI = 1
+	while stepNotFound and tableauStepI <= #formulaExpanded do
+		if not formulaExpanded[tableauStepI] then
+			stepNotFound = false
+			expandFormula(tableauStepI)
+		else
+			tableauStepI = tableauStepI + 1
+		end
 	end
+	return not stepNotFound
 end
 
 function isLeaf(pos)
@@ -136,21 +145,9 @@ function tableauFinished()
 end
 
 function tableauSolve()
-	i = 1
-	canExpand = true
-	while canExpand do
-		if formulaOperator[i] == opEx or formulaOperator[i] == opAll and formulaConstantsUsed[i] > variableExpansionLimit then
-			canExpand = false
-		end
-		expandFormula(i)
-		i = i + 1
-		if i > #formulaIndex then
-			if tableauFinished() then
-				canExpand = false
-			else
-				i = 1
-			end
-		end
+	solveLoop = 0
+	while tableauStep() and solveLoop < variableExpansionLimit do
+		solveLoop = solveLoop + 1
 	end
 end
 
@@ -517,4 +514,14 @@ function expandAll()
 			insertFormula(string.sub(right,1,j), string.sub(right,j+2,i-1), string.sub(right,i+1,string.len(right)-1), index[k], formulaValue[pos], false, formulaX[index[k]], formulaY[index[k]] + 30)
 		end
 	end
+end
+
+function readFormulae(inputFileName)
+	local formulae = {}
+	io.input(inputFileName)
+	formulae[1] = io.read()
+	while formulae[#formulae] ~= nil do
+		formulae[#formulae] = io.read()
+	end
+	return formulae
 end
