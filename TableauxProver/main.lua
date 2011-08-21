@@ -9,12 +9,18 @@ function stepButton()
 	yPos = 5
 	xLen = 55
 	yLen = 30
-	love.graphics.rectangle("fill", xPos, yPos, xLen, yLen)
-	love.graphics.printf("Step", xPos + 30, yPos - 5, 0, "center")
-	if love.mouse.isDown("l") and love.mouse.getX() >= xPos and love.mouse.getX() <= xPos + xLen and love.mouse.getY() >= yPos and love.mouse.getY() <= yPos + yLen then
-		tableauStep()
-		love.timer.sleep(150)
+	if love.mouse.getX() >= xPos and love.mouse.getX() <= xPos + xLen and love.mouse.getY() >= yPos and love.mouse.getY() <= yPos + yLen then
+		if love.mouse.isDown("l") then
+			tableauStep()
+			love.timer.sleep(150)
+		end
+		love.graphics.setColor(100, 100, 200)
+	else
+		love.graphics.setColor(0, 100, 200)
 	end
+	love.graphics.rectangle("fill", xPos, yPos, xLen, yLen)
+	love.graphics.setColor(0, 0, 200)
+	love.graphics.printf("Step", xPos + 30, yPos - 5, 0, "center")
 end
 
 function tableauButton()
@@ -22,17 +28,52 @@ function tableauButton()
 	yPos = 40
 	xLen = 55
 	yLen = 30
+	if love.mouse.getX() >= xPos and love.mouse.getX() <= xPos + xLen and love.mouse.getY() >= yPos and love.mouse.getY() <= yPos + yLen then
+		if love.mouse.isDown("l") then
+			tableauSolve()
+			love.timer.sleep(150)
+		end
+		love.graphics.setColor(100, 100, 200)
+	else
+		love.graphics.setColor(0, 100, 200)
+	end
 	love.graphics.rectangle("fill", xPos, yPos, xLen, yLen)
+	love.graphics.setColor(0, 0, 200)
 	love.graphics.printf("Tableau", xPos + 30, yPos - 5, 0, "center")
-	if love.mouse.isDown("l") and love.mouse.getX() >= xPos and love.mouse.getX() <= xPos + xLen and love.mouse.getY() >= yPos and love.mouse.getY() <= yPos + yLen then
-		tableauSolve()
-		love.timer.sleep(150)
+end
+
+function undoButton()
+	xPos = windowWidth - 60
+	yPos = 75
+	xLen = 55
+	yLen = 30
+	if love.mouse.getX() >= xPos and love.mouse.getX() <= xPos + xLen and love.mouse.getY() >= yPos and love.mouse.getY() <= yPos + yLen then
+		if love.mouse.isDown("l") then
+			tableauStepUndo()
+			love.timer.sleep(150)
+		end
+		love.graphics.setColor(100, 100, 200)
+	else
+		love.graphics.setColor(0, 100, 200)
+	end
+	love.graphics.rectangle("fill", xPos, yPos, xLen, yLen)
+	love.graphics.setColor(0, 0, 200)
+	love.graphics.printf("Undo", xPos + 30, yPos - 5, 0, "center")
+end
+
+function testFinished()
+	if not finished and tableauFinished() then
+		finished = true
+	else
+		love.graphics.setColor(0, 100, 200)
+		love.graphics.print("Tableau Closed!", WindoWidth - 100, windowHeight - 30)
 	end
 end
 
 function love.draw()
 	stepButton()
 	tableauButton()
+	undoButton()
 	expandSelectedNode()
 	dragFormula()
 	linkFormulae()

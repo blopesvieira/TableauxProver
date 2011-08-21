@@ -25,6 +25,7 @@ formulaConstants = {}
 formulaConstantsUsed = {}
 formulaExpanded = {}
 formulaLeaf = {}
+finished = false
 
 
 function insertFormula(operator, left, right, index, value, expanded, x, y)
@@ -76,6 +77,8 @@ function isLeaf(pos)
 	return leaf
 end
 
+
+--Repensar!!!
 function tableauStepUndo()
 	if #formulaIndex > 1 then
 		formulaExpanded[formulaIndex[#formulaIndex]] = false
@@ -136,7 +139,7 @@ function tableauFinished()
 	finished = true
 	tableauFinishedI = 1
 	while finished and tableauFinishedI <= #formulaIndex do
-		if not formulaExpanded[i] then
+		if not formulaExpanded[tableauFinishedI] then
 			finished = false
 		end
 		tableauFinishedI = tableauFinishedI + 1
@@ -146,7 +149,7 @@ end
 
 function tableauSolve()
 	solveLoop = 0
-	while tableauStep() and solveLoop < variableExpansionLimit do
+	while not tableauFinished() and tableauStep() and solveLoop < variableExpansionLimit do
 		solveLoop = solveLoop + 1
 	end
 end
