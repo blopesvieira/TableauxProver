@@ -1,7 +1,6 @@
 require 'TableauxProver'
 
-
-insertFormula(opOr, opAnd .. "(a" .. formulaSep .. "b)", opAnd .. "(b" .. formulaSep .. "a)", 1, false, false, 100, 100)
+--insertFormula(opOr, opAnd .. "(a" .. formulaSep .. "b)", opAnd .. "(b" .. formulaSep .. "a)", 1, false, false, 100, 100)
 --insertFormula(opEx, "x", "P x", 1, false, false, 100, 100)
 
 function stepButton()
@@ -61,6 +60,25 @@ function undoButton()
 	love.graphics.printf("Undo", xPos + 30, yPos - 5, 0, "center")
 end
 
+function readFileButton()
+	xPos = windowWidth - 60
+	yPos = 110
+	xLen = 55
+	yLen = 30
+	if love.mouse.getX() >= xPos and love.mouse.getX() <= xPos + xLen and love.mouse.getY() >= yPos and love.mouse.getY() <= yPos + yLen then
+		if love.mouse.isDown("l") then
+			readFormulae("/Users/blopesvieira/GIT/TableauxProver/TableauxProver/" .. defaultInputFile)
+			love.timer.sleep(150)
+		end
+		love.graphics.setColor(100, 100, 200)
+	else
+		love.graphics.setColor(0, 100, 200)
+	end
+	love.graphics.rectangle("fill", xPos, yPos, xLen, yLen)
+	love.graphics.setColor(0, 0, 200)
+	love.graphics.printf("Read", xPos + 30, yPos - 5, 0, "center")
+end
+
 function testFinished()
 	if not finished and tableauFinished() then
 		finished = true
@@ -71,6 +89,7 @@ function testFinished()
 end
 
 function love.draw()
+	readFileButton()
 	stepButton()
 	tableauButton()
 	undoButton()

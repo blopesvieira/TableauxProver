@@ -1,0 +1,6 @@
+\lor
+\land(a,b)
+\land(b,a)
+\land
+a
+b

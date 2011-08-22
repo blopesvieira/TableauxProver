@@ -10,7 +10,7 @@ formulaClosePar = ")"
 windowWidth = 800
 windowHeight = 600
 variableExpansionLimit = 100
-defaultInputFile = "formula.p9"
+defaultInputFile = "formulae.txt"
 
 newConst = "x"
 
@@ -521,10 +521,18 @@ end
 
 function readFormulae(inputFileName)
 	local formulae = {}
+	local readFormulaI = 4
 	io.input(inputFileName)
-	formulae[1] = io.read()
-	while formulae[#formulae] ~= nil do
-		formulae[#formulae] = io.read()
+	formulaR = io.read()
+	while formulaR ~= nil do
+		formulae[#formulae+1] = formulaR
+		formulaR = io.read()
 	end
-	return formulae
+	love.graphics.print("Ok!", 100, 100)
+	insertFormula(formulae[1], formulae[2], formulae[3], 1, false, false, 100, 100)
+	while readFormulaI < #formulae do
+		insertFormula(formulae[readFormulaI], formulae[readFormulaI+1], formulae[readFormulaI+2], #formulaIndex, true, false, formulaX[#formulaX], formulaY[#formulaY] + 30)
+		readFormulaI = readFormulaI + 3
+	end 
 end
+--function insertFormula(operator, left, right, index, value, expanded, x, y)
