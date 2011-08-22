@@ -83,6 +83,25 @@ function readFileButton()
 	love.graphics.printf("Read", xPos + 30, yPos - 5, 0, "center")
 end
 
+function writeFileButton()
+	xPos = windowWidth - 60
+	yPos = 145
+	xLen = 55
+	yLen = 30
+	if love.mouse.getX() >= xPos and love.mouse.getX() <= xPos + xLen and love.mouse.getY() >= yPos and love.mouse.getY() <= yPos + yLen then
+		if love.mouse.isDown("l") then
+			qTreeOutput("/Users/blopesvieira/GIT/TableauxProver/TableauxProver/" .. defaultOutputFile)
+			love.timer.sleep(150)
+		end
+		love.graphics.setColor(100, 100, 200)
+	else
+		love.graphics.setColor(0, 100, 200)
+	end
+	love.graphics.rectangle("fill", xPos, yPos, xLen, yLen)
+	love.graphics.setColor(0, 0, 200)
+	love.graphics.printf("LaTeX", xPos + 30, yPos - 5, 0, "center")
+end
+
 function testFinished()
 	if not finished and tableauFinished() then
 		finished = true
@@ -93,6 +112,7 @@ function testFinished()
 end
 
 function love.draw()
+	writeFileButton()
 	readFileButton()
 	stepButton()
 	tableauButton()

@@ -4,42 +4,8 @@
 -- Author:    Bruno Lopes (bvieira@inf.puc-rio.br)
 -- Tableaux Prover is licensed under a Creative Commons Attribution 3.0 Unported License
 
-
-opAnd = '\\land'
-opOr = '\\lor'
-opImp = '\\to'
-opNot = '\\neg'
-opEx = '\\exists'
-opAll = '\\forall'
-formulaSep = ","
-formulaOpenPar = "("
-formulaClosePar = ")"
-windowWidth = 800
-windowHeight = 600
-xLim = 30
-yLim = 30
-xStep = 50
-yStep = 30
-xBegin = 50
-yBegin = 50
-variableExpansionLimit = 100
-defaultInputFile = "formulae.txt"
-
-newConst = "x"
-
-formulaX = {}
-formulaY = {}
-formulaOperator = {}
-formulaLeft = {}
-formulaRight = {}
-formulaIndex = {}
-formulaOrigin = {}
-formulaValue = {}
-formulaConstants = {}
-formulaConstantsUsed = {}
-formulaExpanded = {}
-formulaLeaf = {}
-finished = false
+require 'constants'
+require 'formula'
 
 function cleanFormulae()
 	formulaX = {}
@@ -586,4 +552,45 @@ function readFormulae(inputFileName)
 		insertFormula(formulae[readFormulaI], formulae[readFormulaI+1], formulae[readFormulaI+2], #formulaIndex, 0, true, false, formulaX[#formulaX], formulaY[#formulaY] + yStep)
 		readFormulaI = readFormulaI + 3
 	end 
+end
+
+function printNode(pos)
+	local value
+	if formulaValue[qTreeOutputI] then
+		value = "(T)"
+	else
+		value = "(F)"
+	end
+	if formulaOperator[pos] == opAnd or formulaOperator[pos] == opOr or formulaOperator[pos] == opImp then
+		return value .. " " .. formulaOperator[pos] .. "(" .. formulaLeft[pos] .. "," .. formulaRight[pos] .. ")"
+	elseif formulaOperator[qTreeOutputI] == opNot then
+		return value .. " " .. formulaOperator[pos] .. "(" .. formulaRight[pos] .. ")"
+	else
+		return value .. " " .. formulaOperator[pos] .. " " .. formulaLeft[pos] .. "(" .. formulaRight[pos] .. ")"
+	end
+end
+
+function printChain(pos, where)
+	if pos <= #formulaIndex then
+		if formulaIndex[pos] == where then
+			if formulaOperator[formulaOrigin[pos]] == opAnd then
+				return "[.{" .. printNode(pos) .. "} " .. printChain(pos + 2, pos) .. "] [.{" .. printNode(pos + 1) .. "} " .. printChain(pos + 2, pos) "]"
+			else
+				return "[.{" .. printNode(pos) .. "} " .. printChain(pos + 1, pos) .. "]"
+			end
+		end
+	end
+	return ""
+end
+
+function qTreeOutput(outputFileName)
+	local outputFile = io.open(outputFileName, "w")
+	outputFile:write("\\documentclass{article}\n\n")
+	outputFile:write("\\usepackage{qtree}\n\n")
+	outputFile:write("\\begin{document}\n\n")
+	outputFile:write("$$\\Tree\n")
+	outputFile:write(printChain(1, 0))
+	outputFile:write("\n$$\n\n")
+	outputFile:write("\\end{document}")
+	outputFile:close()
 end
