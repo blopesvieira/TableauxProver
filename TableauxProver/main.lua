@@ -7,9 +7,6 @@
 
 require 'TableauxProver'
 
---insertFormula(opOr, opAnd .. "(a" .. formulaSep .. "b)", opAnd .. "(b" .. formulaSep .. "a)", 1, false, false, 100, 100)
---insertFormula(opEx, "x", "P x", 1, false, false, 100, 100)
-
 function stepButton()
 	xPos = windowWidth - 60
 	yPos = 5
