@@ -1,3 +1,10 @@
+-- TableauxProver
+-- Copyright: Laborat'orio de Tecnologia em M'etodos Formais (TecMF)
+--            Pontif'icia Universidade Cat'olica do Rio de Janeiro (PUC-Rio)
+-- Author:    Bruno Lopes (bvieira@inf.puc-rio.br)
+-- Tableaux Prover is licensed under a Creative Commons Attribution 3.0 Unported License
+
+
 require 'TableauxProver'
 
 --insertFormula(opOr, opAnd .. "(a" .. formulaSep .. "b)", opAnd .. "(b" .. formulaSep .. "a)", 1, false, false, 100, 100)
