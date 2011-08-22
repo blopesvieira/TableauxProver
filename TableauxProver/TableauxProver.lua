@@ -70,8 +70,8 @@ function insertFormula(operator, left, right, index, origin, value, expanded, x,
 end
 
 function tableauStep()
-	stepNotFound = true
-	tableauStepI = 1
+	local stepNotFound = true
+	local tableauStepI = 1
 	while stepNotFound and tableauStepI <= #formulaExpanded do
 		if not formulaExpanded[tableauStepI] then
 			stepNotFound = false
@@ -94,14 +94,37 @@ function isLeaf(pos)
 	return leaf
 end
 
-
--- Redo!!!
--- Ok! ToDo: First Order undo (remove constants)
 function tableauStepUndo()
 	local tableauStepUndo = #formulaIndex
 	local tableauStepOrigin = formulaOrigin[#formulaOrigin]
+	local tableauStepConstant
+	local tableauStepLeafs = {}
+	local tableauStepI
 	formulaExpanded[tableauStepOrigin] = false
 	if formulaOperator[tableauStepOrigin] == opEx or formulaOperator[tableauStepOrigin] == opAll then
+		if (formulaOperator[tableauStepOrigin] == opEx and formulaValue[tableauStepOrigin]) or (formulaOperator[tableauStepOrigin] == opAll and not formulaValue[tableauStepOrigin]) or ((formulaConstantsUsed[tableauStepOrigin] == #formulaConstants)) then
+			formulaConstants[#formulaConstants] = nil
+		end
+		formulaConstantsUsed[tableauStepOrigin] = formulaConstantsUsed[tableauStepOrigin] - 1
+		while formulaOrigin[#formulaOrigin] == tableauStepOrigin and formulaLeaf[#formulaLeaf] do
+			tableauStepLeafs[tableauStepLeafs+1] = formulaIndex[#formulaIndex]
+			formulaX[#formulaX] = nil
+			formulaY[#formulaY] = nil
+			formulaOperator[#formulaOperator] = nil
+			formulaLeft[#formulaLeft] = nil
+			formulaRight[#formulaRight] = nil
+			formulaIndex[#formulaIndex] = nil
+			formulaOrigin[#formulaOrigin] = nil
+			formulaValue[#formulaValue] = nil
+			formulaExpanded[#formulaExpanded] = nil
+			formulaLeaf[#formulaLeaf] = nil
+		end
+		for tableauStepI = 1, #tableauStepLeafs do
+			if tableauStepLeafs[tableauStepI] <= #formulaLeaf then
+				formulaLeaf[tableuStepLeafs[tableauStepI]] = true
+			end
+		end
+		
 	else
 		while formulaOrigin[#formulaOrigin] == tableauStepOrigin do
 			formulaLeaf[formulaIndex[#formulaIndex]] = true
@@ -541,6 +564,7 @@ function readFormulae(inputFileName)
 	cleanFormulae()
 	insertFormula(formulae[1], formulae[2], formulae[3], 0, 0, false, false, 100, 100)
 	while readFormulaI < #formulae do
+		formulaLeaf[#formulaLeaf] = false
 		insertFormula(formulae[readFormulaI], formulae[readFormulaI+1], formulae[readFormulaI+2], #formulaIndex, 0, true, false, formulaX[#formulaX], formulaY[#formulaY] + 30)
 		readFormulaI = readFormulaI + 3
 	end 
