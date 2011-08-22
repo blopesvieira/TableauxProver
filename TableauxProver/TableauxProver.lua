@@ -20,6 +20,7 @@ formulaOperator = {}
 formulaLeft = {}
 formulaRight = {}
 formulaIndex = {}
+formulaOrigin = {}
 formulaValue = {}
 formulaConstants = {}
 formulaConstantsUsed = {}
@@ -27,10 +28,26 @@ formulaExpanded = {}
 formulaLeaf = {}
 finished = false
 
+function cleanFormulae()
+	formulaX = {}
+	formulaY = {}
+	formulaOperator = {}
+	formulaLeft = {}
+	formulaRight = {}
+	formulaIndex = {}
+	formulaOrigin = {}
+	formulaValue = {}
+	formulaConstants = {}
+	formulaConstantsUsed = {}
+	formulaExpanded = {}
+	formulaLeaf = {}
+	finished = false
+end
 
-function insertFormula(operator, left, right, index, value, expanded, x, y)
+function insertFormula(operator, left, right, index, origin, value, expanded, x, y)
 	formulaOperator[#formulaOperator + 1] = operator
 	formulaIndex[#formulaIndex + 1] = index
+	formulaOrigin[#formulaOrigin + 1] = origin
 	formulaRight[#formulaRight + 1] = right
 	formulaLeft[#formulaLeft + 1] = left
 	formulaValue[#formulaValue + 1] = value
@@ -78,32 +95,25 @@ function isLeaf(pos)
 end
 
 
---Repensar!!!
+-- Redo!!!
+-- Ok! ToDo: First Order undo (remove constants)
 function tableauStepUndo()
-	if #formulaIndex > 1 then
-		formulaExpanded[formulaIndex[#formulaIndex]] = false
-		if formulaOperator[formulaIndex[#formulaIndex]] == opEx or formulaOperator[formulaIndex[#formulaIndex]] == opAll then
-			if (formulaValue[formulaIndex[#formulaIndex]] and formulaOperator[formulaIndex[#formulaIndex]] == opEx) or (not formulaValue[formulaIndex[#formulaIndex]] and formulaOperator[formulaIndex[#formulaIndex]] == opAll) or (formulaConstantsUsed[formulaIndex[#formulaIndex]] == #formulaConstants) then
-				formulaConstants[#formulaConstants] = nil
-			end
-			formulaConstantsUsed[formulaIndex[#formulaIndex]] = formulaConstantsUsed[formulaIndex[#formulaIndex]] - 1
-		end
-		if formulaOperator[formulaIndex[#formulaIndex]] == opAnd or formulaOperator[formulaIndex[#formulaIndex]] == opOr or formulaOperator[formulaIndex[#formulaIndex]] then
-			toRemove = 2
-		else
-			toRemove = 1
-		end
-		if isLeaf(formulaIndex[#formulaIndex]) then
+	local tableauStepUndo = #formulaIndex
+	local tableauStepOrigin = formulaOrigin[#formulaOrigin]
+	formulaExpanded[tableauStepOrigin] = false
+	if formulaOperator[tableauStepOrigin] == opEx or formulaOperator[tableauStepOrigin] == opAll then
+	else
+		while formulaOrigin[#formulaOrigin] == tableauStepOrigin do
 			formulaLeaf[formulaIndex[#formulaIndex]] = true
-		end
-		for stepUndoI = 1, toRemove do
-			formulaX[#formulaIndex] = nil
+			formulaX[#formulaX] = nil
 			formulaY[#formulaY] = nil
 			formulaOperator[#formulaOperator] = nil
 			formulaLeft[#formulaLeft] = nil
 			formulaRight[#formulaRight] = nil
 			formulaIndex[#formulaIndex] = nil
+			formulaOrigin[#formulaOrigin] = nil
 			formulaValue[#formulaValue] = nil
+			formulaExpanded[#formulaExpanded] = nil
 			formulaLeaf[#formulaLeaf] = nil
 		end
 	end
@@ -230,11 +240,11 @@ function expandAnd(pos)
 	j = getOperatorPos(left)
 	if j == nil then
 		for k = 1, #index do
-			insertFormula("", "", left, index[k], false, true, formulaX[index[k]], formulaY[index[k]] + 30)
+			insertFormula("", "", left, index[k], pos, false, true, formulaX[index[k]], formulaY[index[k]] + 30)
 		end
 	else
 		for k = 1, #index do
-			insertFormula(string.sub(left,1,j), string.sub(left,j+2,i-1), string.sub(left,i+1,string.len(left)-1), index[k], false, false, formulaX[index[k]], formulaY[index[k]] + 30)
+			insertFormula(string.sub(left,1,j), string.sub(left,j+2,i-1), string.sub(left,i+1,string.len(left)-1), index[k], pos, false, false, formulaX[index[k]], formulaY[index[k]] + 30)
 		end
 	end
 	i = formulaFindSep(left, formulaSep)
@@ -244,11 +254,11 @@ function expandAnd(pos)
 	j = getOperatorPos(right)
 	if j == nil then
 		for k = 1, #index do
-			insertFormula("", "", right, index[k], false, true, formulaX[index[k]] + 100, formulaY[index[k]] + 30)
+			insertFormula("", "", right, index[k], pos, false, true, formulaX[index[k]] + 100, formulaY[index[k]] + 30)
 		end
 	else
 		for k = 1, #index do
-			insertFormula(string.sub(right,1,j), string.sub(right,j+2,i-1), string.sub(right,i+1,string.len(right)-1), index[k], false, false, formulaX[index[k]] + 200, formulaY[index[k]] + 30)
+			insertFormula(string.sub(right,1,j), string.sub(right,j+2,i-1), string.sub(right,i+1,string.len(right)-1), index[k], pos, false, false, formulaX[index[k]] + 200, formulaY[index[k]] + 30)
 		end
 	end
 end
@@ -273,11 +283,11 @@ function expandOr(pos)
 	j = getOperatorPos(left)
 	if j == nil then
 		for k = 1, #index do
-			insertFormula("", "", left, index[k], false, true, formulaX[index[k]], formulaY[index[k]] + 30)
+			insertFormula("", "", left, index[k], pos, false, true, formulaX[index[k]], formulaY[index[k]] + 30)
 		end
 	else
 		for k = 1, #index do
-			insertFormula(string.sub(left,1,j), string.sub(left,j+2,i-1), string.sub(left,i+1,string.len(left)-1), index[k], false, false, formulaX[index[k]], formulaY[index[k]] + 30)
+			insertFormula(string.sub(left,1,j), string.sub(left,j+2,i-1), string.sub(left,i+1,string.len(left)-1), index[k], pos, false, false, formulaX[index[k]], formulaY[index[k]] + 30)
 		end
 	end
 	i = formulaFindSep(left, formulaSep)
@@ -287,11 +297,11 @@ function expandOr(pos)
 	j = getOperatorPos(right)
 	if j == nil then
 		for k = 1, #index do
-			insertFormula("", "", right, index[k] + 1, false, true, formulaX[index[k]] + 100, formulaY[index[k]] + 30)
+			insertFormula("", "", right, index[k] + 1, pos, false, true, formulaX[index[k]] + 100, formulaY[index[k]] + 30)
 		end
 	else
 		for k = 1, #index do
-			insertFormula(string.sub(right,1,j), string.sub(right,j+2,i-1), string.sub(right,i+1,string.len(right)-1), index[k] + 1, false, false, formulaX[index[k]], formulaY[index[k]] + 60)
+			insertFormula(string.sub(right,1,j), string.sub(right,j+2,i-1), string.sub(right,i+1,string.len(right)-1), index[k] + 1, pos, false, false, formulaX[index[k]], formulaY[index[k]] + 60)
 		end
 	end
 end
@@ -316,11 +326,11 @@ function expandImp(pos)
 	j = getOperatorPos(left)
 	if j == nil then
 		for k = 1, #index do
-			insertFormula("", "", left, index[k], true, true, formulaX[index[k]], formulaY[index[k]] + 30)
+			insertFormula("", "", left, index[k], pos, true, true, formulaX[index[k]], formulaY[index[k]] + 30)
 		end
 	else
 		for k = 1, #index do
-			insertFormula(string.sub(left,1,j), string.sub(left,j+2,i-1), string.sub(left,i+1,string.len(left)-1), index[k], true, false, formulaX[index[k]], formulaY[index[k]] + 30)
+			insertFormula(string.sub(left,1,j), string.sub(left,j+2,i-1), string.sub(left,i+1,string.len(left)-1), index[k], pos, true, false, formulaX[index[k]], formulaY[index[k]] + 30)
 		end
 	end
 	i = formulaFindSep(left, formulaSep)
@@ -330,11 +340,11 @@ function expandImp(pos)
 	j = getOperatorPos(right)
 	if j == nil then
 		for k = 1, #index do
-			insertFormula("", "", right, index[k] + 1, false, true, formulaX[index[k]] + 100, formulaY[index[k]] + 30)
+			insertFormula("", "", right, index[k] + 1, pos, false, true, formulaX[index[k]] + 100, formulaY[index[k]] + 30)
 		end
 	else
 		for k = 1, #index do
-			insertFormula(string.sub(right,1,j), string.sub(right,j+2,i-1), string.sub(right,i+1,string.len(right)-1), index[k] + 1, false, false, formulaX[index[k]], formulaY[index[k]] + 60)
+			insertFormula(string.sub(right,1,j), string.sub(right,j+2,i-1), string.sub(right,i+1,string.len(right)-1), index[k] + 1, pos, false, false, formulaX[index[k]], formulaY[index[k]] + 60)
 		end
 	end
 end
@@ -358,11 +368,11 @@ function expandNot(pos)
 	j = getOperatorPos(right)
 	if j == nil then
 		for k = 1, #index do
-			insertFormula("", "", right, index[k], not formulaValue[pos], true, formulaX[index[k]], formulaY[index[k]] + 30)
+			insertFormula("", "", right, index[k], pos, not formulaValue[pos], true, formulaX[index[k]], formulaY[index[k]] + 30)
 		end
 	else
 		for k = 1, #index do
-			insertFormula(string.sub(right,1,j), string.sub(right,j+2,i-1), string.sub(right,i+1,string.len(right)-1), index[k], not formulaValue[pos], false, formulaX[index[k]], formulaY[index[k]] + 30)
+			insertFormula(string.sub(right,1,j), string.sub(right,j+2,i-1), string.sub(right,i+1,string.len(right)-1), index[k], pos, not formulaValue[pos], false, formulaX[index[k]], formulaY[index[k]] + 30)
 		end
 	end
 end
@@ -473,11 +483,11 @@ function expandEx(pos)
 	j = getOperatorPos(right)
 	if j == nil then
 		for k = 1, #index do
-			insertFormula("", "", right, index[k], formulaValue[pos], true, formulaX[index[k]], formulaY[index[k]] + 30)
+			insertFormula("", "", right, index[k], pos, formulaValue[pos], true, formulaX[index[k]], formulaY[index[k]] + 30)
 		end
 	else
 		for k = 1, #index do
-			insertFormula(string.sub(right,1,j), string.sub(right,j+2,i-1), string.sub(right,i+1,string.len(right)-1), index[k], formulaValue[pos], false, formulaX[index[k]], formulaY[index[k]] + 30)
+			insertFormula(string.sub(right,1,j), string.sub(right,j+2,i-1), string.sub(right,i+1,string.len(right)-1), index[k], pos, formulaValue[pos], false, formulaX[index[k]], formulaY[index[k]] + 30)
 		end
 	end
 end
@@ -510,11 +520,11 @@ function expandAll()
 	j = getOperatorPos(right)
 	if j == nil then
 		for k = 1, #index do
-			insertFormula("", "", right, index[k], formulaValue[pos], true, formulaX[index[k]], formulaY[index[k]] + 30)
+			insertFormula("", "", right, index[k], pos, formulaValue[pos], true, formulaX[index[k]], formulaY[index[k]] + 30)
 		end
 	else
 		for k = 1, #index do
-			insertFormula(string.sub(right,1,j), string.sub(right,j+2,i-1), string.sub(right,i+1,string.len(right)-1), index[k], formulaValue[pos], false, formulaX[index[k]], formulaY[index[k]] + 30)
+			insertFormula(string.sub(right,1,j), string.sub(right,j+2,i-1), string.sub(right,i+1,string.len(right)-1), index[k], pos, formulaValue[pos], false, formulaX[index[k]], formulaY[index[k]] + 30)
 		end
 	end
 end
@@ -528,11 +538,10 @@ function readFormulae(inputFileName)
 		formulae[#formulae+1] = formulaR
 		formulaR = io.read()
 	end
-	love.graphics.print("Ok!", 100, 100)
-	insertFormula(formulae[1], formulae[2], formulae[3], 1, false, false, 100, 100)
+	cleanFormulae()
+	insertFormula(formulae[1], formulae[2], formulae[3], 0, 0, false, false, 100, 100)
 	while readFormulaI < #formulae do
-		insertFormula(formulae[readFormulaI], formulae[readFormulaI+1], formulae[readFormulaI+2], #formulaIndex, true, false, formulaX[#formulaX], formulaY[#formulaY] + 30)
+		insertFormula(formulae[readFormulaI], formulae[readFormulaI+1], formulae[readFormulaI+2], #formulaIndex, 0, true, false, formulaX[#formulaX], formulaY[#formulaY] + 30)
 		readFormulaI = readFormulaI + 3
 	end 
 end
---function insertFormula(operator, left, right, index, value, expanded, x, y)
