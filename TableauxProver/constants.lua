@@ -36,3 +36,6 @@ defaultOutputFile = "formulae.tex"
 
 -- Constants definitions
 newConst = "x"
+
+-- Languege definitions
+defaultLanguage = "en"
