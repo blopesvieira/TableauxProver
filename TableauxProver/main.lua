@@ -142,18 +142,7 @@ function printFormulae()
 		love.graphics.circle("fill", formulaX[i], formulaY[i], 5, 25)
 		love.graphics.setColor(255, 255, 255, 90) -- White 90%
 		love.graphics.circle("line", formulaX[i], formulaY[i], 6)
-		if formulaValue[i] then
-			value = "(T)"
-		else
-			value = "(F)"
-		end
-		if formulaOperator[i] == opAnd or formulaOperator[i] == opOr or formulaOperator[i] == opImp then
-			love.graphics.print(value .. " " .. formulaOperator[i] .. "(" .. formulaLeft[i] .. "," .. formulaRight[i] .. ")", formulaX[i] + 20, formulaY[i] - 6)
-		elseif formulaOperator[i] == opNot then
-			love.graphics.print(value .. " " .. formulaOperator[i] .. "(" .. formulaRight[i] .. ")", formulaX[i] + 20, formulaY[i] - 6)
-		else
-			love.graphics.print(value .. " " .. formulaOperator[i] .. " " .. formulaLeft[i] .. "(" .. formulaRight[i] .. ")", formulaX[i] + 20, formulaY[i] - 6)
-		end
+		love.graphics.print(printNode(i), formulaX[i] + 20, formulaY[i] - 6)
 		i = i + 1
 	end
 end

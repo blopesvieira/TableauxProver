@@ -65,8 +65,8 @@ function tableauStep()
 end
 
 function isLeaf(pos)
-	leaf = true
-	i = pos + 1
+	local leaf = true
+	local i = pos + 1
 	while i <= #formulaIndex and leaf do
 		if isInChain(pos, i) then
 			leaf = false
@@ -125,8 +125,8 @@ function tableauStepUndo()
 end
 
 function tableauClosed()
-	noOpenBranch = true
-	tableauClosedI = #formulaIndex
+	local noOpenBranch = true
+	local tableauClosedI = #formulaIndex
 	while noOpenBranch and tableauClosedI > 0 do
 		if formulaLeaf[tableauClosedI] then
 			tableuClosedJ = tableauClosedI
@@ -152,7 +152,7 @@ end
 
 function tableauFinished()
 	finished = true
-	tableauFinishedI = 1
+	local tableauFinishedI = 1
 	while finished and tableauFinishedI <= #formulaIndex do
 		if not formulaExpanded[tableauFinishedI] then
 			finished = false
@@ -192,8 +192,8 @@ function isInChain(origin, pos)
 	if origin == pos or formulaIndex[pos] == origin then
 		return true
 	end
-	i = pos
-	j = pos
+	local i = pos
+	local j = pos
 	inChain = false
 	while  j > origin do
 		j = j - 1
@@ -208,9 +208,9 @@ function isInChain(origin, pos)
 end
 
 function formulaFindSep(side, formulaSep)
-	sepFindI = 0
-	newFormula = 0
-	formulaSepNotFound = true
+	local sepFindI = 0
+	local newFormula = 0
+	local formulaSepNotFound = true
 	while formulaSepNotFound and sepFindI < string.len(side) do
 		sepFindI = sepFindI + 1
 		if string.sub(side, sepFindI, sepFindI) == formulaOpenPar then
@@ -228,7 +228,7 @@ function formulaFindSep(side, formulaSep)
 end
 
 function expandAnd(pos)
-	index = {}
+	local index = {}
 	for i = pos, #formulaIndex do
 		if formulaLeaf[i] and isInChain(pos, i) then
 			index[#index + 1] = i
@@ -247,11 +247,11 @@ function expandAnd(pos)
 	j = getOperatorPos(left)
 	if j == nil then
 		for k = 1, #index do
-			insertFormula("", "", left, index[k], pos, false, true, formulaX[index[k]], formulaY[index[k]] + yStep)
+			insertFormula("", "", left, index[k], pos, false, true, formulaX[index[k]] - xStep, formulaY[index[k]] + yStep)
 		end
 	else
 		for k = 1, #index do
-			insertFormula(string.sub(left,1,j), string.sub(left,j+2,i-1), string.sub(left,i+1,string.len(left)-1), index[k], pos, false, false, formulaX[index[k]], formulaY[index[k]] + yStep)
+			insertFormula(string.sub(left,1,j), string.sub(left,j+2,i-1), string.sub(left,i+1,string.len(left)-1), index[k], pos, false, false, formulaX[index[k]] - xStep, formulaY[index[k]] + yStep)
 		end
 	end
 	i = formulaFindSep(left, formulaSep)
@@ -261,17 +261,17 @@ function expandAnd(pos)
 	j = getOperatorPos(right)
 	if j == nil then
 		for k = 1, #index do
-			insertFormula("", "", right, index[k], pos, false, true, formulaX[index[k]] + xStep + xStep, formulaY[index[k]] + yStep)
+			insertFormula("", "", right, index[k], pos, false, true, formulaX[index[k]] + xStep, formulaY[index[k]] + yStep)
 		end
 	else
 		for k = 1, #index do
-			insertFormula(string.sub(right,1,j), string.sub(right,j+2,i-1), string.sub(right,i+1,string.len(right)-1), index[k], pos, false, false, formulaX[index[k]] + xStep + xStep, formulaY[index[k]] + yStep)
+			insertFormula(string.sub(right,1,j), string.sub(right,j+2,i-1), string.sub(right,i+1,string.len(right)-1), index[k], pos, false, false, formulaX[index[k]] + xStep, formulaY[index[k]] + yStep)
 		end
 	end
 end
 
 function expandOr(pos)
-	index = {}
+	local index = {}
 	for i = pos, #formulaIndex do
 		if formulaLeaf[i] and isInChain(pos, i) then
 			index[#index + 1] = i
@@ -314,7 +314,7 @@ function expandOr(pos)
 end
 
 function expandImp(pos)
-	index = {}
+	local index = {}
 	for i = pos, #formulaIndex do
 		if formulaLeaf[i] and isInChain(pos, i) then
 			index[#index + 1] = i
@@ -357,7 +357,7 @@ function expandImp(pos)
 end
 
 function expandNot(pos)
-	index = {}
+	local index = {}
 	for i = pos, #formulaIndex do
 		if formulaLeaf[i] and isInChain(pos, i) then
 			index[#index + 1] = i
@@ -401,9 +401,9 @@ function expandFormula(pos)
 end
 
 function findConstants(pos)
-	left = formulaLeft[pos]
-	right = formulaRight[pos]
-	i = string.find(left, opEx)
+	local left = formulaLeft[pos]
+	local right = formulaRight[pos]
+	local i = string.find(left, opEx)
 	while i ~= nil do
 		j = string.find(left, formulaSep, i)
 		formulaConstants[#formulaConstants + 1] = string.sub(left, i + string.len(opEx) + 1, j - 1)
@@ -430,8 +430,8 @@ function findConstants(pos)
 end
 
 function newConstant()
-	exists = true
-	i = 1
+	local exists = true
+	local i = 1
 	while exists do
 		if not existConstant(newConst) then
 			newConst = string.rep(newConst, string.len(newConst) + 1)
@@ -442,7 +442,7 @@ function newConstant()
 end
 
 function getNewConstant()
-	new = newConst .. (#formulaConstants + 1)
+	local new = newConst .. (#formulaConstants + 1)
 	if existConstant(new) then
 		newConstant()
 		new = newConst .. (#formulaConstants + 1)
@@ -451,8 +451,8 @@ function getNewConstant()
 end
 
 function existConstant(const)
-	isNew = false
-	i = 1
+	local isNew = false
+	local i = 1
 	while i <= #formulaConstants and not isNew do
 		if formulaConstants[i] == const then
 			isNew = true
@@ -463,7 +463,7 @@ function existConstant(const)
 end
 
 function expandEx(pos)
-	index = {}
+	local index = {}
 	for i = pos, #formulaIndex do
 		if formulaLeaf[i] and isInChain(pos, i) then
 			index[#index + 1] = i
@@ -500,7 +500,7 @@ function expandEx(pos)
 end
 
 function expandAll()
-	index = {}
+	local index = {}
 	for i = pos, #formulaIndex do
 		if formulaLeaf[i] and isInChain(pos, i) then
 			index[#index + 1] = i
@@ -562,22 +562,32 @@ function printNode(pos)
 		value = "(F)"
 	end
 	if formulaOperator[pos] == opAnd or formulaOperator[pos] == opOr or formulaOperator[pos] == opImp then
-		return value .. " " .. formulaOperator[pos] .. "(" .. formulaLeft[pos] .. "," .. formulaRight[pos] .. ")"
+		return value .. " " .. "$" .. formulaOperator[pos] .. "(" .. formulaLeft[pos] .. "," .. formulaRight[pos] .. ")$"
 	elseif formulaOperator[qTreeOutputI] == opNot then
-		return value .. " " .. formulaOperator[pos] .. "(" .. formulaRight[pos] .. ")"
+		return value .. " " .. "$" .. formulaOperator[pos] .. "(" .. formulaRight[pos] .. ")$"
 	else
-		return value .. " " .. formulaOperator[pos] .. " " .. formulaLeft[pos] .. "(" .. formulaRight[pos] .. ")"
+		return value .. " " .. "$" .. formulaOperator[pos]  .. " " .. formulaLeft[pos] .. "(" .. formulaRight[pos] .. ")$"
 	end
 end
 
 function printChain(pos, where)
+	local chainString
+	local chainString1
+	local chainString2
 	if pos <= #formulaIndex then
 		if formulaIndex[pos] == where then
 			if formulaOperator[formulaOrigin[pos]] == opAnd then
-				return "[.{" .. printNode(pos) .. "} " .. printChain(pos + 2, pos) .. "] [.{" .. printNode(pos + 1) .. "} " .. printChain(pos + 2, pos) "]"
+				chainString1 = printChain(pos + 2, pos)
+				chainString2 = printChain(pos + 2, pos + 1)
+				chainString = "[.{" .. printNode(pos) .. "} " .. chainString1 .. "] [.{" .. printNode(pos + 1) .. "} " .. chainString2 .. "]"
+				return chainString
 			else
-				return "[.{" .. printNode(pos) .. "} " .. printChain(pos + 1, pos) .. "]"
+				chainString1 = printChain(pos + 1, pos)
+				chainString = "[.{" .. printNode(pos) .. "} " .. chainString1 .. "]"
+				return chainString
 			end
+		else
+			return printChain(pos + 1, where)
 		end
 	end
 	return ""
@@ -585,12 +595,13 @@ end
 
 function qTreeOutput(outputFileName)
 	local outputFile = io.open(outputFileName, "w")
+	outputFile:write("% Generated by TableauxProver\n")
+	outputFile:write("% http://www.tecmf.inf.puc-rio.br/TableauxProver\n")
 	outputFile:write("\\documentclass{article}\n\n")
 	outputFile:write("\\usepackage{qtree}\n\n")
 	outputFile:write("\\begin{document}\n\n")
-	outputFile:write("$$\\Tree\n")
+	outputFile:write("\\Tree\n ")
 	outputFile:write(printChain(1, 0))
-	outputFile:write("\n$$\n\n")
-	outputFile:write("\\end{document}")
+	outputFile:write("\n\n\\end{document}")
 	outputFile:close()
 end

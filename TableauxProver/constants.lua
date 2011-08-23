@@ -24,7 +24,7 @@ xLim = 30
 yLim = 30
 xStep = 50
 yStep = 30
-xBegin = 50
+xBegin = windowWidth / 2
 yBegin = 50
 
 -- Deep limit definitions
