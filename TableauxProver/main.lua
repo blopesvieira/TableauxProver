@@ -7,6 +7,8 @@
 
 require 'TableauxProver'
 
+selectLanguage("en")
+
 function stepButton()
 	local xPos = windowWidth - 60
 	local yPos = 5

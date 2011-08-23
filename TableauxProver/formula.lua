@@ -17,3 +17,35 @@ formulaConstantsUsed = {}
 formulaExpanded = {}
 formulaLeaf = {}
 finished = false
+
+function cleanFormulae()
+	formulaX = {}
+	formulaY = {}
+	formulaOperator = {}
+	formulaLeft = {}
+	formulaRight = {}
+	formulaIndex = {}
+	formulaOrigin = {}
+	formulaValue = {}
+	formulaConstants = {}
+	formulaConstantsUsed = {}
+	formulaExpanded = {}
+	formulaLeaf = {}
+	finished = false
+end
+
+function printNode(pos)
+	local value
+	if formulaValue[pos] then
+		value = "(" .. trueLabel .. ")"
+	else
+		value = "(" .. falseLabel .. ")"
+	end
+	if formulaOperator[pos] == opAnd or formulaOperator[pos] == opOr or formulaOperator[pos] == opImp then
+		return value .. " " .. "$" .. formulaOperator[pos] .. "(" .. formulaLeft[pos] .. "," .. formulaRight[pos] .. ")$"
+	elseif formulaOperator[qTreeOutputI] == opNot then
+		return value .. " " .. "$" .. formulaOperator[pos] .. "(" .. formulaRight[pos] .. ")$"
+	else
+		return value .. " " .. "$" .. formulaOperator[pos]  .. " " .. formulaLeft[pos] .. "(" .. formulaRight[pos] .. ")$"
+	end
+end

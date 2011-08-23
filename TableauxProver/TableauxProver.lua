@@ -9,24 +9,6 @@ require 'formula'
 require 'language'
 
 
-selectLanguage("en")
-
-function cleanFormulae()
-	formulaX = {}
-	formulaY = {}
-	formulaOperator = {}
-	formulaLeft = {}
-	formulaRight = {}
-	formulaIndex = {}
-	formulaOrigin = {}
-	formulaValue = {}
-	formulaConstants = {}
-	formulaConstantsUsed = {}
-	formulaExpanded = {}
-	formulaLeaf = {}
-	finished = false
-end
-
 function insertFormula(operator, left, right, index, origin, value, expanded, x, y)
 	formulaOperator[#formulaOperator + 1] = operator
 	formulaIndex[#formulaIndex + 1] = index
@@ -66,17 +48,6 @@ function tableauStep()
 		end
 		return not stepNotFound
 	end
-end
-
-function isLeaf(pos)
-	local leaf = true
-	local i = pos + 1
-	while i <= #formulaIndex and leaf do
-		if isInChain(pos, i) then
-			leaf = false
-		end
-	end
-	return leaf
 end
 
 function tableauStepUndo()
@@ -233,6 +204,11 @@ end
 
 function expandAnd(pos)
 	local index = {}
+	local right
+	local left
+	local i
+	local j
+	local k
 	for i = pos, #formulaIndex do
 		if formulaLeaf[i] and isInChain(pos, i) then
 			index[#index + 1] = i
@@ -276,6 +252,11 @@ end
 
 function expandOr(pos)
 	local index = {}
+	local right
+	local left
+	local i
+	local j
+	local k
 	for i = pos, #formulaIndex do
 		if formulaLeaf[i] and isInChain(pos, i) then
 			index[#index + 1] = i
@@ -308,17 +289,22 @@ function expandOr(pos)
 	j = getOperatorPos(right)
 	if j == nil then
 		for k = 1, #index do
-			insertFormula("", "", right, index[k] + 1, pos, false, true, formulaX[index[k]], formulaY[index[k]] + yStep + yStep)
+			insertFormula("", "", right, index[k] + #index, pos, false, true, formulaX[index[k]], formulaY[index[k]] + yStep + yStep)
 		end
 	else
 		for k = 1, #index do
-			insertFormula(string.sub(right,1,j), string.sub(right,j+2,i-1), string.sub(right,i+1,string.len(right)-1), index[k] + 1, pos, false, false, formulaX[index[k]], formulaY[index[k]] + yStep + yStep)
+			insertFormula(string.sub(right,1,j), string.sub(right,j+2,i-1), string.sub(right,i+1,string.len(right)-1), index[k] + #index, pos, false, false, formulaX[index[k]], formulaY[index[k]] + yStep + yStep)
 		end
 	end
 end
 
 function expandImp(pos)
 	local index = {}
+	local right
+	local left
+	local i
+	local j
+	local k
 	for i = pos, #formulaIndex do
 		if formulaLeaf[i] and isInChain(pos, i) then
 			index[#index + 1] = i
@@ -351,17 +337,22 @@ function expandImp(pos)
 	j = getOperatorPos(right)
 	if j == nil then
 		for k = 1, #index do
-			insertFormula("", "", right, index[k] + 1, pos, false, true, formulaX[index[k]], formulaY[index[k]] + yStep + yStep)
+			insertFormula("", "", right, index[k] + #index, pos, false, true, formulaX[index[k]], formulaY[index[k]] + yStep + yStep)
 		end
 	else
 		for k = 1, #index do
-			insertFormula(string.sub(right,1,j), string.sub(right,j+2,i-1), string.sub(right,i+1,string.len(right)-1), index[k] + 1, pos, false, false, formulaX[index[k]], formulaY[index[k]] + yStep + yStep)
+			insertFormula(string.sub(right,1,j), string.sub(right,j+2,i-1), string.sub(right,i+1,string.len(right)-1), index[k] + #index, pos, false, false, formulaX[index[k]], formulaY[index[k]] + yStep + yStep)
 		end
 	end
 end
 
 function expandNot(pos)
 	local index = {}
+	local right
+	local left
+	local i
+	local j
+	local k
 	for i = pos, #formulaIndex do
 		if formulaLeaf[i] and isInChain(pos, i) then
 			index[#index + 1] = i
@@ -468,6 +459,11 @@ end
 
 function expandEx(pos)
 	local index = {}
+	local right
+	local left
+	local i
+	local j
+	local k
 	for i = pos, #formulaIndex do
 		if formulaLeaf[i] and isInChain(pos, i) then
 			index[#index + 1] = i
@@ -505,6 +501,11 @@ end
 
 function expandAll()
 	local index = {}
+	local right
+	local left
+	local i
+	local j
+	local k
 	for i = pos, #formulaIndex do
 		if formulaLeaf[i] and isInChain(pos, i) then
 			index[#index + 1] = i
@@ -556,22 +557,6 @@ function readFormulae(inputFileName)
 		insertFormula(formulae[readFormulaI], formulae[readFormulaI+1], formulae[readFormulaI+2], #formulaIndex, 0, true, false, formulaX[#formulaX], formulaY[#formulaY] + yStep)
 		readFormulaI = readFormulaI + 3
 	end 
-end
-
-function printNode(pos)
-	local value
-	if formulaValue[qTreeOutputI] then
-		value = "(" .. trueLabel .. ")"
-	else
-		value = "(" .. falseLabel .. ")"
-	end
-	if formulaOperator[pos] == opAnd or formulaOperator[pos] == opOr or formulaOperator[pos] == opImp then
-		return value .. " " .. "$" .. formulaOperator[pos] .. "(" .. formulaLeft[pos] .. "," .. formulaRight[pos] .. ")$"
-	elseif formulaOperator[qTreeOutputI] == opNot then
-		return value .. " " .. "$" .. formulaOperator[pos] .. "(" .. formulaRight[pos] .. ")$"
-	else
-		return value .. " " .. "$" .. formulaOperator[pos]  .. " " .. formulaLeft[pos] .. "(" .. formulaRight[pos] .. ")$"
-	end
 end
 
 function printChain(pos, where)
