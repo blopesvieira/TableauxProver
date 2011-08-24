@@ -80,7 +80,7 @@ function tableauClosed()
 	while i < #formulaIndex do
 		j = i + 1
 		while j <= #formulaIndex do
-			if formulaValue[i] ~= formulaValue[j] and formulaRight[i] == formulaRight[j] and formulaLeft[i] == formulaLeft[j] and isInChain(i, j) then
+			if formulaValue[i] ~= formulaValue[j] and formulaRight[i] == formulaRight[j] and formulaLeft[i] == formulaLeft[j]  and formulaOperator[i] == formulaOperator[j] and isInChain(i, j) then
 				return true
 			end
 			j = j + 1

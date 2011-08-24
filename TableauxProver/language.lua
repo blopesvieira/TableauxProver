@@ -8,10 +8,11 @@
 function selectLanguage(lang)
 	if lang == "en" then
 		stepButtonName = "Step"
-		tableauButtonName = "Tableau"
+		tableauButtonName = "All"
 		latexButtonName = "LaTeX"
 		undoButtonName = "Undo"
 		readFileButtonName = "Read"
+		disposeButtonName = "Adjust"
 		trueLabel = "T"
 		falseLabel = "F"
 		tableauClosedLabel = "Tableau Closed!"
@@ -22,6 +23,7 @@ function selectLanguage(lang)
 		latexButtonName = "LaTeX"
 		undoButtonName = "Desfazer"
 		readFileButtonName = "Arquivo"
+		disposeButtonName = "Ajustar"
 		trueLabel = "V"
 		falseLabel = "F"
 		tableauClosedLabel = "Tableau Fechado!"

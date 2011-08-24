@@ -34,14 +34,51 @@ end
 
 function printNode(pos)
 	local value
+	local operator = formulaOperator[pos]
+	local left = formulaLeft[pos]
+	local right = formulaRight[pos]
 	if formulaValue[pos] then
-		value = "(" .. trueLabel .. ")"
+		value = "[" .. trueLabel .. "]"
 	else
-		value = "(" .. falseLabel .. ")"
+		value = "[" .. falseLabel .. "]"
+	end
+	operator = string.gsub(operator, opAnd, opAndPrint)
+	operator = string.gsub(operator, opOr, opOrPrint)
+	operator = string.gsub(operator, opImp, opImpPrint)
+	operator = string.gsub(operator, opNot, opNotPrint)
+	operator = string.gsub(operator, opEx, opExPrint)
+	operator = string.gsub(operator, opAll, opAllPrint)
+	left = string.gsub(left, opAnd, opAndPrint)
+	left = string.gsub(left, opOr, opOrPrint)
+	left = string.gsub(left, opImp, opImpPrint)
+	left = string.gsub(left, opNot, opNotPrint)
+	left = string.gsub(left, opEx, opExPrint)
+	left = string.gsub(left, opAll, opAllPrint)
+	right = string.gsub(right, opAnd, opAndPrint)
+	right = string.gsub(right, opOr, opOrPrint)
+	right = string.gsub(right, opImp, opImpPrint)
+	right = string.gsub(right, opNot, opNotPrint)
+	right = string.gsub(right, opEx, opExPrint)
+	right = string.gsub(right, opAll, opAllPrint)
+	if formulaOperator[pos] == opAnd or formulaOperator[pos] == opOr or formulaOperator[pos] == opImp then
+		return value .. " " .. operator .. " (" .. left .. "," .. right .. ")$"
+	elseif formulaOperator[pos] == opNot then
+		return value .. " " .. operator .. " (" .. right .. ")$"
+	else
+		return value .. " " .. operator  .. " " .. left .. "(" .. right .. ")$"
+	end
+end
+
+function printNodeLaTeX(pos)
+	local value
+	if formulaValue[pos] then
+		value = "\\textbf{" .. trueLabel .. "}"
+	else
+		value = "\\textbf{" .. falseLabel .. "}"
 	end
 	if formulaOperator[pos] == opAnd or formulaOperator[pos] == opOr or formulaOperator[pos] == opImp then
 		return value .. " " .. "$" .. formulaOperator[pos] .. "(" .. formulaLeft[pos] .. "," .. formulaRight[pos] .. ")$"
-	elseif formulaOperator[qTreeOutputI] == opNot then
+	elseif formulaOperator[pos] == opNot then
 		return value .. " " .. "$" .. formulaOperator[pos] .. "(" .. formulaRight[pos] .. ")$"
 	else
 		return value .. " " .. "$" .. formulaOperator[pos]  .. " " .. formulaLeft[pos] .. "(" .. formulaRight[pos] .. ")$"
@@ -57,11 +94,11 @@ function printQTreeChain(pos, where)
 			if formulaOperator[formulaOrigin[pos]] == opAnd then
 				chainString1 = printQTreeChain(pos + 2, pos)
 				chainString2 = printQTreeChain(pos + 2, pos + 1)
-				chainString = "[.{" .. printNode(pos) .. "} " .. chainString1 .. "] [.{" .. printNode(pos + 1) .. "} " .. chainString2 .. "]"
+				chainString = "[.{" .. printNodeLaTeX(pos) .. "} " .. chainString1 .. "] [.{" .. printNodeLaTeX(pos + 1) .. "} " .. chainString2 .. "]"
 				return chainString
 			else
 				chainString1 = printQTreeChain(pos + 1, pos)
-				chainString = "[.{" .. printNode(pos) .. "} " .. chainString1 .. "]"
+				chainString = "[.{" .. printNodeLaTeX(pos) .. "} " .. chainString1 .. "]"
 				return chainString
 			end
 		else

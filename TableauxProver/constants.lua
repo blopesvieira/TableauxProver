@@ -6,11 +6,17 @@
 
 -- Operators definitions
 opAnd = '\\land'
+opAndPrint = '&'
 opOr = '\\lor'
+opOrPrint = '|'
 opImp = '\\to'
+opImpPrint = '->'
 opNot = '\\neg'
+opNotPrint = '~'
 opEx = '\\exists'
+opExPrint = 'Ex'
 opAll = '\\forall'
+opAllPrint = 'All'
 
 -- Separators definitions
 formulaSep = ","

@@ -108,6 +108,25 @@ function writeFileButton()
 	love.graphics.printf(latexButtonName, xPos + 30, yPos - 5, 0, "center")
 end
 
+function autoDisposeButton()
+	local xPos = windowWidth - 60
+	local yPos = 180
+	local xLen = 55
+	local yLen = 30
+	if love.mouse.getX() >= xPos and love.mouse.getX() <= xPos + xLen and love.mouse.getY() >= yPos and love.mouse.getY() <= yPos + yLen then
+		if love.mouse.isDown("l") then
+			autoDisposeTree()
+			love.timer.sleep(150)
+		end
+		love.graphics.setColor(100, 100, 200)
+	else
+		love.graphics.setColor(0, 100, 200)
+	end
+	love.graphics.rectangle("fill", xPos, yPos, xLen, yLen)
+	love.graphics.setColor(0, 0, 200)
+	love.graphics.printf(disposeButtonName, xPos + 30, yPos - 5, 0, "center")
+end
+
 function testFinished()
 	if isClosed then
 		love.graphics.setColor(0, 100, 200)
@@ -120,6 +139,7 @@ function testFinished()
 end
 
 function love.draw()
+	autoDisposeButton()
 	writeFileButton()
 	readFileButton()
 	stepButton()
@@ -189,5 +209,29 @@ function dragFormula()
 	elseif indexMoving ~= nil then
 		formulaX[indexMoving] = love.mouse.getX()
 		formulaY[indexMoving] = love.mouse.getY()
+	end
+end
+
+function autoDisposeTree()
+	local i = 1
+	local j
+	local notOver = true
+	while notOver and i < #formulaIndex do
+		j = i + 1
+		while notOver and j <= #formulaIndex do
+			if formulaX[i] == formulaX[j] and formulaY[i] == formulaY[j] then
+				if formulaX[formulaIndex[i]] < formulaX[formulaIndex[j]] then
+					formulaX[i] = formulaX[i] - xStep / 2
+					formulaX[j] = formulaX[j] + xStep / 2
+				else
+					formulaX[i] = formulaX[i] + xStep / 2
+					formulaX[j] = formulaX[j] - xStep / 2
+				end
+				notOver = false
+				autoDisposeTree()
+			end
+			j = j + 1
+		end
+		i = i + 1
 	end
 end
