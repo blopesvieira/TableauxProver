@@ -9,6 +9,9 @@ require 'TableauxProver'
 
 selectLanguage("en")
 
+indexDragging = nil
+isDragging = false
+
 function stepButton()
 	local xPos = windowWidth - 60
 	local yPos = 5
@@ -173,11 +176,14 @@ function expandSelectedNode()
 end
 
 function dragFormula()
-	if love.mouse.isDown("l") then
-		pos = getFormulaIndex()
-		if pos ~= nil then
-			formulaX[pos] = love.mouse.getX()
-			formulaY[pos] = love.mouse.getY()
-		end
+	if love.mouse.isDown("l") and not isDragging then
+		indexMoving = getFormulaIndex()
+		isDragging = true
+	elseif not love.mouse.isDown("l") then
+		isDragging = false
+		indexMoving = nil
+	elseif indexMoving ~= nil then
+		formulaX[indexMoving] = love.mouse.getX()
+		formulaY[indexMoving] = love.mouse.getY()
 	end
 end
