@@ -49,26 +49,3 @@ function printNode(pos)
 		return value .. " " .. "$" .. formulaOperator[pos]  .. " " .. formulaLeft[pos] .. "(" .. formulaRight[pos] .. ")$"
 	end
 end
-
-function printQTreeChain(pos, where)
-	local chainString
-	local chainString1
-	local chainString2
-	if pos <= #formulaIndex then
-		if formulaIndex[pos] == where then
-			if formulaOperator[formulaOrigin[pos]] == opAnd then
-				chainString1 = printQTreeChain(pos + 2, pos)
-				chainString2 = printQTreeChain(pos + 2, pos + 1)
-				chainString = "[.{" .. printNode(pos) .. "} " .. chainString1 .. "] [.{" .. printNode(pos + 1) .. "} " .. chainString2 .. "]"
-				return chainString
-			else
-				chainString1 = printQTreeChain(pos + 1, pos)
-				chainString = "[.{" .. printNode(pos) .. "} " .. chainString1 .. "]"
-				return chainString
-			end
-		else
-			return printQTreeChain(pos + 1, where)
-		end
-	end
-	return ""
-end
