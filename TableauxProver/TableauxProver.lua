@@ -64,7 +64,7 @@ function tableauStepUndo()
 			end
 			formulaConstantsUsed[tableauStepOrigin] = formulaConstantsUsed[tableauStepOrigin] - 1
 			while formulaOrigin[#formulaOrigin] == tableauStepOrigin and formulaLeaf[#formulaLeaf] do
-				tableauStepLeafs[tableauStepLeafs+1] = formulaIndex[#formulaIndex]
+				tableauStepLeafs[#tableauStepLeafs+1] = formulaIndex[#formulaIndex]
 				formulaX[#formulaX] = nil
 				formulaY[#formulaY] = nil
 				formulaOperator[#formulaOperator] = nil
@@ -78,7 +78,7 @@ function tableauStepUndo()
 			end
 			for tableauStepI = 1, #tableauStepLeafs do
 				if tableauStepLeafs[tableauStepI] <= #formulaLeaf then
-					formulaLeaf[tableuStepLeafs[tableauStepI]] = true
+					formulaLeaf[tableauStepLeafs[tableauStepI]] = true
 				end
 			end	
 		else
@@ -209,6 +209,7 @@ function expandAnd(pos)
 	local i
 	local j
 	local k
+	local op
 	for i = pos, #formulaIndex do
 		if formulaLeaf[i] and isInChain(pos, i) then
 			index[#index + 1] = i
@@ -220,11 +221,19 @@ function expandAnd(pos)
 	left = formulaLeft[pos]
 	right = formulaRight[pos]
 	formulaExpanded[pos] = true
-	i = formulaFindSep(left, formulaSep)
-	if i == nil then
-		i = string.len(left)
-	end
 	j = getOperatorPos(left)
+	op = string.sub(left, 1, j)
+	if op == opEx or op == opAll then
+		i = j + 1
+		while string.sub(formulae[i], i, i) ~= formulaOpenPar do
+			i = i + 1
+		end
+	else
+		i = formulaFindSep(left, formulaSep)
+		if i == nil then
+			i = string.len(left)
+		end
+	end
 	if j == nil then
 		for k = 1, #index do
 			insertFormula("", "", left, index[k], pos, false, true, formulaX[index[k]] - xStep, formulaY[index[k]] + yStep)
@@ -234,11 +243,19 @@ function expandAnd(pos)
 			insertFormula(string.sub(left,1,j), string.sub(left,j+2,i-1), string.sub(left,i+1,string.len(left)-1), index[k], pos, false, false, formulaX[index[k]] - xStep, formulaY[index[k]] + yStep)
 		end
 	end
-	i = formulaFindSep(left, formulaSep)
-	if i == nil then
-		i = string.len(right)
-	end
 	j = getOperatorPos(right)
+	op = string.sub(right, 1, j)
+	if op == opEx or op == opAll then
+		i = j + 1
+		while string.sub(formulae[i], i, i) ~= formulaOpenPar do
+			i = i + 1
+		end
+	else
+		i = formulaFindSep(right, formulaSep)
+		if i == nil then
+			i = string.len(right)
+		end
+	end
 	if j == nil then
 		for k = 1, #index do
 			insertFormula("", "", right, index[k], pos, false, true, formulaX[index[k]] + xStep, formulaY[index[k]] + yStep)
@@ -257,6 +274,7 @@ function expandOr(pos)
 	local i
 	local j
 	local k
+	local op
 	for i = pos, #formulaIndex do
 		if formulaLeaf[i] and isInChain(pos, i) then
 			index[#index + 1] = i
@@ -268,11 +286,19 @@ function expandOr(pos)
 	left = formulaLeft[pos]
 	right = formulaRight[pos]
 	formulaExpanded[pos] = true
-	i = formulaFindSep(left, formulaSep)
-	if i == nil then
-		i = string.len(left)
-	end
 	j = getOperatorPos(left)
+	op = string.sub(left, 1, j)
+	if op == opEx or op == opAll then
+		i = j + 1
+		while string.sub(formulae[i], i, i) ~= formulaOpenPar do
+			i = i + 1
+		end
+	else
+		i = formulaFindSep(left, formulaSep)
+		if i == nil then
+			i = string.len(left)
+		end
+	end
 	if j == nil then
 		for k = 1, #index do
 			insertFormula("", "", left, index[k], pos, false, true, formulaX[index[k]], formulaY[index[k]] + yStep)
@@ -282,11 +308,19 @@ function expandOr(pos)
 			insertFormula(string.sub(left,1,j), string.sub(left,j+2,i-1), string.sub(left,i+1,string.len(left)-1), index[k], pos, false, false, formulaX[index[k]], formulaY[index[k]] + yStep)
 		end
 	end
-	i = formulaFindSep(left, formulaSep)
-	if i == nil then
-		i = string.len(right)
-	end
 	j = getOperatorPos(right)
+	op = string.sub(right, 1, j)
+	if op == opEx or op == opAll then
+		i = j + 1
+		while string.sub(formulae[i], i, i) ~= formulaOpenPar do
+			i = i + 1
+		end
+	else
+		i = formulaFindSep(right, formulaSep)
+		if i == nil then
+			i = string.len(right)
+		end
+	end
 	if j == nil then
 		for k = 1, #index do
 			insertFormula("", "", right, index[k] + #index, pos, false, true, formulaX[index[k]], formulaY[index[k]] + yStep + yStep)
@@ -305,6 +339,7 @@ function expandImp(pos)
 	local i
 	local j
 	local k
+	local op
 	for i = pos, #formulaIndex do
 		if formulaLeaf[i] and isInChain(pos, i) then
 			index[#index + 1] = i
@@ -316,11 +351,19 @@ function expandImp(pos)
 	left = formulaLeft[pos]
 	right = formulaRight[pos]
 	formulaExpanded[pos] = true
-	i = formulaFindSep(left, formulaSep)
-	if i == nil then
-		i = string.len(left)
-	end
 	j = getOperatorPos(left)
+	op = string.sub(left, 1, j)
+	if op == opEx or op == opAll then
+		i = j + 1
+		while string.sub(formulae[i], i, i) ~= formulaOpenPar do
+			i = i + 1
+		end
+	else
+		i = formulaFindSep(left, formulaSep)
+		if i == nil then
+			i = string.len(left)
+		end
+	end
 	if j == nil then
 		for k = 1, #index do
 			insertFormula("", "", left, index[k], pos, true, true, formulaX[index[k]], formulaY[index[k]] + yStep)
@@ -330,11 +373,19 @@ function expandImp(pos)
 			insertFormula(string.sub(left,1,j), string.sub(left,j+2,i-1), string.sub(left,i+1,string.len(left)-1), index[k], pos, true, false, formulaX[index[k]], formulaY[index[k]] + yStep)
 		end
 	end
-	i = formulaFindSep(left, formulaSep)
-	if i == nil then
-		i = string.len(right)
-	end
 	j = getOperatorPos(right)
+	op = string.sub(right, 1, j)
+	if op == opEx or op == opAll then
+		i = j + 1
+		while string.sub(formulae[i], i, i) ~= formulaOpenPar do
+			i = i + 1
+		end
+	else
+		i = formulaFindSep(right, formulaSep)
+		if i == nil then
+			i = string.len(right)
+		end
+	end
 	if j == nil then
 		for k = 1, #index do
 			insertFormula("", "", right, index[k] + #index, pos, false, true, formulaX[index[k]], formulaY[index[k]] + yStep + yStep)
@@ -353,6 +404,7 @@ function expandNot(pos)
 	local i
 	local j
 	local k
+	local op
 	for i = pos, #formulaIndex do
 		if formulaLeaf[i] and isInChain(pos, i) then
 			index[#index + 1] = i
@@ -363,11 +415,19 @@ function expandNot(pos)
 	end
 	right = formulaRight[pos]
 	formulaExpanded[pos] = true
-	i = formulaFindSep(left, formulaSep)
-	if i == nil then
-		i = string.len(right)
-	end
 	j = getOperatorPos(right)
+	op = string.sub(right, 1, j)
+	if op == opEx or op == opAll then
+		i = j + 1
+		while string.sub(formulae[i], i, i) ~= formulaOpenPar do
+			i = i + 1
+		end
+	else
+		i = formulaFindSep(right, formulaSep)
+		if i == nil then
+			i = string.len(right)
+		end
+	end
 	if j == nil then
 		for k = 1, #index do
 			insertFormula("", "", right, index[k], pos, not formulaValue[pos], true, formulaX[index[k]], formulaY[index[k]] + yStep)
@@ -464,6 +524,7 @@ function expandEx(pos)
 	local i
 	local j
 	local k
+	local op
 	for i = pos, #formulaIndex do
 		if formulaLeaf[i] and isInChain(pos, i) then
 			index[#index + 1] = i
@@ -488,6 +549,18 @@ function expandEx(pos)
 	end
 	right = string.gsub(right, " " .. left, " " .. const)
 	j = getOperatorPos(right)
+	op = string.sub(right, 1, j)
+	if op == opEx or op == opAll then
+		i = j + 1
+		while string.sub(formulae[i], i, i) ~= formulaOpenPar do
+			i = i + 1
+		end
+	else
+		i = formulaFindSep(right, formulaSep)
+		if i == nil then
+			i = string.len(right)
+		end
+	end
 	if j == nil then
 		for k = 1, #index do
 			insertFormula("", "", right, index[k], pos, formulaValue[pos], true, formulaX[index[k]], formulaY[index[k]] + yStep)
@@ -499,13 +572,14 @@ function expandEx(pos)
 	end
 end
 
-function expandAll()
+function expandAll(pos)
 	local index = {}
 	local right
 	local left
 	local i
 	local j
 	local k
+	local op
 	for i = pos, #formulaIndex do
 		if formulaLeaf[i] and isInChain(pos, i) then
 			index[#index + 1] = i
@@ -530,6 +604,18 @@ function expandAll()
 	end
 	right = string.gsub(right, " " .. left, " " .. const)
 	j = getOperatorPos(right)
+	op = string.sub(right, 1, j)
+	if op == opEx or op == opAll then
+		i = j + 1
+		while string.sub(formulae[i], i, i) ~= formulaOpenPar do
+			i = i + 1
+		end
+	else
+		i = formulaFindSep(right, formulaSep)
+		if i == nil then
+			i = string.len(right)
+		end
+	end
 	if j == nil then
 		for k = 1, #index do
 			insertFormula("", "", right, index[k], pos, formulaValue[pos], true, formulaX[index[k]], formulaY[index[k]] + yStep)
@@ -543,7 +629,11 @@ end
 
 function readFormulae(inputFileName)
 	local formulae = {}
-	local readFormulaI = 4
+	local i
+	local j
+	local k 
+	local op
+	local value = true
 	io.input(inputFileName)
 	formulaR = io.read()
 	while formulaR ~= nil do
@@ -551,35 +641,26 @@ function readFormulae(inputFileName)
 		formulaR = io.read()
 	end
 	cleanFormulae()
-	insertFormula(formulae[1], formulae[2], formulae[3], 0, 0, false, false, xBegin, yBegin)
-	while readFormulaI < #formulae do
-		formulaLeaf[#formulaLeaf] = false
-		insertFormula(formulae[readFormulaI], formulae[readFormulaI+1], formulae[readFormulaI+2], #formulaIndex, 0, true, false, formulaX[#formulaX], formulaY[#formulaY] + yStep)
-		readFormulaI = readFormulaI + 3
-	end 
-end
-
-function printChain(pos, where)
-	local chainString
-	local chainString1
-	local chainString2
-	if pos <= #formulaIndex then
-		if formulaIndex[pos] == where then
-			if formulaOperator[formulaOrigin[pos]] == opAnd then
-				chainString1 = printChain(pos + 2, pos)
-				chainString2 = printChain(pos + 2, pos + 1)
-				chainString = "[.{" .. printNode(pos) .. "} " .. chainString1 .. "] [.{" .. printNode(pos + 1) .. "} " .. chainString2 .. "]"
-				return chainString
-			else
-				chainString1 = printChain(pos + 1, pos)
-				chainString = "[.{" .. printNode(pos) .. "} " .. chainString1 .. "]"
-				return chainString
+	for i = 1, #formulae do
+		if i == #formulae then
+			value = false
+		end
+		j = getOperatorPos(formulae[i])
+		op = string.sub(formulae[i], 1, j)
+		if op == opEx or op == opAll then
+			k = j + 1
+			while string.sub(formulae[i], k, k) ~= formulaOpenPar do
+				k = k + 1
 			end
 		else
-			return printChain(pos + 1, where)
+			k = formulaFindSep(formulae[i], formulaSep)
+			if k == nil then
+				k = string.len(formulae[i])
+			end
 		end
+		insertFormula(op, string.sub(formulae[i],j+2,k-1), string.sub(formulae[i],k+1,string.len(formulae[i])-1), i - 1, 0, value, false, xBegin, yBegin * i)
 	end
-	return ""
+	
 end
 
 function qTreeOutput(outputFileName)
@@ -590,7 +671,7 @@ function qTreeOutput(outputFileName)
 	outputFile:write("\\usepackage{qtree}\n\n")
 	outputFile:write("\\begin{document}\n\n")
 	outputFile:write("\\Tree\n ")
-	outputFile:write(printChain(1, 0))
+	outputFile:write(printQTreeChain(1, 0))
 	outputFile:write("\n\n\\end{document}")
 	outputFile:close()
 end
