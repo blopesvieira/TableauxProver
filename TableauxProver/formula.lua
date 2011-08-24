@@ -16,7 +16,6 @@ formulaConstants = {}
 formulaConstantsUsed = {}
 formulaExpanded = {}
 formulaLeaf = {}
-finished = false
 
 function cleanFormulae()
 	formulaX = {}
@@ -31,7 +30,6 @@ function cleanFormulae()
 	formulaConstantsUsed = {}
 	formulaExpanded = {}
 	formulaLeaf = {}
-	finished = false
 end
 
 function printNode(pos)
@@ -71,4 +69,33 @@ function printQTreeChain(pos, where)
 		end
 	end
 	return ""
+end
+
+function insertFormula(operator, left, right, index, origin, value, expanded, x, y)
+	formulaOperator[#formulaOperator + 1] = operator
+	formulaIndex[#formulaIndex + 1] = index
+	formulaOrigin[#formulaOrigin + 1] = origin
+	formulaRight[#formulaRight + 1] = right
+	if operator == opNot then
+		formulaLeft[#formulaLeft + 1] = ""
+	else
+		formulaLeft[#formulaLeft + 1] = left
+	end
+	formulaValue[#formulaValue + 1] = value
+	if x > windowWidth - xLim then
+		x = windowWidth - xLim
+	end
+	if y > windowHeight - yLim then
+		y = windowHeight - yLim
+	end
+	formulaX[#formulaX + 1] = x
+	formulaY[#formulaY + 1] = y
+	formulaExpanded[#formulaExpanded + 1] = expanded
+	if #formulaLeaf > 0 then
+		formulaLeaf[index] = false
+	else
+		findConstants(1)
+	end
+	formulaLeaf[#formulaLeaf + 1] = true
+	formulaConstantsUsed[#formulaConstantsUsed + 1] = 0
 end

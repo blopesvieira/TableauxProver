@@ -9,31 +9,6 @@ require 'formula'
 require 'language'
 
 
-function insertFormula(operator, left, right, index, origin, value, expanded, x, y)
-	formulaOperator[#formulaOperator + 1] = operator
-	formulaIndex[#formulaIndex + 1] = index
-	formulaOrigin[#formulaOrigin + 1] = origin
-	formulaRight[#formulaRight + 1] = right
-	formulaLeft[#formulaLeft + 1] = left
-	formulaValue[#formulaValue + 1] = value
-	if x > windowWidth - xLim then
-		x = windowWidth - xLim
-	end
-	if y > windowHeight - yLim then
-		y = windowHeight - yLim
-	end
-	formulaX[#formulaX + 1] = x
-	formulaY[#formulaY + 1] = y
-	formulaExpanded[#formulaExpanded + 1] = expanded
-	if #formulaLeaf > 0 then
-		formulaLeaf[index] = false
-	else
-		findConstants(1)
-	end
-	formulaLeaf[#formulaLeaf + 1] = true
-	formulaConstantsUsed[#formulaConstantsUsed + 1] = 0
-end
-
 function tableauStep()
 	local stepNotFound = true
 	local tableauStepI = 1
@@ -100,47 +75,25 @@ function tableauStepUndo()
 end
 
 function tableauClosed()
-	local noOpenBranch = true
-	local tableauClosedI = #formulaIndex
-	while noOpenBranch and tableauClosedI > 0 do
-		if formulaLeaf[tableauClosedI] then
-			tableuClosedJ = tableauClosedI
-			noContradiction = true
-			while noContradiction and tableauClosedJ > 0 do
-				tableauClosedK = formulaIndex[tableauClosedJ]
-				while noConstradiction and tableauClosedK > 0 do
-					if formulaOperator[tableauClosedJ] == formulaOperator[tableauClosedK] and formulaRight[tableauClosedJ] == formulaRight[tableauClosedK] and formulaLeft[tableauClosedJ] == formulaLeft[tableauClosedK] and formulaValue[tableauClosedJ] ~= formulaValue[tableauClosedK] then
-						noConstradiction = false
-					else
-						tableauClosedK = tableauClosedK - 1
-					end
-				end
+	local i = 1
+	local j
+	while i < #formulaIndex do
+		j = i + 1
+		while j <= #formulaIndex do
+			if formulaValue[i] ~= formulaValue[j] and formulaRight[i] == formulaRight[j] and formulaLeft[i] == formulaLeft[j] and isInChain(i, j) then
+				return true
 			end
-			if not noContradiction then
-				noOpenBranch = false
-			end
+			j = j + 1
 		end
-		tableauClosedI = tableauClosedI - 1
+		i = i + 1
 	end
-	return noOpenBranch
-end
-
-function tableauFinished()
-	finished = true
-	local tableauFinishedI = 1
-	while finished and tableauFinishedI <= #formulaIndex do
-		if not formulaExpanded[tableauFinishedI] then
-			finished = false
-		end
-		tableauFinishedI = tableauFinishedI + 1
-	end
-	return finished
+	return false
 end
 
 function tableauSolve()
+	local solveLoop = 0
 	if #formulaIndex >= 1 then
-		solveLoop = 0
-		while not tableauFinished() and tableauStep() and solveLoop < variableExpansionLimit do
+		while not tableauClosed() and tableauStep() and solveLoop < variableExpansionLimit do
 			solveLoop = solveLoop + 1
 		end
 	end
@@ -164,12 +117,12 @@ function getOperatorPos(formula)
 end
 
 function isInChain(origin, pos)
+	local i = pos
+	local j = pos
+	local inChain = false
 	if origin == pos or formulaIndex[pos] == origin then
 		return true
 	end
-	local i = pos
-	local j = pos
-	inChain = false
 	while  j > origin do
 		j = j - 1
 		if formulaIndex[i] == j then
@@ -228,6 +181,8 @@ function expandAnd(pos)
 		while string.sub(formulae[i], i, i) ~= formulaOpenPar do
 			i = i + 1
 		end
+	elseif op == opNot then
+		i = j + 1
 	else
 		i = formulaFindSep(left, formulaSep)
 		if i == nil then
@@ -250,6 +205,8 @@ function expandAnd(pos)
 		while string.sub(formulae[i], i, i) ~= formulaOpenPar do
 			i = i + 1
 		end
+	elseif op == opNot then
+		i = j + 1
 	else
 		i = formulaFindSep(right, formulaSep)
 		if i == nil then
@@ -293,6 +250,8 @@ function expandOr(pos)
 		while string.sub(formulae[i], i, i) ~= formulaOpenPar do
 			i = i + 1
 		end
+	elseif op == opNot then
+		i = j + 1
 	else
 		i = formulaFindSep(left, formulaSep)
 		if i == nil then
@@ -315,6 +274,8 @@ function expandOr(pos)
 		while string.sub(formulae[i], i, i) ~= formulaOpenPar do
 			i = i + 1
 		end
+	elseif op == opNot then
+		i = j + 1
 	else
 		i = formulaFindSep(right, formulaSep)
 		if i == nil then
@@ -358,6 +319,8 @@ function expandImp(pos)
 		while string.sub(formulae[i], i, i) ~= formulaOpenPar do
 			i = i + 1
 		end
+	elseif op == opNot then
+		i = j + 1
 	else
 		i = formulaFindSep(left, formulaSep)
 		if i == nil then
@@ -380,6 +343,8 @@ function expandImp(pos)
 		while string.sub(formulae[i], i, i) ~= formulaOpenPar do
 			i = i + 1
 		end
+	elseif op == opNot then
+		i = j + 1
 	else
 		i = formulaFindSep(right, formulaSep)
 		if i == nil then
@@ -422,6 +387,8 @@ function expandNot(pos)
 		while string.sub(formulae[i], i, i) ~= formulaOpenPar do
 			i = i + 1
 		end
+	elseif op == opNot then
+		i = j + 1
 	else
 		i = formulaFindSep(right, formulaSep)
 		if i == nil then
@@ -555,6 +522,8 @@ function expandEx(pos)
 		while string.sub(formulae[i], i, i) ~= formulaOpenPar do
 			i = i + 1
 		end
+	elseif op == opNot then
+		i = j + 1
 	else
 		i = formulaFindSep(right, formulaSep)
 		if i == nil then
@@ -610,6 +579,8 @@ function expandAll(pos)
 		while string.sub(formulae[i], i, i) ~= formulaOpenPar do
 			i = i + 1
 		end
+	elseif op == opNot then
+		i = j + 1
 	else
 		i = formulaFindSep(right, formulaSep)
 		if i == nil then
@@ -652,6 +623,8 @@ function readFormulae(inputFileName)
 			while string.sub(formulae[i], k, k) ~= formulaOpenPar do
 				k = k + 1
 			end
+		elseif op == opNot then
+			k = j + 1
 		else
 			k = formulaFindSep(formulae[i], formulaSep)
 			if k == nil then

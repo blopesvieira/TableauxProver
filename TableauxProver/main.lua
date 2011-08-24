@@ -11,6 +11,7 @@ selectLanguage("en")
 
 indexDragging = nil
 isDragging = false
+isClosed = false
 
 function stepButton()
 	local xPos = windowWidth - 60
@@ -108,11 +109,13 @@ function writeFileButton()
 end
 
 function testFinished()
-	if not finished and tableauFinished() then
-		finished = true
-	else
+	if isClosed then
 		love.graphics.setColor(0, 100, 200)
-		love.graphics.print(tableauClosedLabel, WindoWidth - 100, windowHeight - 30)
+		love.graphics.print(tableauClosedLabel, windowWidth - 130, windowHeight - 30)
+	else
+		if tableauClosed() then
+			isClosed = true
+		end
 	end
 end
 
@@ -126,6 +129,7 @@ function love.draw()
 	dragFormula()
 	linkFormulae()
 	printFormulae()
+	testFinished()
 end
 
 function linkFormulae()
