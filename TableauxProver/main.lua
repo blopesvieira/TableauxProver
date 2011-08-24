@@ -77,7 +77,7 @@ function readFileButton()
 	local yLen = 30
 	if love.mouse.getX() >= xPos and love.mouse.getX() <= xPos + xLen and love.mouse.getY() >= yPos and love.mouse.getY() <= yPos + yLen then
 		if love.mouse.isDown("l") then
-			readFormulae("/Users/blopesvieira/GIT/TableauxProver/TableauxProver/" .. defaultInputFile)
+			readFormulae(os.getenv(currentPath) .. "/" .. defaultInputFile)
 			love.timer.sleep(150)
 		end
 		love.graphics.setColor(100, 100, 200)
@@ -96,7 +96,7 @@ function writeFileButton()
 	local yLen = 30
 	if love.mouse.getX() >= xPos and love.mouse.getX() <= xPos + xLen and love.mouse.getY() >= yPos and love.mouse.getY() <= yPos + yLen then
 		if love.mouse.isDown("l") then
-			qTreeOutput("/Users/blopesvieira/GIT/TableauxProver/TableauxProver/" .. defaultOutputFile)
+			qTreeOutput(os.getenv(currentPath) .. "/" .. defaultOutputFile)
 			love.timer.sleep(150)
 		end
 		love.graphics.setColor(100, 100, 200)
