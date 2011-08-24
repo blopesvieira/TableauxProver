@@ -33,7 +33,7 @@ variableExpansionLimit = 100
 -- File definitions
 defaultInputFile = "formulae.txt"
 defaultOutputFile = "formulae.tex"
-defaultPath = "TableauxProverRootDirectory"
+currentPath = "TableauxProverRootDirectory"
 
 -- Constants definitions
 newConst = "x"
