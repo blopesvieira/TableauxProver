@@ -2,6 +2,7 @@
 -- Copyright: Laborat'orio de Tecnologia em M'etodos Formais (TecMF)
 --            Pontif'icia Universidade Cat'olica do Rio de Janeiro (PUC-Rio)
 -- Author:    Bruno Lopes (bvieira@inf.puc-rio.br)
+--            Edward Hermann (hermann@inf.puc-rio.br)
 -- Tableaux Prover is licensed under a Creative Commons Attribution 3.0 Unported License
 
 
@@ -77,6 +78,7 @@ function readFileButton()
 	local yLen = 30
 	if love.mouse.getX() >= xPos and love.mouse.getX() <= xPos + xLen and love.mouse.getY() >= yPos and love.mouse.getY() <= yPos + yLen then
 		if love.mouse.isDown("l") then
+			isClosed = false
 			readFormulae(os.getenv(currentPath) .. "/" .. defaultInputFile)
 			love.timer.sleep(150)
 		end
@@ -168,6 +170,9 @@ function printFormulae()
 			love.graphics.setColor(200, 0, 0) -- Red circle
 		else
 			love.graphics.setColor(0, 255, 0) -- Green circle
+		end
+		if formulaContradiction[1] == i or formulaContradiction[2] == i then
+			love.graphics.setColor(100, 100, 200) -- Cyan circle
 		end
 		love.graphics.circle("fill", formulaX[i], formulaY[i], 5, 25)
 		love.graphics.setColor(255, 255, 255, 90) -- White 90%

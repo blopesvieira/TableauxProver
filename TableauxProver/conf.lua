@@ -1,3 +1,11 @@
+-- TableauxProver
+-- Copyright: Laborat'orio de Tecnologia em M'etodos Formais (TecMF)
+--            Pontif'icia Universidade Cat'olica do Rio de Janeiro (PUC-Rio)
+-- Author:    Bruno Lopes (bvieira@inf.puc-rio.br
+--            Edward Hermann (hermann@inf.puc-rio.br))
+-- Tableaux Prover is licensed under a Creative Commons Attribution 3.0 Unported License
+
+
 function love.conf(t)
     t.title = "TableauxProver"  -- The title of the window the game is in (string)
     t.author = "TecMF"          -- The author of the game (string)

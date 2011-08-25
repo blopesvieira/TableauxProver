@@ -2,7 +2,9 @@
 -- Copyright: Laborat'orio de Tecnologia em M'etodos Formais (TecMF)
 --            Pontif'icia Universidade Cat'olica do Rio de Janeiro (PUC-Rio)
 -- Author:    Bruno Lopes (bvieira@inf.puc-rio.br)
+--            Edward Hermann (hermann@inf.puc-rio.br)
 -- Tableaux Prover is licensed under a Creative Commons Attribution 3.0 Unported License
+
 
 formulaX = {}
 formulaY = {}
@@ -16,6 +18,7 @@ formulaConstants = {}
 formulaConstantsUsed = {}
 formulaExpanded = {}
 formulaLeaf = {}
+formulaContradiction = {}
 
 function cleanFormulae()
 	formulaX = {}
@@ -30,6 +33,7 @@ function cleanFormulae()
 	formulaConstantsUsed = {}
 	formulaExpanded = {}
 	formulaLeaf = {}
+	formulaContradiction = {}
 end
 
 function printNode(pos)
@@ -75,6 +79,9 @@ function printNodeLaTeX(pos)
 		value = "\\textbf{" .. trueLabel .. "}"
 	else
 		value = "\\textbf{" .. falseLabel .. "}"
+	end
+	if formulaContradiction[1] == pos or formulaContradiction[2] == pos then
+		value = "$\\Rightarrow$" .. value
 	end
 	if formulaOperator[pos] == opAnd or formulaOperator[pos] == opOr or formulaOperator[pos] == opImp then
 		return value .. " " .. "$" .. formulaOperator[pos] .. "(" .. formulaLeft[pos] .. "," .. formulaRight[pos] .. ")$"

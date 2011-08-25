@@ -2,7 +2,9 @@
 -- Copyright: Laborat'orio de Tecnologia em M'etodos Formais (TecMF)
 --            Pontif'icia Universidade Cat'olica do Rio de Janeiro (PUC-Rio)
 -- Author:    Bruno Lopes (bvieira@inf.puc-rio.br)
+--            Edward Hermann (hermann@inf.puc-rio.br)
 -- Tableaux Prover is licensed under a Creative Commons Attribution 3.0 Unported License
+
 
 require 'constants'
 require 'formula'
@@ -32,7 +34,10 @@ function tableauStepUndo()
 	local tableauStepLeafs = {}
 	local tableauStepI
 	if #formulaIndex > 1 then
-	formulaExpanded[tableauStepOrigin] = false
+		if formulaContradiction[1] == #formulaIndex or formulaContradiction[2] == #formulaIndex then
+			formulaContradiction = {}
+		end
+		formulaExpanded[tableauStepOrigin] = false
 		if formulaOperator[tableauStepOrigin] == opEx or formulaOperator[tableauStepOrigin] == opAll then
 			if (formulaOperator[tableauStepOrigin] == opEx and formulaValue[tableauStepOrigin]) or (formulaOperator[tableauStepOrigin] == opAll and not formulaValue[tableauStepOrigin]) or ((formulaConstantsUsed[tableauStepOrigin] == #formulaConstants)) then
 				formulaConstants[#formulaConstants] = nil
@@ -81,6 +86,8 @@ function tableauClosed()
 		j = i + 1
 		while j <= #formulaIndex do
 			if formulaValue[i] ~= formulaValue[j] and formulaRight[i] == formulaRight[j] and formulaLeft[i] == formulaLeft[j]  and formulaOperator[i] == formulaOperator[j] and isInChain(i, j) then
+				formulaContradiction[1] = i
+				formulaContradiction[2] = j
 				return true
 			end
 			j = j + 1
