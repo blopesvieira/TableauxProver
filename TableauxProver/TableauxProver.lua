@@ -121,8 +121,6 @@ function tableauClosed()
 		end
 		i = i + 1
 	end
-	love.graphics.print("Chain = " .. countChains(), 100, 100)
-	love.graphics.print("ChainCon = " .. chainContradiction, 100, 150)
 	for i = 1, #formulaContradiction do
 		love.graphics.print(formulaContradiction[i], 0, 1 + 30 * i)
 	end
