@@ -41,7 +41,7 @@ function printNode(pos)
 	local operator = formulaOperator[pos]
 	local left = formulaLeft[pos]
 	local right = formulaRight[pos]
-	if inFormulaContradiction(pos) == pos then
+	if formulaValue[pos] then
 		value = "[" .. trueLabel .. "]"
 	else
 		value = "[" .. falseLabel .. "]"

@@ -82,6 +82,8 @@ function tableauClosed()
 	local k
 	local chainContradiction = #formulaContradiction / 2
 	local inChain
+	local inChainI
+	local inChainJ
 	local contradiction
 	while i < #formulaIndex do
 		j = i + 1
@@ -103,12 +105,18 @@ function tableauClosed()
 						inChain = false
 						while k < #formulaContradiction and inChain do
 							if formulaContradiction[k] > i then
-								inChain = isInChain(i, formulaContradiction[k])
+								inChainI = isInChain(i, formulaContradiction[k])
 							else
-								inChain = isInChain(formulaContradiction[k], i)
+								inChainI = isInChain(formulaContradiction[k], i)
+							end
+							if formulaContradiction[k] > j then
+								inChainJ = isInChain(j, formulaContradiction[k])
+							else
+								inChainJ = isInChain(formulaContradiction[k], j)
 							end
 							k = k + 1
 						end
+						inChain = not (inChainI and inChainJ)
 						if not inChain then
 							chainContradiction = chainContradiction + 1
 						end
