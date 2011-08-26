@@ -34,9 +34,6 @@ function tableauStepUndo()
 	local tableauStepLeafs = {}
 	local tableauStepI
 	if #formulaIndex > 1 then
-		if formulaContradiction[1] == #formulaIndex or formulaContradiction[2] == #formulaIndex then
-			formulaContradiction = {}
-		end
 		formulaExpanded[tableauStepOrigin] = false
 		if formulaOperator[tableauStepOrigin] == opEx or formulaOperator[tableauStepOrigin] == opAll then
 			if (formulaOperator[tableauStepOrigin] == opEx and formulaValue[tableauStepOrigin]) or (formulaOperator[tableauStepOrigin] == opAll and not formulaValue[tableauStepOrigin]) or ((formulaConstantsUsed[tableauStepOrigin] == #formulaConstants)) then
@@ -82,17 +79,55 @@ end
 function tableauClosed()
 	local i = 1
 	local j
+	local k
+	local chainContradiction = #formulaContradiction / 2
+	local inChain
+	local contradiction
 	while i < #formulaIndex do
 		j = i + 1
 		while j <= #formulaIndex do
 			if formulaValue[i] ~= formulaValue[j] and formulaRight[i] == formulaRight[j] and formulaLeft[i] == formulaLeft[j]  and formulaOperator[i] == formulaOperator[j] and isInChain(i, j) then
-				formulaContradiction[1] = i
-				formulaContradiction[2] = j
-				return true
+				k = 1
+				contradiction = true
+				while k <= #formulaIndex do
+					if formulaContradiction[k] == i or formulaContradiction[k] == j then
+						contradiction = false
+					end
+					k = k + 1
+				end
+				if contradiction then
+					if #formulaContradiction == 0 then
+						chainContradiction = 1
+					else
+						k = 1
+						inChain = false
+						while k < #formulaContradiction and inChain do
+							if formulaContradiction[k] > i then
+								inChain = isInChain(i, formulaContradiction[k])
+							else
+								inChain = isInChain(formulaContradiction[k], i)
+							end
+							k = k + 1
+						end
+						if not inChain then
+							chainContradiction = chainContradiction + 1
+						end
+					end
+					formulaContradiction[#formulaContradiction + 1] = i
+					formulaContradiction[#formulaContradiction + 1] = j
+				end
 			end
 			j = j + 1
 		end
 		i = i + 1
+	end
+	love.graphics.print("Chain = " .. countChains(), 100, 100)
+	love.graphics.print("ChainCon = " .. chainContradiction, 100, 150)
+	for i = 1, #formulaContradiction do
+		love.graphics.print(formulaContradiction[i], 0, 1 + 30 * i)
+	end
+	if chainContradiction == countChains() then
+		return true
 	end
 	return false
 end

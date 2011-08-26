@@ -41,7 +41,7 @@ function printNode(pos)
 	local operator = formulaOperator[pos]
 	local left = formulaLeft[pos]
 	local right = formulaRight[pos]
-	if formulaValue[pos] then
+	if inFormulaContradiction(pos) == pos then
 		value = "[" .. trueLabel .. "]"
 	else
 		value = "[" .. falseLabel .. "]"
@@ -73,6 +73,17 @@ function printNode(pos)
 	end
 end
 
+function inFormulaContradiction(pos)
+	local i = 1
+	while i <= #formulaContradiction do
+		if formulaContradiction[i] == pos then
+			return true
+		end
+		i = i + 1
+	end
+	return false
+end
+
 function printNodeLaTeX(pos)
 	local value
 	if formulaValue[pos] then
@@ -80,7 +91,7 @@ function printNodeLaTeX(pos)
 	else
 		value = "\\textbf{" .. falseLabel .. "}"
 	end
-	if formulaContradiction[1] == pos or formulaContradiction[2] == pos then
+	if inFormulaContradiction(pos) == pos then
 		value = "$\\Rightarrow$" .. value
 	end
 	if formulaOperator[pos] == opAnd or formulaOperator[pos] == opOr or formulaOperator[pos] == opImp then
@@ -142,4 +153,15 @@ function insertFormula(operator, left, right, index, origin, value, expanded, x,
 	end
 	formulaLeaf[#formulaLeaf + 1] = true
 	formulaConstantsUsed[#formulaConstantsUsed + 1] = 0
+end
+
+function countChains()
+	local i
+	local chains = 1
+	for i = 1, #formulaIndex do
+		if formulaOperator[i] == opAnd and formulaExpanded[i] then
+			chains = chains + 1
+		end
+	end
+	return chains
 end

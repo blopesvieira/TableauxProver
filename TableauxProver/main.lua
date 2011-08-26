@@ -171,7 +171,7 @@ function printFormulae()
 		else
 			love.graphics.setColor(0, 255, 0) -- Green circle
 		end
-		if formulaContradiction[1] == i or formulaContradiction[2] == i then
+		if inFormulaContradiction(i) then
 			love.graphics.setColor(100, 100, 200) -- Cyan circle
 		end
 		love.graphics.circle("fill", formulaX[i], formulaY[i], 5, 25)
