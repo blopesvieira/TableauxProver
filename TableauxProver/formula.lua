@@ -187,13 +187,16 @@ function tableauClosed()
 	local j
 	local k
 	local newContradiction
+	if #formulaIndex == 0 then
+		return false
+	end
 	while i < #formulaIndex do
 		j = i + 1
 		while j <= #formulaIndex do
 			if formulaValue[i] ~= formulaValue[j] and formulaRight[i] == formulaRight[j] and formulaLeft[i] == formulaLeft[j]  and formulaOperator[i] == formulaOperator[j] and isInChain(i, j) then
 				k = 1
 				newContradiction = true
-				while k <= #formulaContradiction do
+				while newContradiction and k <= #formulaContradiction do
 					if (formulaContradiction[k] == i and formulaContradiction[k+1] == j) or (formulaContradiction[k] == j and formulaContradiction[k+1] == i) then
 						newContradiction = false
 					end
