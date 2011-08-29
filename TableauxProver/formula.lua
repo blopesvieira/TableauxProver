@@ -69,11 +69,11 @@ function printNode(pos)
 	right = string.gsub(right, opEx, opExPrint)
 	right = string.gsub(right, opAll, opAllPrint)
 	if formulaOperator[pos] == opAnd or formulaOperator[pos] == opOr or formulaOperator[pos] == opImp then
-		return value .. " " .. operator .. " (" .. left .. "," .. right .. ")$"
+		return value .. " " .. operator .. " (" .. left .. "," .. right .. ")"
 	elseif formulaOperator[pos] == opNot then
-		return value .. " " .. operator .. " (" .. right .. ")$"
+		return value .. " " .. operator .. " (" .. right .. ")"
 	else
-		return value .. " " .. operator  .. " " .. left .. "(" .. right .. ")$"
+		return value .. " " .. operator  .. " " .. left .. "(" .. right .. ")"
 	end
 end
 
@@ -158,27 +158,55 @@ function insertFormula(operator, left, right, index, origin, value, expanded, x,
 	formulaConstantsUsed[#formulaConstantsUsed + 1] = 0
 end
 
-function countOpenChains()
+function haveOpenChains()
 	local i
 	local j
 	local open
-	local chains = 1
 	for i = 1, #formulaIndex do
-		if formulaOperator[i] == opAnd and formulaExpanded[i] then
-			chains = chains + 1
-		end
 		if formulaLeaf[i] then
 			open = true
 			j = 1
 			while open and j < #formulaContradiction do
 				if formulaContradiction[j] <= i and formulaContradiction[j+1] <= i then
 					if isInChain(formulaContradiction[j], i) and isInChain(formulaContradiction[j+1], i) then
-						chains = chains - 1
+						open = false
 					end
 				end
 				j = j + 2
 			end
+			if open then
+				return true
+			end
 		end
 	end
-	return chains
+	return false
+end
+
+function tableauClosed()
+	local i = 1
+	local j
+	local k
+	local newContradiction
+	while i < #formulaIndex do
+		j = i + 1
+		while j <= #formulaIndex do
+			if formulaValue[i] ~= formulaValue[j] and formulaRight[i] == formulaRight[j] and formulaLeft[i] == formulaLeft[j]  and formulaOperator[i] == formulaOperator[j] and isInChain(i, j) then
+				k = 1
+				newContradiction = true
+				while k <= #formulaContradiction do
+					if (formulaContradiction[k] == i and formulaContradiction[k+1] == j) or (formulaContradiction[k] == j and formulaContradiction[k+1] == i) then
+						newContradiction = false
+					end
+					k = k + 2
+				end
+				if newContradiction then
+					formulaContradiction[#formulaContradiction + 1] = i
+					formulaContradiction[#formulaContradiction + 1] = j
+				end
+			end
+			j = j + 1
+		end
+		i = i + 1
+	end
+	return not haveOpenChains()
 end

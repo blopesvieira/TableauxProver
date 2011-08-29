@@ -76,65 +76,6 @@ function tableauStepUndo()
 	end
 end
 
-function tableauClosed()
-	local i = 1
-	local j
-	local k
-	local chainContradiction = #formulaContradiction / 2
-	local inChain
-	local inChainI
-	local inChainJ
-	local contradiction
-	while i < #formulaIndex do
-		j = i + 1
-		while j <= #formulaIndex do
-			if formulaValue[i] ~= formulaValue[j] and formulaRight[i] == formulaRight[j] and formulaLeft[i] == formulaLeft[j]  and formulaOperator[i] == formulaOperator[j] and isInChain(i, j) then
-				k = 1
-				contradiction = true
-				while k <= #formulaIndex do
-					if formulaContradiction[k] == i or formulaContradiction[k] == j then
-						contradiction = false
-					end
-					k = k + 1
-				end
-				if contradiction then
-					if #formulaContradiction == 0 then
-						chainContradiction = 1
-					else
-						k = 1
-						inChain = false
-						while k < #formulaContradiction and inChain do
-							if formulaContradiction[k] > i then
-								inChainI = isInChain(i, formulaContradiction[k])
-							else
-								inChainI = isInChain(formulaContradiction[k], i)
-							end
-							if formulaContradiction[k] > j then
-								inChainJ = isInChain(j, formulaContradiction[k])
-							else
-								inChainJ = isInChain(formulaContradiction[k], j)
-							end
-							k = k + 1
-						end
-						inChain = not (inChainI and inChainJ)
-						if not inChain then
-							chainContradiction = chainContradiction + 1
-						end
-					end
-					formulaContradiction[#formulaContradiction + 1] = i
-					formulaContradiction[#formulaContradiction + 1] = j
-				end
-			end
-			j = j + 1
-		end
-		i = i + 1
-	end
-	if countOpenChains() == 0 then
-		return true
-	end
-	return false
-end
-
 function tableauSolve()
 	local solveLoop = 0
 	if #formulaIndex >= 1 then
