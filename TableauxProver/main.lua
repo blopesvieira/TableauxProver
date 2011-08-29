@@ -60,6 +60,8 @@ function undoButton()
 	if love.mouse.getX() >= xPos and love.mouse.getX() <= xPos + xLen and love.mouse.getY() >= yPos and love.mouse.getY() <= yPos + yLen then
 		if love.mouse.isDown("l") then
 			tableauStepUndo()
+			isClosed = false
+			cleanContradictions()
 			love.timer.sleep(150)
 		end
 		love.graphics.setColor(100, 100, 200)

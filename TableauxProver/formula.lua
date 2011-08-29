@@ -36,6 +36,10 @@ function cleanFormulae()
 	formulaContradiction = {}
 end
 
+function cleanContradictions()
+	formulaContradiction = {}
+end
+
 function printNode(pos)
 	local value
 	local operator = formulaOperator[pos]
@@ -74,12 +78,11 @@ function printNode(pos)
 end
 
 function inFormulaContradiction(pos)
-	local i = 1
-	while i <= #formulaContradiction do
+	local i
+	for i = 1, #formulaContradiction do
 		if formulaContradiction[i] == pos then
 			return true
 		end
-		i = i + 1
 	end
 	return false
 end
@@ -91,7 +94,7 @@ function printNodeLaTeX(pos)
 	else
 		value = "\\textbf{" .. falseLabel .. "}"
 	end
-	if inFormulaContradiction(pos) == pos then
+	if inFormulaContradiction(pos) then
 		value = "$\\Rightarrow$" .. value
 	end
 	if formulaOperator[pos] == opAnd or formulaOperator[pos] == opOr or formulaOperator[pos] == opImp then
@@ -155,12 +158,26 @@ function insertFormula(operator, left, right, index, origin, value, expanded, x,
 	formulaConstantsUsed[#formulaConstantsUsed + 1] = 0
 end
 
-function countChains()
+function countOpenChains()
 	local i
+	local j
+	local open
 	local chains = 1
 	for i = 1, #formulaIndex do
 		if formulaOperator[i] == opAnd and formulaExpanded[i] then
 			chains = chains + 1
+		end
+		if formulaLeaf[i] then
+			open = true
+			j = 1
+			while open and j < #formulaContradiction do
+				if formulaContradiction[j] <= i and formulaContradiction[j+1] <= i then
+					if isInChain(formulaContradiction[j], i) and isInChain(formulaContradiction[j+1], i) then
+						chains = chains - 1
+					end
+				end
+				j = j + 2
+			end
 		end
 	end
 	return chains

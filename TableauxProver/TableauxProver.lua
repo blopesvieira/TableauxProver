@@ -129,10 +129,7 @@ function tableauClosed()
 		end
 		i = i + 1
 	end
-	for i = 1, #formulaContradiction do
-		love.graphics.print(formulaContradiction[i], 0, 1 + 30 * i)
-	end
-	if chainContradiction == countChains() then
+	if countOpenChains() == 0 then
 		return true
 	end
 	return false
@@ -171,7 +168,7 @@ function isInChain(origin, pos)
 	if origin == pos or formulaIndex[pos] == origin then
 		return true
 	end
-	while  j > origin do
+	while j > origin do
 		j = j - 1
 		if formulaIndex[i] == j then
 			i = j
@@ -272,6 +269,7 @@ function expandAnd(pos)
 	end
 end
 
+-- Atomic opOr with child in opNot with odd branches problem
 function expandOr(pos)
 	local index = {}
 	local right
@@ -315,6 +313,12 @@ function expandOr(pos)
 			insertFormula(string.sub(left,1,j), string.sub(left,j+2,i-1), string.sub(left,i+1,string.len(left)-1), index[k], pos, false, false, formulaX[index[k]], formulaY[index[k]] + yStep)
 		end
 	end
+	index = {}
+	for i = pos, #formulaIndex do
+		if formulaLeaf[i] and isInChain(pos, i) then
+			index[#index + 1] = i
+		end
+	end
 	j = getOperatorPos(right)
 	op = string.sub(right, 1, j)
 	if op == opEx or op == opAll then
@@ -332,11 +336,11 @@ function expandOr(pos)
 	end
 	if j == nil then
 		for k = 1, #index do
-			insertFormula("", "", right, index[k] + #index, pos, false, true, formulaX[index[k]], formulaY[index[k]] + yStep + yStep)
+			insertFormula("", "", right, index[k], pos, false, true, formulaX[index[k]], formulaY[index[k]] + yStep)
 		end
 	else
 		for k = 1, #index do
-			insertFormula(string.sub(right,1,j), string.sub(right,j+2,i-1), string.sub(right,i+1,string.len(right)-1), index[k] + #index, pos, false, false, formulaX[index[k]], formulaY[index[k]] + yStep + yStep)
+			insertFormula(string.sub(right,1,j), string.sub(right,j+2,i-1), string.sub(right,i+1,string.len(right)-1), index[k], pos, false, false, formulaX[index[k]], formulaY[index[k]] + yStep)
 		end
 	end
 end
@@ -384,6 +388,12 @@ function expandImp(pos)
 			insertFormula(string.sub(left,1,j), string.sub(left,j+2,i-1), string.sub(left,i+1,string.len(left)-1), index[k], pos, true, false, formulaX[index[k]], formulaY[index[k]] + yStep)
 		end
 	end
+	index = {}
+	for i = pos, #formulaIndex do
+		if formulaLeaf[i] and isInChain(pos, i) then
+			index[#index + 1] = i
+		end
+	end
 	j = getOperatorPos(right)
 	op = string.sub(right, 1, j)
 	if op == opEx or op == opAll then
@@ -401,11 +411,11 @@ function expandImp(pos)
 	end
 	if j == nil then
 		for k = 1, #index do
-			insertFormula("", "", right, index[k] + #index, pos, false, true, formulaX[index[k]], formulaY[index[k]] + yStep + yStep)
+			insertFormula("", "", right, index[k], pos, false, true, formulaX[index[k]], formulaY[index[k]] + yStep)
 		end
 	else
 		for k = 1, #index do
-			insertFormula(string.sub(right,1,j), string.sub(right,j+2,i-1), string.sub(right,i+1,string.len(right)-1), index[k] + #index, pos, false, false, formulaX[index[k]], formulaY[index[k]] + yStep + yStep)
+			insertFormula(string.sub(right,1,j), string.sub(right,j+2,i-1), string.sub(right,i+1,string.len(right)-1), index[k], pos, false, false, formulaX[index[k]], formulaY[index[k]] + yStep)
 		end
 	end
 end
