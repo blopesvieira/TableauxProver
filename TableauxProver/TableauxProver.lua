@@ -164,7 +164,7 @@ function expandAnd(pos)
 	op = string.sub(left, 1, j)
 	if op == opEx or op == opAll then
 		i = j + 1
-		while string.sub(formulae[i], i, i) ~= formulaOpenPar do
+		while string.sub(left[i], i, i) ~= formulaOpenPar do
 			i = i + 1
 		end
 	elseif op == opNot then
@@ -188,7 +188,7 @@ function expandAnd(pos)
 	op = string.sub(right, 1, j)
 	if op == opEx or op == opAll then
 		i = j + 1
-		while string.sub(formulae[i], i, i) ~= formulaOpenPar do
+		while string.sub(right[i], i, i) ~= formulaOpenPar do
 			i = i + 1
 		end
 	elseif op == opNot then
@@ -210,7 +210,6 @@ function expandAnd(pos)
 	end
 end
 
--- Atomic opOr with child in opNot with odd branches problem
 function expandOr(pos)
 	local index = {}
 	local right
@@ -234,7 +233,7 @@ function expandOr(pos)
 	op = string.sub(left, 1, j)
 	if op == opEx or op == opAll then
 		i = j + 1
-		while string.sub(formulae[i], i, i) ~= formulaOpenPar do
+		while string.sub(left[i], i, i) ~= formulaOpenPar do
 			i = i + 1
 		end
 	elseif op == opNot then
@@ -264,7 +263,7 @@ function expandOr(pos)
 	op = string.sub(right, 1, j)
 	if op == opEx or op == opAll then
 		i = j + 1
-		while string.sub(formulae[i], i, i) ~= formulaOpenPar do
+		while string.sub(right[i], i, i) ~= formulaOpenPar do
 			i = i + 1
 		end
 	elseif op == opNot then
@@ -309,7 +308,7 @@ function expandImp(pos)
 	op = string.sub(left, 1, j)
 	if op == opEx or op == opAll then
 		i = j + 1
-		while string.sub(formulae[i], i, i) ~= formulaOpenPar do
+		while string.sub(right[i], i, i) ~= formulaOpenPar do
 			i = i + 1
 		end
 	elseif op == opNot then
@@ -339,7 +338,7 @@ function expandImp(pos)
 	op = string.sub(right, 1, j)
 	if op == opEx or op == opAll then
 		i = j + 1
-		while string.sub(formulae[i], i, i) ~= formulaOpenPar do
+		while string.sub(left[i], i, i) ~= formulaOpenPar do
 			i = i + 1
 		end
 	elseif op == opNot then
@@ -383,7 +382,7 @@ function expandNot(pos)
 	op = string.sub(right, 1, j)
 	if op == opEx or op == opAll then
 		i = j + 1
-		while string.sub(formulae[i], i, i) ~= formulaOpenPar do
+		while string.sub(right[i], i, i) ~= formulaOpenPar do
 			i = i + 1
 		end
 	elseif op == opNot then
@@ -518,7 +517,7 @@ function expandEx(pos)
 	op = string.sub(right, 1, j)
 	if op == opEx or op == opAll then
 		i = j + 1
-		while string.sub(formulae[i], i, i) ~= formulaOpenPar do
+		while string.sub(right[i], i, i) ~= formulaOpenPar do
 			i = i + 1
 		end
 	elseif op == opNot then
@@ -575,7 +574,7 @@ function expandAll(pos)
 	op = string.sub(right, 1, j)
 	if op == opEx or op == opAll then
 		i = j + 1
-		while string.sub(formulae[i], i, i) ~= formulaOpenPar do
+		while string.sub(right[i], i, i) ~= formulaOpenPar do
 			i = i + 1
 		end
 	elseif op == opNot then
@@ -607,7 +606,9 @@ function readFormulae(inputFileName)
 	io.input(inputFileName)
 	formulaR = io.read()
 	while formulaR ~= nil do
-		formulae[#formulae+1] = formulaR
+		if formulaPrefixParser(formulaR) then
+			formulae[#formulae+1] = formulaR
+		end
 		formulaR = io.read()
 	end
 	cleanFormulae()
@@ -646,4 +647,44 @@ function qTreeOutput(outputFileName)
 	outputFile:write(printQTreeChain(1, 0))
 	outputFile:write("\n\n\\end{document}")
 	outputFile:close()
+end
+
+function formulaPrefixParser(formula)
+	local i
+	local j
+	local k
+	local left
+	local right
+	j = getOperatorPos(formula)
+	if j == nil then
+		for i = 1, string.len(formula) do
+			if string.sub(formula, i, i) == formulaOpenPar or string.sub(formula, i, i) == formulaClosePar or string.sub(formula, i, i) == formulaSep then
+				return false
+			end
+		end
+		return true
+	end
+	if string.sub(formula, 1, j) == opEx or string.sub(formula, 1, j) == opAll then
+		if string.sub(formula, j + 1, j + 1) ~= " " or string.sub(formula, j + 2, j + 2) == formulaOpenPar or string.sub(formula, j + 2, j + 2) == formulaClosePar or string.sub(formula, j + 2, j + 2) == formulaSep or string.sub(formula, j + 2, j + 2) == " " then
+			return false
+		end
+		k = j + 3
+		while k > string.len(formula) and string.sub(formula, k, k) ~= formulaOpenPar do
+			k = k + 1
+		end
+		if k > string.len(formula) then
+			return false
+		end
+		return formulaPrefixParser(string.sub(formula,k+1,string.len(formula)-1))
+	end
+	if string.sub(formula, j + 1, j + 1) ~= formulaOpenPar or string.sub(formula, string.len(formula)) ~= formulaClosePar then
+		return false
+	end
+	if string.sub(formula, 1, j) == opNot then
+		return formulaPrefixParser(string.sub(formula, j + 2, string.len(formula) - 1))
+	end
+	i = formulaFindSep(formula, formulaSep)
+	left = formulaPrefixParser(string.sub(formula,j+string.len(formulaOpenPar)+1,i-1))
+	right = formulaPrefixParser(string.sub(formula,i+1,string.len(formula)-1))
+	return left and right
 end
