@@ -39,7 +39,7 @@ variableExpansionLimit = 100
 -- File definitions
 defaultInputFile = "formulae.txt"
 defaultOutputFile = "formulae.tex"
-currentPath = "TableauxProverRootDirectory"
+defaultPath = {os.getenv("PWD"), os.getenv("HOME")}
 
 -- Constants definitions
 newConst = "x"

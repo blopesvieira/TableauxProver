@@ -81,7 +81,7 @@ function readFileButton()
 	if love.mouse.getX() >= xPos and love.mouse.getX() <= xPos + xLen and love.mouse.getY() >= yPos and love.mouse.getY() <= yPos + yLen then
 		if love.mouse.isDown("l") then
 			isClosed = false
-			readFormulae(os.getenv(currentPath) .. "/" .. defaultInputFile)
+			readFormulae(getPath(defaultInputFile))
 			love.timer.sleep(150)
 		end
 		love.graphics.setColor(100, 100, 200)
@@ -100,7 +100,7 @@ function writeFileButton()
 	local yLen = 30
 	if love.mouse.getX() >= xPos and love.mouse.getX() <= xPos + xLen and love.mouse.getY() >= yPos and love.mouse.getY() <= yPos + yLen then
 		if love.mouse.isDown("l") then
-			qTreeOutput(os.getenv(currentPath) .. "/" .. defaultOutputFile)
+			qTreeOutput(getPath(defaultOutputFile))
 			love.timer.sleep(150)
 		end
 		love.graphics.setColor(100, 100, 200)
@@ -240,5 +240,20 @@ function autoDisposeTree()
 			j = j + 1
 		end
 		i = i + 1
+	end
+end
+
+function getPath(fileName)
+	local file
+	local i
+	for i = 1, #defaultPath do
+		if defaultPath[i] ~= nil then
+			file = io.open(defaultPath[i] .. "/" .. fileName, "r")
+			if file ~= nil then
+				io.close(file)
+				return defaultPath[i] .. "/" .. fileName
+			end
+			io.close(file)
+		end
 	end
 end
