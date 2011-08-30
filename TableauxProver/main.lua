@@ -100,7 +100,7 @@ function writeFileButton()
 	local yLen = 30
 	if love.mouse.getX() >= xPos and love.mouse.getX() <= xPos + xLen and love.mouse.getY() >= yPos and love.mouse.getY() <= yPos + yLen then
 		if love.mouse.isDown("l") then
-			qTreeOutput(getPath(defaultOutputFile))
+			qTreeOutput(getNonNil(defaultPath) .. "/" .. defaultOutputFile)
 			love.timer.sleep(150)
 		end
 		love.graphics.setColor(100, 100, 200)
@@ -256,4 +256,15 @@ function getPath(fileName)
 			io.close(file)
 		end
 	end
+	return nil
+end
+
+function getNonNil(list)
+	local i
+	for i = 1, #list do
+		if list[i] ~= nil then
+			return list[i]
+		end
+	end
+	return nil
 end
