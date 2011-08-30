@@ -93,14 +93,14 @@ function readFileButton()
 	love.graphics.printf(readFileButtonName, xPos + 30, yPos - 5, 0, "center")
 end
 
-function writeFileButton()
+function writeLaTeXFileButton()
 	local xPos = windowWidth - 60
 	local yPos = 145
 	local xLen = 55
 	local yLen = 30
 	if love.mouse.getX() >= xPos and love.mouse.getX() <= xPos + xLen and love.mouse.getY() >= yPos and love.mouse.getY() <= yPos + yLen then
 		if love.mouse.isDown("l") then
-			qTreeOutput(getNonNil(defaultPath) .. "/" .. defaultOutputFile)
+			qTreeOutput(getNonNil(defaultPath) .. "/" .. defaultLaTeXOutputFile)
 			love.timer.sleep(150)
 		end
 		love.graphics.setColor(100, 100, 200)
@@ -112,9 +112,28 @@ function writeFileButton()
 	love.graphics.printf(latexButtonName, xPos + 30, yPos - 5, 0, "center")
 end
 
-function autoDisposeButton()
+function writeDotFileButton()
 	local xPos = windowWidth - 60
 	local yPos = 180
+	local xLen = 55
+	local yLen = 30
+	if love.mouse.getX() >= xPos and love.mouse.getX() <= xPos + xLen and love.mouse.getY() >= yPos and love.mouse.getY() <= yPos + yLen then
+		if love.mouse.isDown("l") then
+			dotOutput(getNonNil(defaultPath) .. "/" .. defaultDotOutputFile)
+			love.timer.sleep(150)
+		end
+		love.graphics.setColor(100, 100, 200)
+	else
+		love.graphics.setColor(0, 100, 200)
+	end
+	love.graphics.rectangle("fill", xPos, yPos, xLen, yLen)
+	love.graphics.setColor(0, 0, 200)
+	love.graphics.printf(dotButtonName, xPos + 30, yPos - 5, 0, "center")
+end
+
+function autoDisposeButton()
+	local xPos = windowWidth - 60
+	local yPos = 215
 	local xLen = 55
 	local yLen = 30
 	if love.mouse.getX() >= xPos and love.mouse.getX() <= xPos + xLen and love.mouse.getY() >= yPos and love.mouse.getY() <= yPos + yLen then
@@ -144,7 +163,8 @@ end
 
 function love.draw()
 	autoDisposeButton()
-	writeFileButton()
+	writeDotFileButton()
+	writeLaTeXFileButton()
 	readFileButton()
 	stepButton()
 	tableauButton()

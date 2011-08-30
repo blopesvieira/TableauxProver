@@ -639,13 +639,29 @@ end
 function qTreeOutput(outputFileName)
 	local outputFile = io.open(outputFileName, "w")
 	outputFile:write("% " .. fileDisclaimer .. "\n")
-	outputFile:write("% http://www.tecmf.inf.puc-rio.br/TableauxProver\n")
+	outputFile:write("% " .. tecmfURL .. "\n")
 	outputFile:write("\\documentclass{article}\n\n")
 	outputFile:write("\\usepackage{qtree}\n\n")
 	outputFile:write("\\begin{document}\n\n")
 	outputFile:write("\\Tree\n ")
 	outputFile:write(printQTreeChain(1, 0))
 	outputFile:write("\n\n\\end{document}")
+	outputFile:close()
+end
+
+function dotOutput(outputFileName)
+	local i
+	local outputFile = io.open(outputFileName, "w")
+	outputFile:write("// " .. fileDisclaimer .. "\n")
+	outputFile:write("// " .. tecmfURL .. "\n")
+	outputFile:write("digraph Proof{\n")
+	for i = 1, #formulaIndex do
+		outputFile:write(i .. '[label="' .. printNode(i) .. '"]\n')
+	end
+	for i = 2, #formulaIndex do
+		outputFile:write(formulaIndex[i] .. ' -> ' .. i .. '\n')
+	end
+	outputFile:write("}")
 	outputFile:close()
 end
 
