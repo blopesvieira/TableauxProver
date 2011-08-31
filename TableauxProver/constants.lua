@@ -40,8 +40,14 @@ variableExpansionLimit = 100
 defaultInputFile = "formulae.txt"
 defaultLaTeXOutputFile = "formulae.tex"
 defaultDotOutputFile = "formulae.dot"
+displayOutput = "display"
 defaultPath = {os.getenv("PWD"), os.getenv("HOME")}
 tecmfURL = "http://www.tecmf.inf.puc-rio.br/TableauxProver"
+
+-- Format definitions
+latexFormat = "latex"
+dotFormat = "dot"
+defaultOutputFormat = latexFormat
 
 -- Constants definitions
 newConst = "x"

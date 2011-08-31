@@ -637,7 +637,12 @@ function readFormulae(inputFileName)
 end
 
 function qTreeOutput(outputFileName)
-	local outputFile = io.open(outputFileName, "w")
+	local outputFile
+	if outputFile == nil then
+		outputFile = io.stdout
+	else
+		outputFile = io.open(outputFileName, "w")
+	end
 	outputFile:write("% " .. fileDisclaimer .. "\n")
 	outputFile:write("% " .. tecmfURL .. "\n")
 	outputFile:write("\\documentclass{article}\n\n")
@@ -651,7 +656,13 @@ end
 
 function dotOutput(outputFileName)
 	local i
-	local outputFile = io.open(outputFileName, "w")
+	local outputFile
+	local outputFile
+	if outputFile == nil then
+		outputFile = io.stdout
+	else
+		outputFile = io.open(outputFileName, "w")
+	end
 	outputFile:write("// " .. fileDisclaimer .. "\n")
 	outputFile:write("// " .. tecmfURL .. "\n")
 	outputFile:write("digraph Proof{\n")
@@ -703,4 +714,36 @@ function formulaPrefixParser(formula)
 	left = formulaPrefixParser(string.sub(formula,j+string.len(formulaOpenPar)+1,i-1))
 	right = formulaPrefixParser(string.sub(formula,i+1,string.len(formula)-1))
 	return left and right
+end
+
+function autoTableau(outputFormat, formulaInput, formulaOutput)
+	if formulaInput == nil then
+		formulaInput = defaultFormulaInput
+	end
+	if outputFormat == nil then
+		outputFormat = defaultOutputFormat
+	end
+	if formulaOutput == nil then
+		if outputFormat == latexFormat then
+			formulaOutput = defaultLaTeXFormulaOutput
+		elseif outputFormat == dotFormat then
+			formulaOutput = defaultDotFormulaOutput
+		end
+	end
+	readFormulae(formulaInput)
+	tableauSolve()
+	if formulaOutput == displayOutput then
+		formulaOutput = nil
+	end
+	if outputFormat == latexFormat then
+		qTreeOutput(formulaOutput)
+	elseif outputFormat == dotFormat then
+		dotOutput(formulaOutput)
+	end
+end
+
+-- Console execution
+if #arg > 0 then
+	selectLanguage(defaultLanguage)
+	autoTableau(arg[1], arg[2], arg[3])
 end

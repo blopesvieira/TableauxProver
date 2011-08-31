@@ -8,7 +8,7 @@
 
 require 'TableauxProver'
 
-selectLanguage("en")
+selectLanguage(defaultLanguage)
 
 indexDragging = nil
 isDragging = false
