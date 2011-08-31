@@ -651,7 +651,9 @@ function qTreeOutput(outputFileName)
 	outputFile:write("\\Tree\n ")
 	outputFile:write(printQTreeChain(1, 0))
 	outputFile:write("\n\n\\end{document}")
-	outputFile:close()
+	if outputFile ~= io.stdout then
+		outputFile:close()
+	end
 end
 
 function dotOutput(outputFileName)
@@ -673,7 +675,9 @@ function dotOutput(outputFileName)
 		outputFile:write(formulaIndex[i] .. ' -> ' .. i .. '\n')
 	end
 	outputFile:write("}")
-	outputFile:close()
+	if outputFile ~= io.stdout then
+		outputFile:close()
+	end
 end
 
 function formulaPrefixParser(formula)
