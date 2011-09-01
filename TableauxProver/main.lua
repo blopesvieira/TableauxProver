@@ -242,11 +242,12 @@ end
 function autoDisposeTree()
 	local i = 1
 	local j
-	local notOver = true
-	while notOver and i < #formulaIndex do
+	local notOver
+	while i < #formulaIndex do
 		j = i + 1
+		notOver = true
 		while notOver and j <= #formulaIndex do
-			if formulaX[i] == formulaX[j] and formulaY[i] == formulaY[j] then
+			if formulaX[i] == formulaX[j] and formulaY[i] == formulaY[j] and (formulaX[i] > 0 and formulaX[i] < windowWidth) then
 				if formulaX[formulaIndex[i]] < formulaX[formulaIndex[j]] then
 					formulaX[i] = formulaX[i] - xStep / 2
 					formulaX[j] = formulaX[j] + xStep / 2
@@ -255,7 +256,7 @@ function autoDisposeTree()
 					formulaX[j] = formulaX[j] - xStep / 2
 				end
 				notOver = false
-				autoDisposeTree()
+				i = 0
 			end
 			j = j + 1
 		end

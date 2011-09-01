@@ -720,7 +720,10 @@ function formulaPrefixParser(formula)
 	return left and right
 end
 
-function autoTableau(outputFormat, formulaInput, formulaOutput)
+function autoTableau(outputFormat, formulaInput, formulaOutput, expansionLimit, direct)
+	local j
+	local k
+	local op
 	if formulaInput == nil then
 		formulaInput = defaultFormulaInput
 	end
@@ -734,7 +737,30 @@ function autoTableau(outputFormat, formulaInput, formulaOutput)
 			formulaOutput = defaultDotFormulaOutput
 		end
 	end
-	readFormulae(formulaInput)
+	if expansionLimit ~= nil then
+		variableExpansionLimit = tonumber(expansionLimit)
+	end
+	if direct ~= noFile then
+		readFormulae(formulaInput)
+	elseif formulaPrefixParser(formulaInput) then
+		j = getOperatorPos(formulaInput)
+		op = string.sub(formulaInput, 1, j)
+		if op == opEx or op == opAll then
+			k = j + 1
+			while string.sub(formulaInput, k, k) ~= formulaOpenPar do
+				k = k + 1
+			end
+		elseif op == opNot then
+			k = j + 1
+		else
+			k = formulaFindSep(formulaInput, formulaSep)
+			if k == nil then
+				k = string.len(formulaInput)
+			end
+		end
+		insertFormula(op, string.sub(formulaInput,j+2,k-1), string.sub(formulaInput,k+1,string.len(formulaInput)-1), 0, 0, false, false, xBegin, yBegin)
+		
+	end
 	tableauSolve()
 	if formulaOutput == displayOutput then
 		formulaOutput = nil
@@ -749,5 +775,5 @@ end
 -- Console execution
 if #arg > 0 then
 	selectLanguage(defaultLanguage)
-	autoTableau(arg[1], arg[2], arg[3])
+	autoTableau(arg[1], arg[2], arg[3], arg[4], arg[5])
 end

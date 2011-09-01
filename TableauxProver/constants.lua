@@ -43,6 +43,7 @@ defaultDotOutputFile = "formulae.dot"
 displayOutput = "display"
 defaultPath = {os.getenv("PWD"), os.getenv("HOME")}
 tecmfURL = "http://www.tecmf.inf.puc-rio.br/TableauxProver"
+noFile = "directinput"
 
 -- Format definitions
 latexFormat = "latex"
