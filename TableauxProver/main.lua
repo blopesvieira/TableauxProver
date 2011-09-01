@@ -86,7 +86,7 @@ function readFileButton()
 			if path == nil then
 				love.graphics.print(inputFail, windowWidth - 130, windowHeight - 30)
 			else
-				readFormulae()
+				readFormulae(path)
 			end
 			love.timer.sleep(150)
 		end
