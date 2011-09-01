@@ -78,10 +78,16 @@ function readFileButton()
 	local yPos = 110
 	local xLen = 55
 	local yLen = 30
+	local path
 	if love.mouse.getX() >= xPos and love.mouse.getX() <= xPos + xLen and love.mouse.getY() >= yPos and love.mouse.getY() <= yPos + yLen then
 		if love.mouse.isDown("l") then
 			isClosed = false
-			readFormulae(getPath(defaultInputFile))
+			path = getPath(defaultInputFile)
+			if path == nil then
+				love.graphics.print(inputFail, windowWidth - 130, windowHeight - 30)
+			else
+				readFormulae()
+			end
 			love.timer.sleep(150)
 		end
 		love.graphics.setColor(100, 100, 200)
@@ -274,7 +280,6 @@ function getPath(fileName)
 				io.close(file)
 				return defaultPath[i] .. "/" .. fileName
 			end
-			io.close(file)
 		end
 	end
 	return nil

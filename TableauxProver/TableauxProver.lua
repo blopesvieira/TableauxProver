@@ -638,7 +638,7 @@ end
 
 function qTreeOutput(outputFileName)
 	local outputFile
-	if outputFile == nil then
+	if outputFileName == nil then
 		outputFile = io.stdout
 	else
 		outputFile = io.open(outputFileName, "w")
@@ -659,8 +659,7 @@ end
 function dotOutput(outputFileName)
 	local i
 	local outputFile
-	local outputFile
-	if outputFile == nil then
+	if outputFileName == nil then
 		outputFile = io.stdout
 	else
 		outputFile = io.open(outputFileName, "w")
@@ -724,24 +723,31 @@ function autoTableau(outputFormat, formulaInput, formulaOutput, expansionLimit, 
 	local j
 	local k
 	local op
+	local file
 	if formulaInput == nil then
-		formulaInput = defaultFormulaInput
+		formulaInput = defaultInputFile
 	end
 	if outputFormat == nil then
 		outputFormat = defaultOutputFormat
 	end
 	if formulaOutput == nil then
 		if outputFormat == latexFormat then
-			formulaOutput = defaultLaTeXFormulaOutput
+			formulaOutput = defaultLaTeXOutputFile
 		elseif outputFormat == dotFormat then
-			formulaOutput = defaultDotFormulaOutput
+			formulaOutput = defaultDotOutputFile
 		end
 	end
 	if expansionLimit ~= nil then
 		variableExpansionLimit = tonumber(expansionLimit)
 	end
 	if direct ~= noFile then
-		readFormulae(formulaInput)
+		file = io.open(formulaInput, "r")
+		if file == nil then
+			print(inputFail)
+		else
+			io.close(file)
+			readFormulae(formulaInput)
+		end
 	elseif formulaPrefixParser(formulaInput) then
 		j = getOperatorPos(formulaInput)
 		op = string.sub(formulaInput, 1, j)
@@ -765,9 +771,9 @@ function autoTableau(outputFormat, formulaInput, formulaOutput, expansionLimit, 
 	if formulaOutput == displayOutput then
 		formulaOutput = nil
 	end
-	if outputFormat == latexFormat then
+	if outputFormat == latexFormat and #formulaIndex > 0 then
 		qTreeOutput(formulaOutput)
-	elseif outputFormat == dotFormat then
+	elseif outputFormat == dotFormat and #formulaIndex > 0 then
 		dotOutput(formulaOutput)
 	end
 end
