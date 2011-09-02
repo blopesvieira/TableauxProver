@@ -164,7 +164,7 @@ function expandAnd(pos)
 	op = string.sub(left, 1, j)
 	if op == opEx or op == opAll then
 		i = j + 1
-		while string.sub(left[i], i, i) ~= formulaOpenPar do
+		while string.sub(left, i, i) ~= formulaOpenPar do
 			i = i + 1
 		end
 	elseif op == opNot then
@@ -188,7 +188,7 @@ function expandAnd(pos)
 	op = string.sub(right, 1, j)
 	if op == opEx or op == opAll then
 		i = j + 1
-		while string.sub(right[i], i, i) ~= formulaOpenPar do
+		while string.sub(right, i, i) ~= formulaOpenPar do
 			i = i + 1
 		end
 	elseif op == opNot then
@@ -233,7 +233,7 @@ function expandOr(pos)
 	op = string.sub(left, 1, j)
 	if op == opEx or op == opAll then
 		i = j + 1
-		while string.sub(left[i], i, i) ~= formulaOpenPar do
+		while string.sub(left, i, i) ~= formulaOpenPar do
 			i = i + 1
 		end
 	elseif op == opNot then
@@ -263,7 +263,7 @@ function expandOr(pos)
 	op = string.sub(right, 1, j)
 	if op == opEx or op == opAll then
 		i = j + 1
-		while string.sub(right[i], i, i) ~= formulaOpenPar do
+		while string.sub(right, i, i) ~= formulaOpenPar do
 			i = i + 1
 		end
 	elseif op == opNot then
@@ -308,7 +308,7 @@ function expandImp(pos)
 	op = string.sub(left, 1, j)
 	if op == opEx or op == opAll then
 		i = j + 1
-		while string.sub(right[i], i, i) ~= formulaOpenPar do
+		while string.sub(right, i, i) ~= formulaOpenPar do
 			i = i + 1
 		end
 	elseif op == opNot then
@@ -338,7 +338,7 @@ function expandImp(pos)
 	op = string.sub(right, 1, j)
 	if op == opEx or op == opAll then
 		i = j + 1
-		while string.sub(left[i], i, i) ~= formulaOpenPar do
+		while string.sub(right, i, i) ~= formulaOpenPar do
 			i = i + 1
 		end
 	elseif op == opNot then
@@ -382,7 +382,7 @@ function expandNot(pos)
 	op = string.sub(right, 1, j)
 	if op == opEx or op == opAll then
 		i = j + 1
-		while string.sub(right[i], i, i) ~= formulaOpenPar do
+		while string.sub(right, i, i) ~= formulaOpenPar do
 			i = i + 1
 		end
 	elseif op == opNot then
@@ -424,28 +424,45 @@ function findConstants(pos)
 	local left = formulaLeft[pos]
 	local right = formulaRight[pos]
 	local i = string.find(left, opEx)
+	local j
 	while i ~= nil do
 		j = string.find(left, formulaSep, i)
-		formulaConstants[#formulaConstants + 1] = string.sub(left, i + string.len(opEx) + 1, j - 1)
-		i = string.find(left, opEx, j)
+		if j ~= nil then
+			formulaConstants[#formulaConstants + 1] = string.sub(left, i + string.len(opEx) + 1, j - 1)
+			i = string.find(left, opEx, j)
+		else
+			i = nil
+		end
 	end
 	i = string.find(left, opAll)
 	while i ~= nil do
 		j = string.find(left, formulaSep, i)
-		formulaConstants[#formulaConstants + 1] = string.sub(left, i + string.len(opAll) + 1, j - 1)
-		i = string.find(left, opAll, j)
+		if j ~= nil then 
+			formulaConstants[#formulaConstants + 1] = string.sub(left, i + string.len(opAll) + 1, j - 1)
+			i = string.find(left, opAll, j)
+		else
+			i = nil
+		end
 	end
 	i = string.find(right, opEx)
 	while i ~= nil do
 		j = string.find(right, formulaSep, i)
-		formulaConstants[#formulaConstants + 1] = string.sub(right, i + string.len(opEx) + 1, j - 1)
-		i = string.find(right, opEx, j)
+		if j ~= nil then
+			formulaConstants[#formulaConstants + 1] = string.sub(right, i + string.len(opEx) + 1, j - 1)
+			i = string.find(right, opEx, j)
+		else
+			i = nil
+		end
 	end
 	i = string.find(left, opAll)
 	while i ~= nil do
 		j = string.find(right, formulaSep, i)
-		formulaConstants[#formulaConstants + 1] = string.sub(right, i + string.len(opAll) + 1, j - 1)
-		i = string.find(right, opAll, j)
+		if j ~= nil then
+			formulaConstants[#formulaConstants + 1] = string.sub(right, i + string.len(opAll) + 1, j - 1)
+			i = string.find(right, opAll, j)
+		else
+			i = nil
+		end
 	end
 end
 
@@ -517,7 +534,7 @@ function expandEx(pos)
 	op = string.sub(right, 1, j)
 	if op == opEx or op == opAll then
 		i = j + 1
-		while string.sub(right[i], i, i) ~= formulaOpenPar do
+		while string.sub(right, i, i) ~= formulaOpenPar do
 			i = i + 1
 		end
 	elseif op == opNot then
@@ -574,7 +591,7 @@ function expandAll(pos)
 	op = string.sub(right, 1, j)
 	if op == opEx or op == opAll then
 		i = j + 1
-		while string.sub(right[i], i, i) ~= formulaOpenPar do
+		while string.sub(right, i, i) ~= formulaOpenPar do
 			i = i + 1
 		end
 	elseif op == opNot then
@@ -596,6 +613,20 @@ function expandAll(pos)
 	end
 end
 
+function composeAnd(formulae)
+	local composedFormulae = {}
+	local cI
+	if #formulae > 2 then
+		for cI = 1, #formulae - 3 do
+			composedFormulae[cI] = formulae[cI]
+		end
+		composedFormulae[#composedFormulae + 1] = opAnd .. formulaOpenPar .. formulae[#formulae - 2] .. formulaSep .. formulae[#formulae - 1] .. formulaClosePar
+		composedFormulae[#composedFormulae + 1] = formulae[#formulae]
+		return composeAnd(composedFormulae)
+	end
+	return formulae
+end
+
 function readFormulae(inputFileName)
 	local formulae = {}
 	local i
@@ -603,6 +634,7 @@ function readFormulae(inputFileName)
 	local k 
 	local op
 	local value = true
+	local formulaR
 	io.input(inputFileName)
 	formulaR = io.read()
 	while formulaR ~= nil do
@@ -611,6 +643,7 @@ function readFormulae(inputFileName)
 		end
 		formulaR = io.read()
 	end
+	formulae = composeAnd(formulae)
 	cleanFormulae()
 	for i = 1, #formulae do
 		if i == #formulae then
