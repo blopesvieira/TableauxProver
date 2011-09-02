@@ -29,6 +29,12 @@ function stepButton()
 		love.graphics.setColor(0, 100, 200)
 	end
 	love.graphics.rectangle("fill", xPos, yPos, xLen, yLen)
+	love.graphics.setColor(0, 0, 255)
+	love.graphics.line(xPos, yPos, xPos, yPos + yLen)
+	love.graphics.line(xPos, yPos + yLen, xPos + xLen, yPos + yLen)
+	love.graphics.setColor(255, 255, 255)
+	love.graphics.line(xPos + xLen, yPos, xPos + xLen, yPos + yLen)
+	love.graphics.line(xPos, yPos, xPos + xLen, yPos)
 	love.graphics.setColor(0, 0, 200)
 	love.graphics.printf(stepButtonName, xPos + 30, yPos - 5, 0, "center")
 end
@@ -48,6 +54,12 @@ function tableauButton()
 		love.graphics.setColor(0, 100, 200)
 	end
 	love.graphics.rectangle("fill", xPos, yPos, xLen, yLen)
+	love.graphics.setColor(0, 0, 255)
+	love.graphics.line(xPos, yPos, xPos, yPos + yLen)
+	love.graphics.line(xPos, yPos + yLen, xPos + xLen, yPos + yLen)
+	love.graphics.setColor(255, 255, 255)
+	love.graphics.line(xPos + xLen, yPos, xPos + xLen, yPos + yLen)
+	love.graphics.line(xPos, yPos, xPos + xLen, yPos)
 	love.graphics.setColor(0, 0, 200)
 	love.graphics.printf(tableauButtonName, xPos + 30, yPos - 5, 0, "center")
 end
@@ -69,6 +81,12 @@ function undoButton()
 		love.graphics.setColor(0, 100, 200)
 	end
 	love.graphics.rectangle("fill", xPos, yPos, xLen, yLen)
+	love.graphics.setColor(0, 0, 255)
+	love.graphics.line(xPos, yPos, xPos, yPos + yLen)
+	love.graphics.line(xPos, yPos + yLen, xPos + xLen, yPos + yLen)
+	love.graphics.setColor(255, 255, 255)
+	love.graphics.line(xPos + xLen, yPos, xPos + xLen, yPos + yLen)
+	love.graphics.line(xPos, yPos, xPos + xLen, yPos)
 	love.graphics.setColor(0, 0, 200)
 	love.graphics.printf(undoButtonName, xPos + 30, yPos - 5, 0, "center")
 end
@@ -95,6 +113,12 @@ function readFileButton()
 		love.graphics.setColor(0, 100, 200)
 	end
 	love.graphics.rectangle("fill", xPos, yPos, xLen, yLen)
+	love.graphics.setColor(0, 0, 255)
+	love.graphics.line(xPos, yPos, xPos, yPos + yLen)
+	love.graphics.line(xPos, yPos + yLen, xPos + xLen, yPos + yLen)
+	love.graphics.setColor(255, 255, 255)
+	love.graphics.line(xPos + xLen, yPos, xPos + xLen, yPos + yLen)
+	love.graphics.line(xPos, yPos, xPos + xLen, yPos)
 	love.graphics.setColor(0, 0, 200)
 	love.graphics.printf(readFileButtonName, xPos + 30, yPos - 5, 0, "center")
 end
@@ -114,6 +138,12 @@ function writeLaTeXFileButton()
 		love.graphics.setColor(0, 100, 200)
 	end
 	love.graphics.rectangle("fill", xPos, yPos, xLen, yLen)
+	love.graphics.setColor(0, 0, 255)
+	love.graphics.line(xPos, yPos, xPos, yPos + yLen)
+	love.graphics.line(xPos, yPos + yLen, xPos + xLen, yPos + yLen)
+	love.graphics.setColor(255, 255, 255)
+	love.graphics.line(xPos + xLen, yPos, xPos + xLen, yPos + yLen)
+	love.graphics.line(xPos, yPos, xPos + xLen, yPos)
 	love.graphics.setColor(0, 0, 200)
 	love.graphics.printf(latexButtonName, xPos + 30, yPos - 5, 0, "center")
 end
@@ -133,6 +163,12 @@ function writeDotFileButton()
 		love.graphics.setColor(0, 100, 200)
 	end
 	love.graphics.rectangle("fill", xPos, yPos, xLen, yLen)
+	love.graphics.setColor(0, 0, 255)
+	love.graphics.line(xPos, yPos, xPos, yPos + yLen)
+	love.graphics.line(xPos, yPos + yLen, xPos + xLen, yPos + yLen)
+	love.graphics.setColor(255, 255, 255)
+	love.graphics.line(xPos + xLen, yPos, xPos + xLen, yPos + yLen)
+	love.graphics.line(xPos, yPos, xPos + xLen, yPos)
 	love.graphics.setColor(0, 0, 200)
 	love.graphics.printf(dotButtonName, xPos + 30, yPos - 5, 0, "center")
 end
@@ -152,6 +188,12 @@ function autoDisposeButton()
 		love.graphics.setColor(0, 100, 200)
 	end
 	love.graphics.rectangle("fill", xPos, yPos, xLen, yLen)
+	love.graphics.setColor(0, 0, 255)
+	love.graphics.line(xPos, yPos, xPos, yPos + yLen)
+	love.graphics.line(xPos, yPos + yLen, xPos + xLen, yPos + yLen)
+	love.graphics.setColor(255, 255, 255)
+	love.graphics.line(xPos + xLen, yPos, xPos + xLen, yPos + yLen)
+	love.graphics.line(xPos, yPos, xPos + xLen, yPos)
 	love.graphics.setColor(0, 0, 200)
 	love.graphics.printf(disposeButtonName, xPos + 30, yPos - 5, 0, "center")
 end
@@ -254,7 +296,7 @@ function autoDisposeTree()
 		notOver = true
 		while notOver and j <= #formulaIndex do
 			if formulaX[i] == formulaX[j] and formulaY[i] == formulaY[j] and (formulaX[i] > 0 and formulaX[i] < windowWidth) then
-				if formulaX[formulaIndex[i]] < formulaX[formulaIndex[j]] then
+				if formulaIndex[i] ~= 0 and formulaX[formulaIndex[i]] < formulaX[formulaIndex[j]] then
 					formulaX[i] = formulaX[i] - xStep / 2
 					formulaX[j] = formulaX[j] + xStep / 2
 				else

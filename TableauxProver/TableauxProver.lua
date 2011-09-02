@@ -454,7 +454,7 @@ function findConstants(pos)
 			i = nil
 		end
 	end
-	i = string.find(left, opAll)
+	i = string.find(right, opAll)
 	while i ~= nil do
 		j = string.find(right, formulaSep, i)
 		if j ~= nil then
