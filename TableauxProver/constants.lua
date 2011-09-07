@@ -55,3 +55,6 @@ newConst = "x"
 
 -- Languege definitions
 defaultLanguage = "en"
+
+-- Time definitions
+buttonTime = 150

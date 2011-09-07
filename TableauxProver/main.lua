@@ -22,7 +22,7 @@ function stepButton()
 	if love.mouse.getX() >= xPos and love.mouse.getX() <= xPos + xLen and love.mouse.getY() >= yPos and love.mouse.getY() <= yPos + yLen then
 		if love.mouse.isDown("l") then
 			tableauStep()
-			love.timer.sleep(150)
+			love.timer.sleep(buttonTime)
 		end
 		love.graphics.setColor(100, 100, 200)
 	else
@@ -30,6 +30,7 @@ function stepButton()
 	end
 	love.graphics.rectangle("fill", xPos, yPos, xLen, yLen)
 	love.graphics.setColor(0, 0, 255)
+	love.graphics.setLineStyle("smooth")
 	love.graphics.line(xPos, yPos, xPos, yPos + yLen)
 	love.graphics.line(xPos, yPos + yLen, xPos + xLen, yPos + yLen)
 	love.graphics.setColor(255, 255, 255)
@@ -47,7 +48,7 @@ function tableauButton()
 	if love.mouse.getX() >= xPos and love.mouse.getX() <= xPos + xLen and love.mouse.getY() >= yPos and love.mouse.getY() <= yPos + yLen then
 		if love.mouse.isDown("l") then
 			tableauSolve()
-			love.timer.sleep(150)
+			love.timer.sleep(buttonTime)
 		end
 		love.graphics.setColor(100, 100, 200)
 	else
@@ -55,6 +56,7 @@ function tableauButton()
 	end
 	love.graphics.rectangle("fill", xPos, yPos, xLen, yLen)
 	love.graphics.setColor(0, 0, 255)
+	love.graphics.setLineStyle("smooth")
 	love.graphics.line(xPos, yPos, xPos, yPos + yLen)
 	love.graphics.line(xPos, yPos + yLen, xPos + xLen, yPos + yLen)
 	love.graphics.setColor(255, 255, 255)
@@ -74,7 +76,7 @@ function undoButton()
 			tableauStepUndo()
 			isClosed = false
 			cleanContradictions()
-			love.timer.sleep(150)
+			love.timer.sleep(buttonTime)
 		end
 		love.graphics.setColor(100, 100, 200)
 	else
@@ -82,6 +84,7 @@ function undoButton()
 	end
 	love.graphics.rectangle("fill", xPos, yPos, xLen, yLen)
 	love.graphics.setColor(0, 0, 255)
+	love.graphics.setLineStyle("smooth")
 	love.graphics.line(xPos, yPos, xPos, yPos + yLen)
 	love.graphics.line(xPos, yPos + yLen, xPos + xLen, yPos + yLen)
 	love.graphics.setColor(255, 255, 255)
@@ -106,7 +109,7 @@ function readFileButton()
 			else
 				readFormulae(path)
 			end
-			love.timer.sleep(150)
+			love.timer.sleep(buttonTime)
 		end
 		love.graphics.setColor(100, 100, 200)
 	else
@@ -114,6 +117,7 @@ function readFileButton()
 	end
 	love.graphics.rectangle("fill", xPos, yPos, xLen, yLen)
 	love.graphics.setColor(0, 0, 255)
+	love.graphics.setLineStyle("smooth")
 	love.graphics.line(xPos, yPos, xPos, yPos + yLen)
 	love.graphics.line(xPos, yPos + yLen, xPos + xLen, yPos + yLen)
 	love.graphics.setColor(255, 255, 255)
@@ -131,7 +135,7 @@ function writeLaTeXFileButton()
 	if love.mouse.getX() >= xPos and love.mouse.getX() <= xPos + xLen and love.mouse.getY() >= yPos and love.mouse.getY() <= yPos + yLen then
 		if love.mouse.isDown("l") then
 			qTreeOutput(getNonNil(defaultPath) .. "/" .. defaultLaTeXOutputFile)
-			love.timer.sleep(150)
+			love.timer.sleep(buttonTime)
 		end
 		love.graphics.setColor(100, 100, 200)
 	else
@@ -139,6 +143,7 @@ function writeLaTeXFileButton()
 	end
 	love.graphics.rectangle("fill", xPos, yPos, xLen, yLen)
 	love.graphics.setColor(0, 0, 255)
+	love.graphics.setLineStyle("smooth")
 	love.graphics.line(xPos, yPos, xPos, yPos + yLen)
 	love.graphics.line(xPos, yPos + yLen, xPos + xLen, yPos + yLen)
 	love.graphics.setColor(255, 255, 255)
@@ -156,7 +161,7 @@ function writeDotFileButton()
 	if love.mouse.getX() >= xPos and love.mouse.getX() <= xPos + xLen and love.mouse.getY() >= yPos and love.mouse.getY() <= yPos + yLen then
 		if love.mouse.isDown("l") then
 			dotOutput(getNonNil(defaultPath) .. "/" .. defaultDotOutputFile)
-			love.timer.sleep(150)
+			love.timer.sleep(buttonTime)
 		end
 		love.graphics.setColor(100, 100, 200)
 	else
@@ -164,6 +169,7 @@ function writeDotFileButton()
 	end
 	love.graphics.rectangle("fill", xPos, yPos, xLen, yLen)
 	love.graphics.setColor(0, 0, 255)
+	love.graphics.setLineStyle("smooth")
 	love.graphics.line(xPos, yPos, xPos, yPos + yLen)
 	love.graphics.line(xPos, yPos + yLen, xPos + xLen, yPos + yLen)
 	love.graphics.setColor(255, 255, 255)
@@ -181,7 +187,7 @@ function autoDisposeButton()
 	if love.mouse.getX() >= xPos and love.mouse.getX() <= xPos + xLen and love.mouse.getY() >= yPos and love.mouse.getY() <= yPos + yLen then
 		if love.mouse.isDown("l") then
 			autoDisposeTree()
-			love.timer.sleep(150)
+			love.timer.sleep(buttonTime)
 		end
 		love.graphics.setColor(100, 100, 200)
 	else
@@ -189,6 +195,7 @@ function autoDisposeButton()
 	end
 	love.graphics.rectangle("fill", xPos, yPos, xLen, yLen)
 	love.graphics.setColor(0, 0, 255)
+	love.graphics.setLineStyle("smooth")
 	love.graphics.line(xPos, yPos, xPos, yPos + yLen)
 	love.graphics.line(xPos, yPos + yLen, xPos + xLen, yPos + yLen)
 	love.graphics.setColor(255, 255, 255)
