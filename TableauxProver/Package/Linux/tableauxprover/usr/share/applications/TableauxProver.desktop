@@ -1,0 +1,9 @@
+[Desktop Entry]
+Name=TableauxProver
+Comment=A theorem prover on Tableaux
+MimeType=application/x-love-game;
+Exec="/usr/bin/TableauxProver"
+Type=Application
+Categories=Science
+Terminal=false
+Icon=TableauxProver.svg

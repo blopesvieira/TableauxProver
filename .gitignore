@@ -1,0 +1,9 @@
+TableauxPropI/applet/
+TableauxPropI/application.*
+TableauxProver/Package/MacOS/TableauxProver/TableauxProver.app/Contents/MacOS/love
+TableauxProver/Package/MacOS/TableauxProver/TableauxProver.app/Contents/Frameworks/
+*TableauxProver.love
+*.deb
+*.dmg
+*.exe
+*.dll

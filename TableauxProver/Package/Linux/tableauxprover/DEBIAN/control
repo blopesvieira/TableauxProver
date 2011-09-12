@@ -1,0 +1,10 @@
+Package: tableauxprover
+Version: 1.0
+Architecture: all
+Maintainer: Bruno Lopes <bvieira@inf.puc-rio.br>
+Installed-Size: 1612
+Depends: love
+Section: science
+Priority: extra
+Homepage: http://www.tecmf.inf.puc-rio.br/TableauxProver
+Description: TableauxProver is an automatic and semi-automatic theorem prover based on Tableaux.
