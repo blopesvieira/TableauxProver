@@ -93,7 +93,7 @@ function getOperatorPos(formula)
 	elseif string.sub(formula, 1, string.len(opNot)) == opNot then
 		return string.len(opNot)
 	elseif string.sub(formula, 1, string.len(opImp)) == opImp then
-		return string.len(opImplies)
+		return string.len(opImp)
 	elseif string.sub(formula, 1, string.len(opEx)) == opEx then
 		return string.len(opEx)
 	elseif string.sub(formula, 1, string.len(opAll)) == opAll then
@@ -308,7 +308,7 @@ function expandImp(pos)
 	op = string.sub(left, 1, j)
 	if op == opEx or op == opAll then
 		i = j + 1
-		while string.sub(right, i, i) ~= formulaOpenPar do
+		while string.sub(left, i, i) ~= formulaOpenPar do
 			i = i + 1
 		end
 	elseif op == opNot then
@@ -410,6 +410,8 @@ function expandFormula(pos)
 			expandAnd(pos)
 		elseif formulaOperator[pos] == opOr then
 			expandOr(pos)
+		elseif formulaOperator[pos] == opImp then
+			expandImp(pos)
 		elseif formulaOperator[pos] == opNot then
 			expandNot(pos)
 		elseif formulaOperator[pos] == opEx then
