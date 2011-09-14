@@ -643,7 +643,7 @@ function readFormulae(inputFileName)
 		if formulaPrefixParser(formulaR) then
 			formulae[#formulae+1] = formulaR
 		end
-		formulaR = io.read()
+		formulaR = removeExtraWhiteSpace(io.read())
 	end
 	formulae = composeAnd(formulae)
 	cleanFormulae()
@@ -712,6 +712,37 @@ function dotOutput(outputFileName)
 	if outputFile ~= io.stdout then
 		outputFile:close()
 	end
+end
+
+function removeExtraWhiteSpace(formula)
+	local extraI = 1
+	local left
+	local right
+	local nextC
+	if formula == nil then
+		return formula
+	end
+	while extraI < string.len(formula) do
+		if string.sub(formula, extraI, extraI) == " " then
+			nextC = string.sub(formula, extraI + 1, extraI + 1)
+			if nextC == formulaSeparator or nextC == " " or nextC == formulaOpenPar or nextC == formulaClosePar or nextC == operatorStart then
+				left = string.sub(formula, 1, extraI - 1)
+				right = string.sub(formula, extraI + 1, string.len(formula))
+				if left == nil then
+					left = ""
+				end
+				if right == nil then
+					right = ""
+				end
+				formula = left .. right
+			else
+				extraI = extraI + 1
+			end
+		else
+			extraI = extraI + 1
+		end
+	end
+	return formula
 end
 
 function formulaPrefixParser(formula)

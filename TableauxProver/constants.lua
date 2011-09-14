@@ -22,6 +22,7 @@ opAllPrint = 'All'
 formulaSep = ","
 formulaOpenPar = "("
 formulaClosePar = ")"
+operatorStart = '\\'
 
 -- Positioning definitions
 windowWidth = 800
