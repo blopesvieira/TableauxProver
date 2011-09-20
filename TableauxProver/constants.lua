@@ -42,7 +42,7 @@ defaultInputFile = "formulae.txt"
 defaultLaTeXOutputFile = "formulae.tex"
 defaultDotOutputFile = "formulae.dot"
 displayOutput = "display"
-defaultPath = {os.getenv("PWD"), os.getenv("HOME")}
+defaultPath = {os.getenv("PWD"), os.getenv("HOME"), os.getenv("HOMEPATH"), os.getenv("USERPROFILE")}
 tecmfURL = "http://www.tecmf.inf.puc-rio.br/TableauxProver"
 noFile = "directinput"
 
