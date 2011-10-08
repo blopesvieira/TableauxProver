@@ -862,7 +862,11 @@ function readFormulae(inputFileName)
 				k = string.len(formulae[i])
 			end
 		end
-		insertFormula(op, string.sub(formulae[i],j+2,k-1), string.sub(formulae[i],k+1,string.len(formulae[i])-1), i - 1, 0, value, false, xBegin, yBegin * i)
+		if j == nil then
+			insertFormula("", "", formulae[i], i - 1, 0, value, true, xBegin, yBegin * i)
+		else
+			insertFormula(op, string.sub(formulae[i],j+2,k-1), string.sub(formulae[i],k+1,string.len(formulae[i])-1), i - 1, 0, value, false, xBegin, yBegin * i)
+		end
 	end
 	
 end
