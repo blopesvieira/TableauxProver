@@ -9,6 +9,7 @@
 require 'TableauxProver'
 
 selectLanguage(defaultLanguage)
+love.graphics.setBackgroundColor(255, 255, 255) -- White Color
 
 indexDragging = nil
 isDragging = false
@@ -244,15 +245,15 @@ function printFormulae()
 	local i = 1
 	while i <= #formulaX do
 		if formulaExpanded[i] then
-			love.graphics.setColor(200, 0, 0) -- Red circle
+			love.graphics.setColor(100, 100, 200) -- Cyan circle
 		else
 			love.graphics.setColor(0, 255, 0) -- Green circle
 		end
 		if inFormulaContradiction(i) then
-			love.graphics.setColor(100, 100, 200) -- Cyan circle
+			love.graphics.setColor(200, 0, 0) -- Red circle
 		end
 		love.graphics.circle("fill", formulaX[i], formulaY[i], 5, 25)
-		love.graphics.setColor(255, 255, 255, 90) -- White 90%
+		love.graphics.setColor(0, 0, 0, 99) -- Black 99%
 		love.graphics.circle("line", formulaX[i], formulaY[i], 6)
 		love.graphics.print(printNode(i), formulaX[i] + 20, formulaY[i] - 6)
 		i = i + 1

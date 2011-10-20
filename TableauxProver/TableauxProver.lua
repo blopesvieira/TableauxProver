@@ -727,7 +727,14 @@ function expandEx(pos)
 			formulaConstants[#formulaConstants + 1] = const
 		end
 	end
-	right = string.gsub(right, " " .. left, " " .. const)
+	if string.sub(right, 1, 1) ~= formulaOpenPar then
+		right = right .. formulaClosePar
+	end
+	right = string.gsub(right, " " .. left .. " ", " " .. const .. " ")
+	right = string.gsub(right, " " .. left .. "%" .. formulaClosePar, " " .. const .. "%" .. formulaClosePar)
+	if string.sub(right, 1, 1) == formulaOpenPar then
+		right = string.sub(right, 1, string.len(right) - 1)
+	end
 	j = getOperatorPos(right)
 	op = string.sub(right, 1, j)
 	if op == opEx or op == opAll then
@@ -784,7 +791,14 @@ function expandAll(pos)
 			formulaConstants[#formulaConstants + 1] = const
 		end
 	end
-	right = string.gsub(right, " " .. left, " " .. const)
+	if string.sub(right, 1, 1) ~= formulaOpenPar then
+		right = right .. formulaClosePar
+	end
+	right = string.gsub(right, " " .. left .. " ", " " .. const .. " ")
+	right = string.gsub(right, " " .. left .. "%" .. formulaClosePar, " " .. const .. "%" .. formulaClosePar)
+	if string.sub(right, 1, 1) == formulaOpenPar then
+		right = string.sub(right, 1, string.len(right) - 1)
+	end
 	j = getOperatorPos(right)
 	op = string.sub(right, 1, j)
 	if op == opEx or op == opAll then

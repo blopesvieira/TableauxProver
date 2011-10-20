@@ -1,9 +1,9 @@
 Package: tableauxprover
-Version: 1.0
+Version: 1.1
 Architecture: all
 Maintainer: Bruno Lopes <bvieira@inf.puc-rio.br>
 Installed-Size: 1612
-Depends: love(>=0.6)
+Depends: love(>=0.7)
 Section: science
 Priority: extra
 Homepage: http://www.tecmf.inf.puc-rio.br/TableauxProver
