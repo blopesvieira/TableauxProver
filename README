@@ -15,6 +15,7 @@ Licensed under a Creative Commons Attribution 3.0 Unported License
 http://creativecommons.org/licenses/by/3.0/
 
 Revision history
+ * 1.1-1 new FOL constant specification
  * 1.1   new color pattern and small bug correction on FOL variable substitution
  * 1.0   first official release
  * 0.6   recoded in Lua using Love2D

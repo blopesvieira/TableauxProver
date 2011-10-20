@@ -151,8 +151,6 @@ function insertFormula(operator, left, right, index, origin, value, expanded, x,
 	formulaExpanded[#formulaExpanded + 1] = expanded
 	if #formulaLeaf > 0 then
 		formulaLeaf[index] = false
-	else
-		findConstants(1)
 	end
 	formulaLeaf[#formulaLeaf + 1] = true
 	formulaConstantsUsed[#formulaConstantsUsed + 1] = 0

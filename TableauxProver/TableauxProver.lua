@@ -618,52 +618,6 @@ function expandFormula(pos)
 	end
 end
 
-function findConstants(pos)
-	local left = formulaLeft[pos]
-	local right = formulaRight[pos]
-	local i = string.find(left, opEx)
-	local j
-	while i ~= nil do
-		j = string.find(left, formulaSep, i)
-		if j ~= nil then
-			formulaConstants[#formulaConstants + 1] = string.sub(left, i + string.len(opEx) + 1, j - 1)
-			i = string.find(left, opEx, j)
-		else
-			i = nil
-		end
-	end
-	i = string.find(left, opAll)
-	while i ~= nil do
-		j = string.find(left, formulaSep, i)
-		if j ~= nil then 
-			formulaConstants[#formulaConstants + 1] = string.sub(left, i + string.len(opAll) + 1, j - 1)
-			i = string.find(left, opAll, j)
-		else
-			i = nil
-		end
-	end
-	i = string.find(right, opEx)
-	while i ~= nil do
-		j = string.find(right, formulaSep, i)
-		if j ~= nil then
-			formulaConstants[#formulaConstants + 1] = string.sub(right, i + string.len(opEx) + 1, j - 1)
-			i = string.find(right, opEx, j)
-		else
-			i = nil
-		end
-	end
-	i = string.find(right, opAll)
-	while i ~= nil do
-		j = string.find(right, formulaSep, i)
-		if j ~= nil then
-			formulaConstants[#formulaConstants + 1] = string.sub(right, i + string.len(opAll) + 1, j - 1)
-			i = string.find(right, opAll, j)
-		else
-			i = nil
-		end
-	end
-end
-
 function newConstant()
 	local exists = true
 	local i = 1
@@ -705,6 +659,7 @@ function expandEx(pos)
 	local j
 	local k
 	local op
+	local const
 	for i = pos, #formulaIndex do
 		if formulaLeaf[i] and isInChain(pos, i) then
 			index[#index + 1] = i
@@ -731,6 +686,10 @@ function expandEx(pos)
 		right = right .. formulaClosePar
 	end
 	right = string.gsub(right, " " .. left .. " ", " " .. const .. " ")
+	right = string.gsub(right, " " .. left .. formulaSep, " " .. const .. formulaSep)
+	right = string.gsub(right, formulaSep .. left .. " ", formulaSep .. const .. " ")
+	right = string.gsub(right, formulaSep .. left .. formulaSep, formulaSep .. const .. formulaSep)
+	right = string.gsub(right, formulaSep .. left .. "%" .. formulaClosePar, formulaSep .. const .. "%" .. formulaClosePar)
 	right = string.gsub(right, " " .. left .. "%" .. formulaClosePar, " " .. const .. "%" .. formulaClosePar)
 	if string.sub(right, 1, 1) == formulaOpenPar then
 		right = string.sub(right, 1, string.len(right) - 1)
@@ -756,7 +715,7 @@ function expandEx(pos)
 		end
 	else
 		for k = 1, #index do
-			insertFormula(string.sub(right,1,j), string.sub(right,j+2,i-1), string.sub(right,i+1,string.len(right)-1), index[k], pos, formulaValue[pos], false, formulaX[index[k]], formulaY[index[k]] + yStep)
+			insertFormula(string.sub(right,1,j), string.sub(right,j+2,i-1), string.sub(right,i+1,string.len(right)-2), index[k], pos, formulaValue[pos], false, formulaX[index[k]], formulaY[index[k]] + yStep)
 		end
 	end
 end
@@ -769,6 +728,7 @@ function expandAll(pos)
 	local j
 	local k
 	local op
+	local const
 	for i = pos, #formulaIndex do
 		if formulaLeaf[i] and isInChain(pos, i) then
 			index[#index + 1] = i
@@ -795,6 +755,10 @@ function expandAll(pos)
 		right = right .. formulaClosePar
 	end
 	right = string.gsub(right, " " .. left .. " ", " " .. const .. " ")
+	right = string.gsub(right, " " .. left .. formulaSep, " " .. const .. formulaSep)
+	right = string.gsub(right, formulaSep .. left .. " ", formulaSep .. const .. " ")
+	right = string.gsub(right, formulaSep .. left .. formulaSep, formulaSep .. const .. formulaSep)
+	right = string.gsub(right, formulaSep .. left .. "%" .. formulaClosePar, formulaSep .. const .. "%" .. formulaClosePar)
 	right = string.gsub(right, " " .. left .. "%" .. formulaClosePar, " " .. const .. "%" .. formulaClosePar)
 	if string.sub(right, 1, 1) == formulaOpenPar then
 		right = string.sub(right, 1, string.len(right) - 1)
@@ -820,7 +784,7 @@ function expandAll(pos)
 		end
 	else
 		for k = 1, #index do
-			insertFormula(string.sub(right,1,j), string.sub(right,j+2,i-1), string.sub(right,i+1,string.len(right)-1), index[k], pos, formulaValue[pos], false, formulaX[index[k]], formulaY[index[k]] + yStep)
+			insertFormula(string.sub(right,1,j), string.sub(right,j+2,i-1), string.sub(right,i+1,string.len(right)-2), index[k], pos, formulaValue[pos], false, formulaX[index[k]], formulaY[index[k]] + yStep)
 		end
 	end
 end
