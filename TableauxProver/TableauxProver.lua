@@ -691,7 +691,7 @@ function expandEx(pos)
 	right = string.gsub(right, formulaSep .. left .. formulaSep, formulaSep .. const .. formulaSep)
 	right = string.gsub(right, formulaSep .. left .. "%" .. formulaClosePar, formulaSep .. const .. "%" .. formulaClosePar)
 	right = string.gsub(right, " " .. left .. "%" .. formulaClosePar, " " .. const .. "%" .. formulaClosePar)
-	if string.sub(right, 1, 1) == formulaOpenPar then
+	if string.sub(right, 1, 1) ~= formulaOpenPar then
 		right = string.sub(right, 1, string.len(right) - 1)
 	end
 	j = getOperatorPos(right)

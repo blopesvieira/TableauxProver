@@ -7,3 +7,4 @@ TableauxProver/Package/MacOS/TableauxProver/TableauxProver.app/Contents/Framewor
 *.dmg
 *.exe
 *.dll
+*.swp
