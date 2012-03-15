@@ -10,6 +10,7 @@ require 'TableauxProver'
 
 selectLanguage(defaultLanguage)
 love.graphics.setBackgroundColor(255, 255, 255) -- White Color
+font = love.graphics.newFont(11)
 
 indexDragging = nil
 isDragging = false
@@ -255,18 +256,33 @@ function printFormulae()
 		love.graphics.circle("fill", formulaX[i], formulaY[i], 5, 25)
 		love.graphics.setColor(0, 0, 0, 99) -- Black 99%
 		love.graphics.circle("line", formulaX[i], formulaY[i], 6)
-		love.graphics.print(printNode(i), formulaX[i] + 20, formulaY[i] - 6)
+		love.graphics.print(printNode(i), formulaX[i] + circleSeparation, formulaY[i] - 6)
 		i = i + 1
 	end
 end
 
 function getFormulaIndex()
 	local pos = nil
+	local sub = nil
 	local i
+	local searchSub = true
+	local from = 0
 	for i = 1, #formulaOperator do
-		if love.mouse.getX() <= formulaX[i] + 6 and love.mouse.getX() >= formulaX[i] - 6 and love.mouse.getY() <= formulaY[i] + 6 and love.mouse.getY() >= formulaY[i] - 6 then
+		if love.mouse.getX() <= formulaX[i] + circleSeparations + font:width(printNode(i)) and love.mouse.getX() >= formulaX[i] + circleSeparation and love.mouse.getY() <= formulaY[i] + 6 and love.mouse.getY() >= formulaY[i] - 6 then
 			pos = i
 		end
+	end
+	if pos ~= nil then
+		i = 0
+		while searchSub do
+			i = i + 1
+			from = from + font:width(printNode(i))
+			if love.mouse.getX() <= formulaX[i] + circleSeparation + from then
+				sub = i
+				searchSub = false
+			end
+		end
+		return pos, sub
 	end
 	return pos
 end

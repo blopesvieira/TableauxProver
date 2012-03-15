@@ -40,40 +40,49 @@ function cleanContradictions()
 	formulaContradiction = {}
 end
 
-function printNode(pos)
+function printNode(pos, sub)
 	local value
 	local operator = formulaOperator[pos]
-	local left = formulaLeft[pos]
+	local left = formulaOperator[pos]
+	local to = #left
+	local leftOutput = ""
 	local right = formulaRight[pos]
-	if formulaValue[pos] then
-		value = "[" .. trueLabel .. "]"
-	else
-		value = "[" .. falseLabel .. "]"
-	end
 	operator = string.gsub(operator, opAnd, opAndPrint)
 	operator = string.gsub(operator, opOr, opOrPrint)
 	operator = string.gsub(operator, opImp, opImpPrint)
 	operator = string.gsub(operator, opNot, opNotPrint)
 	operator = string.gsub(operator, opEx, opExPrint)
 	operator = string.gsub(operator, opAll, opAllPrint)
-	left = string.gsub(left, opAnd, opAndPrint)
-	left = string.gsub(left, opOr, opOrPrint)
-	left = string.gsub(left, opImp, opImpPrint)
-	left = string.gsub(left, opNot, opNotPrint)
-	left = string.gsub(left, opEx, opExPrint)
-	left = string.gsub(left, opAll, opAllPrint)
 	right = string.gsub(right, opAnd, opAndPrint)
 	right = string.gsub(right, opOr, opOrPrint)
 	right = string.gsub(right, opImp, opImpPrint)
 	right = string.gsub(right, opNot, opNotPrint)
 	right = string.gsub(right, opEx, opExPrint)
 	right = string.gsub(right, opAll, opAllPrint)
+	if sub ~= nil then
+		if sub <= #left then
+			to = sub
+		end
+	end 
+	for i = 1, to do
+		left[i] = string.gsub(left[i], opAnd, opAndPrint)
+		left[i] = string.gsub(left[i], opOr, opOrPrint)
+		left[i] = string.gsub(left[i], opImp, opImpPrint)
+		left[i] = string.gsub(left[i], opNot, opNotPrint)
+		left[i] = string.gsub(left[i], opEx, opExPrint)
+		left[i] = string.gsub(left[i], opAll, opAllPrint)
+		leftOutput = leftOutput .. "," .. left[i]
+	end
+	leftOutput = string.sub(leftOutput, 2)
+	if sub ~= nil then
+		return leftOutput
+	end
 	if formulaOperator[pos] == opAnd or formulaOperator[pos] == opOr or formulaOperator[pos] == opImp then
-		return value .. " " .. operator .. " (" .. left .. "," .. right .. ")"
+		return  operator .. " (" .. left .. "," .. right .. ")"
 	elseif formulaOperator[pos] == opNot then
-		return value .. " " .. operator .. " (" .. right .. ")"
+		return operator .. " (" .. right .. ")"
 	else
-		return value .. " " .. operator  .. " " .. left .. "(" .. right .. ")"
+		return operator  .. " " .. left .. "(" .. right .. ")"
 	end
 end
 
@@ -130,14 +139,14 @@ function printQTreeChain(pos, where)
 end
 
 function insertFormula(operator, left, right, index, origin, value, expanded, x, y)
+	local i
 	formulaOperator[#formulaOperator + 1] = operator
 	formulaIndex[#formulaIndex + 1] = index
 	formulaOrigin[#formulaOrigin + 1] = origin
 	formulaRight[#formulaRight + 1] = right
-	if operator == opNot then
-		formulaLeft[#formulaLeft + 1] = ""
-	else
-		formulaLeft[#formulaLeft + 1] = left
+	formulaLeft[#formulaLeft + 1] = {}
+	for i = 1, #left do
+		formulaLeft[#formulaLeft][i] = left[i]
 	end
 	formulaValue[#formulaValue + 1] = value
 	if x > windowWidth - xLim then

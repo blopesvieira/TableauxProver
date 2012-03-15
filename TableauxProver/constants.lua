@@ -17,6 +17,7 @@ opEx = '\\exists'
 opExPrint = 'Ex'
 opAll = '\\forall'
 opAllPrint = 'All'
+opSeq = '\\vdash'
 
 -- Separators definitions
 formulaSep = ","
@@ -30,9 +31,10 @@ windowHeight = 600
 xLim = 30
 yLim = 30
 xStep = 50
-yStep = 30
+yStep = -30
 xBegin = windowWidth / 2
-yBegin = 50
+yBegin = 560
+circleSeparation = 20
 
 -- Deep limit definitions
 variableExpansionLimit = 100
