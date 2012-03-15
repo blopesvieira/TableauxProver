@@ -15,13 +15,19 @@ indexDragging = nil
 isDragging = false
 isClosed = false
 
+--[[ Esta na funcao Draw
+ Ela é chamado a todo momento, com um intervalo bem pequeno. Sempre que a posicao do mouse cai no
+ unico if que tem nesta funcao, ela pinta o botao. Se além do mouse estar em cima do botao, o botao esquerdo do mouse
+ estiver sendo apertado, ele chama a funcao tableauStep e depois chama um timer. ]]--
 function stepButton()
 	local xPos = windowWidth - 60
 	local yPos = 5
 	local xLen = 55
 	local yLen = 30
 	if love.mouse.getX() >= xPos and love.mouse.getX() <= xPos + xLen and love.mouse.getY() >= yPos and love.mouse.getY() <= yPos + yLen then
+		-- Entra aqui quando o mouse esta em cima da regiao do botao
 		if love.mouse.isDown("l") then
+			-- Entra aqui quando além do if de cima o botao esquedo foi pressionado.
 			tableauStep()
 			love.timer.sleep(buttonTime)
 		end
@@ -106,7 +112,7 @@ function readFileButton()
 			isClosed = false
 			path = getPath(defaultInputFile)
 			if path == nil then
-				love.graphics.print(inputFail, windowWidth - 130, windowHeight - 30)
+				love.graphics.print("VITOR!!!", windowWidth - 130, windowHeight - 30) -- VITOR: Ele até desenha, mas como o refresh é muito rapido nao da tempo de ler.
 			else
 				readFormulae(path)
 			end
@@ -218,17 +224,17 @@ function testFinished()
 end
 
 function love.draw()
-	autoDisposeButton()
+	autoDisposeButton() -- Desenha o botao Ajust, nao sei o que ele faz.
 	writeDotFileButton()
 	writeLaTeXFileButton()
-	readFileButton()
-	stepButton()
-	tableauButton()
-	undoButton()
-	expandSelectedNode()
+	readFileButton() -- Desenha o Botao Read
+	stepButton() -- Desenha o botao Step
+	tableauButton() -- Desenha o Botao All
+	undoButton() -- Desenha o Botao Undo
+	expandSelectedNode() -- Recebe o evento do mouse pra expandir o nó desejado
 	dragFormula()
-	linkFormulae()
-	printFormulae()
+	linkFormulae() -- Desenha as arestas entre os nós no canvas
+	printFormulae() -- Desenha as formulas e as bolinhas
 	testFinished()
 end
 
@@ -320,6 +326,9 @@ function autoDisposeTree()
 	end
 end
 
+-- Essa funcao tenta encontrar o arquivo nester lugares:
+-- o primeiro que ele consegue abrir ele usa.
+-- 1) os.getenv("PWD"), 2) os.getenv("HOME"), 3) os.getenv("HOMEPATH"), 4) os.getenv("USERPROFILE")
 function getPath(fileName)
 	local file
 	local i

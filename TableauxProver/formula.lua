@@ -16,7 +16,7 @@ formulaOrigin = {}
 formulaValue = {}
 formulaConstants = {}
 formulaConstantsUsed = {}
-formulaExpanded = {}
+formulaExpanded = {} 
 formulaLeaf = {}
 formulaContradiction = {}
 
