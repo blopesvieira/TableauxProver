@@ -44,13 +44,13 @@ end
 function printNode(pos, subPos)
 	local value
 	local operator = formulaOperator[pos]
-	local left = formulaLeft[pos]
-	local to = #left
+	local left = {}
+	local to = #formulaLeft[pos]
 	local leftOutput = ""
 	local right = formulaRight[pos]
-
+	
 	--debugMessage = formulaOperator[pos] -- VITOR
-
+	
 	operator = string.gsub(operator, opAnd, opAndPrint)
 	operator = string.gsub(operator, opOr, opOrPrint)
 	operator = string.gsub(operator, opImp, opImpPrint)
@@ -65,11 +65,12 @@ function printNode(pos, subPos)
 	right = string.gsub(right, opEx, opExPrint)
 	right = string.gsub(right, opAll, opAllPrint)
 	if subPos ~= nil then
-		if subPos <= #left then
+		if subPos <= to then
 			to = subPos
 		end
 	end 
 	for i = 1, to do
+			left[i] = formulaLeft[pos][i]
 			left[i] = string.gsub(left[i], opAnd, opAndPrint)
 			left[i] = string.gsub(left[i], opOr, opOrPrint)
 			left[i] = string.gsub(left[i], opImp, opImpPrint)
@@ -78,7 +79,7 @@ function printNode(pos, subPos)
 			left[i] = string.gsub(left[i], opAll, opAllPrint)
 			leftOutput = leftOutput .. "," .. left[i]
 	end	
-
+	
 	leftOutput = string.sub(leftOutput, 2)	
 	if subPos ~= nil then
 		if subPos <= #left then
