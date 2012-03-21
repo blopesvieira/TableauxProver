@@ -79,7 +79,7 @@ void setup() {
   rdcNotation = new IFRadioController("Formulae notation");
   rdoInfix = new IFRadioButton("infix", 25, 55, rdcNotation);
   rdoPrefix = new IFRadioButton("prefix", 25, 75, rdcNotation);
-  lblLaTeXOutput = new IFLabel("LaTeX qTree code:", 100, 65);
+  //lblLaTeXOutput = new IFLabel("LaTeX qTree code:", 100, 65);
   txtLaTeXOutput = new IFTextField("outputLaTeX", 205, 60, 416);
   txtInputFormula.addActionListener(this);
   c.add(txtInputFormula);
@@ -88,7 +88,7 @@ void setup() {
   c.add(btnTableaux);
   btnUndo.addActionListener(this);
   c.add(btnUndo);
-  btnResolve.addActionListener(this);
+  //btnResolve.addActionListener(this);
   //c.add(btnResolve);
   c.add(rdoInfix);
   c.add(rdoPrefix);
@@ -122,10 +122,10 @@ void actionPerformed(GUIEvent e) {
 }
 
 void resolve() {
-  int i = 0;
+  int i = -1;
   startTableaux(txtInputFormula.getValue());
-  println("Full tableau resolution...");
-  while(i < nos.size() && i <= stepLimit) step(i++);
+  println("Full tableau resolution: nos.size = " + nos.size());
+  while(i < nos.size() && i <= stepLimit) step(++i);
   println("Done!");
   println("Primeiro: " + nos.size());
   println(countnos);

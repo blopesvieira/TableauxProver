@@ -112,7 +112,7 @@ function printQTreeChain(pos, where)
 	local chainString2
 	if pos <= #formulaIndex then
 		if formulaIndex[pos] == where then
-			if formulaOperator[formulaOrigin[pos]] == opAnd then
+			if (formulaOperator[formulaOrigin[pos]] == opAnd and not formulaValue[formulaOrigin[pos]]) or ((formulaOperator[formulaOrigin[pos]] == opOr or formulaOperator[formulaOrigin[pos]] == opImp) and formulaValue[formulaOrigin[pos]])  then
 				chainString1 = printQTreeChain(pos + 2, pos)
 				chainString2 = printQTreeChain(pos + 2, pos + 1)
 				chainString = "[.{" .. printNodeLaTeX(pos) .. "} " .. chainString1 .. "] [.{" .. printNodeLaTeX(pos + 1) .. "} " .. chainString2 .. "]"
