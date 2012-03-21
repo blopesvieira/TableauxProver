@@ -3,7 +3,7 @@
 --            Pontif'icia Universidade Cat'olica do Rio de Janeiro (PUC-Rio)
 -- Author:    Bruno Lopes (bvieira@inf.puc-rio.br
 --            Edward Hermann (hermann@inf.puc-rio.br))
--- Tableaux Prover is licensed under a Creative Commons Attribution 3.0 Unported License
+-- TableauxProver is licensed under a Creative Commons Attribution 3.0 Unported License
 
 
 function selectLanguage(lang)
