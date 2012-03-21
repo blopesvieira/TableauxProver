@@ -1,22 +1,23 @@
--- TableauxProver
+-- SequentProver
 -- Copyright: Laborat'orio de Tecnologia em M'etodos Formais (TecMF)
 --            Pontif'icia Universidade Cat'olica do Rio de Janeiro (PUC-Rio)
 -- Author:    Bruno Lopes (bvieira@inf.puc-rio.br)
 --            Edward Hermann (hermann@inf.puc-rio.br)
--- Tableaux Prover is licensed under a Creative Commons Attribution 3.0 Unported License
+--            Vitor Pinheiro
+-- SequentProver is licensed under a Creative Commons Attribution 3.0 Unported License
 
 
 formulaX = {}
 formulaY = {}
-formulaOperator = {}
-formulaLeft = {}
-formulaRight = {}
-formulaIndex = {}
-formulaOrigin = {}
-formulaValue = {}
+formulaOperator = {} -- formulaOperator[pos] retorna o operador da formula na posicao pos
+formulaLeft = {} -- formulaLeft[pos] retorna toda a parte da esquerda da formula que tem o operador formulaOperator[pos]
+formulaRight = {} -- formulaRight[pos] retorna toda a parte da direita da formula que tem o operador formulaOperator[pos]
+formulaIndex = {} -- formulaIndex[pos] retorna o indice da formula da posicao pos.
+formulaOrigin = {} 
+formulaValue = {} -- Isso aqui especifica se eu quero que uma determinada formula seja verdadeira ou falsa. (Usa no Tableaux)
 formulaConstants = {}
 formulaConstantsUsed = {}
-formulaExpanded = {}
+formulaExpanded = {} -- formulaExpanded[pos] retorna se a formula da posicao pos ja foi expandida
 formulaLeaf = {}
 formulaContradiction = {}
 
@@ -40,49 +41,60 @@ function cleanContradictions()
 	formulaContradiction = {}
 end
 
-function printNode(pos, sub)
+function printNode(pos, subPos)
 	local value
 	local operator = formulaOperator[pos]
-	local left = formulaOperator[pos]
+	local left = formulaLeft[pos]
 	local to = #left
 	local leftOutput = ""
 	local right = formulaRight[pos]
+
+	--debugMessage = formulaOperator[pos] -- VITOR
+
 	operator = string.gsub(operator, opAnd, opAndPrint)
 	operator = string.gsub(operator, opOr, opOrPrint)
 	operator = string.gsub(operator, opImp, opImpPrint)
 	operator = string.gsub(operator, opNot, opNotPrint)
 	operator = string.gsub(operator, opEx, opExPrint)
 	operator = string.gsub(operator, opAll, opAllPrint)
+	operator = string.gsub(operator, opSeq, opSeqPrint)
 	right = string.gsub(right, opAnd, opAndPrint)
 	right = string.gsub(right, opOr, opOrPrint)
 	right = string.gsub(right, opImp, opImpPrint)
 	right = string.gsub(right, opNot, opNotPrint)
 	right = string.gsub(right, opEx, opExPrint)
 	right = string.gsub(right, opAll, opAllPrint)
-	if sub ~= nil then
-		if sub <= #left then
-			to = sub
+	if subPos ~= nil then
+		if subPos <= #left then
+			to = subPos
 		end
 	end 
 	for i = 1, to do
-		left[i] = string.gsub(left[i], opAnd, opAndPrint)
-		left[i] = string.gsub(left[i], opOr, opOrPrint)
-		left[i] = string.gsub(left[i], opImp, opImpPrint)
-		left[i] = string.gsub(left[i], opNot, opNotPrint)
-		left[i] = string.gsub(left[i], opEx, opExPrint)
-		left[i] = string.gsub(left[i], opAll, opAllPrint)
-		leftOutput = leftOutput .. "," .. left[i]
-	end
-	leftOutput = string.sub(leftOutput, 2)
-	if sub ~= nil then
-		return leftOutput
+			left[i] = string.gsub(left[i], opAnd, opAndPrint)
+			left[i] = string.gsub(left[i], opOr, opOrPrint)
+			left[i] = string.gsub(left[i], opImp, opImpPrint)
+			left[i] = string.gsub(left[i], opNot, opNotPrint)
+			left[i] = string.gsub(left[i], opEx, opExPrint)
+			left[i] = string.gsub(left[i], opAll, opAllPrint)
+			leftOutput = leftOutput .. "," .. left[i]
+	end	
+
+	leftOutput = string.sub(leftOutput, 2)	
+	if subPos ~= nil then
+		if subPos <= #left then
+			return leftOutput
+		else
+			return right
+		end
 	end
 	if formulaOperator[pos] == opAnd or formulaOperator[pos] == opOr or formulaOperator[pos] == opImp then
-		return  operator .. " (" .. left .. "," .. right .. ")"
+		return  operator .. " (" .. leftOutput .. "," .. right .. ")"
+	elseif formulaOperator[pos] == opSeq then -- Vitor, só mudo o print na tela
+		return  operator .. " ((" .. leftOutput .. ")" .. right .. ")"
 	elseif formulaOperator[pos] == opNot then
 		return operator .. " (" .. right .. ")"
 	else
-		return operator  .. " " .. left .. "(" .. right .. ")"
+		return operator  .. " " .. leftOutput .. "(" .. right .. ")"
 	end
 end
 

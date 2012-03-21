@@ -1,9 +1,10 @@
--- TableauxProver
+-- SequentProver
 -- Copyright: Laborat'orio de Tecnologia em M'etodos Formais (TecMF)
 --            Pontif'icia Universidade Cat'olica do Rio de Janeiro (PUC-Rio)
 -- Author:    Bruno Lopes (bvieira@inf.puc-rio.br)
 --            Edward Hermann (hermann@inf.puc-rio.br)
--- Tableaux Prover is licensed under a Creative Commons Attribution 3.0 Unported License
+--            Vitor Pinheiro
+-- Sequent Prover is licensed under a Creative Commons Attribution 3.0 Unported License
 
 
 require 'constants'
@@ -139,282 +140,6 @@ function formulaFindSep(side, formulaSep)
 		sepFindI = nil
 	end
 	return sepFindI
-end
-
-function expandAnd(pos)
-	local index = {}
-	local right
-	local left
-	local i
-	local j
-	local k
-	local op
-	if formulaValue[pos] then
-		for i = pos, #formulaIndex do
-			if formulaLeaf[i] and isInChain(pos, i) then
-				index[#index + 1] = i
-			end
-		end
-		if index == nil then
-			index[1] = pos
-		end
-		left = formulaLeft[pos]
-		right = formulaRight[pos]
-		formulaExpanded[pos] = true
-		j = getOperatorPos(left)
-		op = string.sub(left, 1, j)
-		if op == opEx or op == opAll then
-			i = j + 1
-			while string.sub(left, i, i) ~= formulaOpenPar do
-				i = i + 1
-			end
-		elseif op == opNot then
-			i = j + 1
-		else
-			i = formulaFindSep(left, formulaSep)
-			if i == nil then
-				i = string.len(left)
-			end
-		end
-		if j == nil then
-			for k = 1, #index do
-				insertFormula("", "", left, index[k], pos, formulaValue[pos], true, formulaX[index[k]], formulaY[index[k]] + yStep)
-			end
-		else
-			for k = 1, #index do
-				insertFormula(string.sub(left,1,j), string.sub(left,j+2,i-1), string.sub(left,i+1,string.len(left)-1), index[k], pos, formulaValue[pos], false, formulaX[index[k]], formulaY[index[k]] + yStep)
-			end
-		end
-		index = {}
-		for i = pos, #formulaIndex do
-			if formulaLeaf[i] and isInChain(pos, i) then
-				index[#index + 1] = i
-			end
-		end
-		j = getOperatorPos(right)
-		op = string.sub(right, 1, j)
-		if op == opEx or op == opAll then
-			i = j + 1
-			while string.sub(right, i, i) ~= formulaOpenPar do
-				i = i + 1
-			end
-		elseif op == opNot then
-			i = j + 1
-		else
-			i = formulaFindSep(right, formulaSep)
-			if i == nil then
-				i = string.len(right)
-			end
-		end
-		if j == nil then
-			for k = 1, #index do
-				insertFormula("", "", right, index[k], pos, formulaValue[pos], true, formulaX[index[k]], formulaY[index[k]] + yStep)
-			end
-		else
-			for k = 1, #index do
-				insertFormula(string.sub(right,1,j), string.sub(right,j+2,i-1), string.sub(right,i+1,string.len(right)-1), index[k], pos, formulaValue[pos], false, formulaX[index[k]], formulaY[index[k]] + yStep)
-			end
-		end
-
-	else
-		for i = pos, #formulaIndex do
-			if formulaLeaf[i] and isInChain(pos, i) then
-				index[#index + 1] = i
-			end
-		end
-		if index == nil then
-			index[1] = pos
-		end
-		left = formulaLeft[pos]
-		right = formulaRight[pos]
-		formulaExpanded[pos] = true
-		j = getOperatorPos(left)
-		op = string.sub(left, 1, j)
-		if op == opEx or op == opAll then
-			i = j + 1
-			while string.sub(left, i, i) ~= formulaOpenPar do
-				i = i + 1
-			end
-		elseif op == opNot then
-			i = j + 1
-		else
-			i = formulaFindSep(left, formulaSep)
-			if i == nil then
-				i = string.len(left)
-			end
-		end
-		if j == nil then
-			for k = 1, #index do
-				insertFormula("", "", left, index[k], pos, formulaValue[pos], true, formulaX[index[k]] - xStep, formulaY[index[k]] + yStep)
-			end
-		else
-			for k = 1, #index do
-				insertFormula(string.sub(left,1,j), string.sub(left,j+2,i-1), string.sub(left,i+1,string.len(left)-1), index[k], pos, formulaValue[pos], false, formulaX[index[k]] - xStep, formulaY[index[k]] + yStep)
-			end
-		end
-		j = getOperatorPos(right)
-		op = string.sub(right, 1, j)
-		if op == opEx or op == opAll then
-			i = j + 1
-			while string.sub(right, i, i) ~= formulaOpenPar do
-				i = i + 1
-			end
-		elseif op == opNot then
-			i = j + 1
-		else
-			i = formulaFindSep(right, formulaSep)
-			if i == nil then
-				i = string.len(right)
-			end
-		end
-		if j == nil then
-			for k = 1, #index do
-				insertFormula("", "", right, index[k], pos, formulaValue[pos], true, formulaX[index[k]] + xStep, formulaY[index[k]] + yStep)
-			end
-		else
-			for k = 1, #index do
-				insertFormula(string.sub(right,1,j), string.sub(right,j+2,i-1), string.sub(right,i+1,string.len(right)-1), index[k], pos, formulaValue[pos], false, formulaX[index[k]] + xStep, formulaY[index[k]] + yStep)
-			end
-		end
-	end
-end
-
-function expandOr(pos)
-	local index = {}
-	local right
-	local left
-	local i
-	local j
-	local k
-	local op
-	if not formulaValue[pos] then
-		for i = pos, #formulaIndex do
-			if formulaLeaf[i] and isInChain(pos, i) then
-				index[#index + 1] = i
-			end
-		end
-		if index == nil then
-			index[1] = pos
-		end
-		left = formulaLeft[pos]
-		right = formulaRight[pos]
-		formulaExpanded[pos] = true
-		j = getOperatorPos(left)
-		op = string.sub(left, 1, j)
-		if op == opEx or op == opAll then
-			i = j + 1
-			while string.sub(left, i, i) ~= formulaOpenPar do
-				i = i + 1
-			end
-		elseif op == opNot then
-			i = j + 1
-		else
-			i = formulaFindSep(left, formulaSep)
-			if i == nil then
-				i = string.len(left)
-			end
-		end
-		if j == nil then
-			for k = 1, #index do
-				insertFormula("", "", left, index[k], pos, formulaValue[pos], true, formulaX[index[k]], formulaY[index[k]] + yStep)
-			end
-		else
-			for k = 1, #index do
-				insertFormula(string.sub(left,1,j), string.sub(left,j+2,i-1), string.sub(left,i+1,string.len(left)-1), index[k], pos, formulaValue[pos], false, formulaX[index[k]], formulaY[index[k]] + yStep)
-			end
-		end
-		index = {}
-		for i = pos, #formulaIndex do
-			if formulaLeaf[i] and isInChain(pos, i) then
-				index[#index + 1] = i
-			end
-		end
-		j = getOperatorPos(right)
-		op = string.sub(right, 1, j)
-		if op == opEx or op == opAll then
-			i = j + 1
-			while string.sub(right, i, i) ~= formulaOpenPar do
-				i = i + 1
-			end
-		elseif op == opNot then
-			i = j + 1
-		else
-			i = formulaFindSep(right, formulaSep)
-			if i == nil then
-				i = string.len(right)
-			end
-		end
-		if j == nil then
-			for k = 1, #index do
-				insertFormula("", "", right, index[k], pos, formulaValue[pos], true, formulaX[index[k]], formulaY[index[k]] + yStep)
-			end
-		else
-			for k = 1, #index do
-				insertFormula(string.sub(right,1,j), string.sub(right,j+2,i-1), string.sub(right,i+1,string.len(right)-1), index[k], pos, formulaValue[pos], false, formulaX[index[k]], formulaY[index[k]] + yStep)
-			end
-		end
-
-	else
-		for i = pos, #formulaIndex do
-			if formulaLeaf[i] and isInChain(pos, i) then
-				index[#index + 1] = i
-			end
-		end
-		if index == nil then
-			index[1] = pos
-		end
-		left = formulaLeft[pos]
-		right = formulaRight[pos]
-		formulaExpanded[pos] = true
-		j = getOperatorPos(left)
-		op = string.sub(left, 1, j)
-		if op == opEx or op == opAll then
-			i = j + 1
-			while string.sub(left, i, i) ~= formulaOpenPar do
-				i = i + 1
-			end
-		elseif op == opNot then
-			i = j + 1
-		else
-			i = formulaFindSep(left, formulaSep)
-			if i == nil then
-				i = string.len(left)
-			end
-		end
-		if j == nil then
-			for k = 1, #index do
-				insertFormula("", "", left, index[k], pos, formulaValue[pos], true, formulaX[index[k]] - xStep, formulaY[index[k]] + yStep)
-			end
-		else
-			for k = 1, #index do
-				insertFormula(string.sub(left,1,j), string.sub(left,j+2,i-1), string.sub(left,i+1,string.len(left)-1), index[k], pos, formulaValue[pos], false, formulaX[index[k]] - xStep, formulaY[index[k]] + yStep)
-			end
-		end
-		j = getOperatorPos(right)
-		op = string.sub(right, 1, j)
-		if op == opEx or op == opAll then
-			i = j + 1
-			while string.sub(right, i, i) ~= formulaOpenPar do
-				i = i + 1
-			end
-		elseif op == opNot then
-			i = j + 1
-		else
-			i = formulaFindSep(right, formulaSep)
-			if i == nil then
-				i = string.len(right)
-			end
-		end
-		if j == nil then
-			for k = 1, #index do
-				insertFormula("", "", right, index[k], pos, formulaValue[pos], true, formulaX[index[k]] + xStep, formulaY[index[k]] + yStep)
-			end
-		else
-			for k = 1, #index do
-				insertFormula(string.sub(right,1,j), string.sub(right,j+2,i-1), string.sub(right,i+1,string.len(right)-1), index[k], pos, formulaValue[pos], false, formulaX[index[k]] + xStep, formulaY[index[k]] + yStep)
-			end
-		end
-	end
 end
 
 function expandImp(pos)
@@ -556,51 +281,7 @@ function expandImp(pos)
 
 end
 
-function expandNot(pos)
-	local index = {}
-	local right
-	local left
-	local i
-	local j
-	local k
-	local op
-	for i = pos, #formulaIndex do
-		if formulaLeaf[i] and isInChain(pos, i) then
-			index[#index + 1] = i
-		end
-	end
-	if index == nil then
-		index[1] = pos
-	end
-	right = formulaRight[pos]
-	formulaExpanded[pos] = true
-	j = getOperatorPos(right)
-	op = string.sub(right, 1, j)
-	if op == opEx or op == opAll then
-		i = j + 1
-		while string.sub(right, i, i) ~= formulaOpenPar do
-			i = i + 1
-		end
-	elseif op == opNot then
-		i = j + 1
-	else
-		i = formulaFindSep(right, formulaSep)
-		if i == nil then
-			i = string.len(right)
-		end
-	end
-	if j == nil then
-		for k = 1, #index do
-			insertFormula("", "", right, index[k], pos, not formulaValue[pos], true, formulaX[index[k]], formulaY[index[k]] + yStep)
-		end
-	else
-		for k = 1, #index do
-			insertFormula(string.sub(right,1,j), string.sub(right,j+2,i-1), string.sub(right,i+1,string.len(right)-1), index[k], pos, not formulaValue[pos], false, formulaX[index[k]], formulaY[index[k]] + yStep)
-		end
-	end
-end
-
-function expandFormula(pos)
+function expandFormula(pos, subPos)
 	if not formulaExpanded[pos] then
 		if formulaOperator[pos] == opAnd then
 			expandAnd(pos)
@@ -614,179 +295,50 @@ function expandFormula(pos)
 			expandEx(pos)
 		elseif formulaOperator[pos] == opAll then
 			expandAll(pos)
+		elseif formulaOperator[pos] == opSeq then -- Adicionei
+			expandSeq(pos, subPos)
 		end
 	end
 end
 
-function newConstant()
-	local exists = true
-	local i = 1
-	while exists do
-		if not existConstant(newConst) then
-			newConst = string.rep(newConst, string.len(newConst) + 1)
-		else
-			exists = false
-		end
-	end
-end
+--[[ 
+pos é posicao da formula
+subPos é a posicao da subformula da parte esquerda
+se subPos for nil é pq ele clicou na formula da direita.
 
-function getNewConstant()
-	local new = newConst .. (#formulaConstants + 1)
-	if existConstant(new) then
-		newConstant()
-		new = newConst .. (#formulaConstants + 1)
-	end
-	return new
-end
+]]--
+function expandSeq(pos, subPos) -- Adicionei
 
-function existConstant(const)
-	local isNew = false
-	local i = 1
-	while i <= #formulaConstants and not isNew do
-		if formulaConstants[i] == const then
-			isNew = true
-		end
-		i = i + 1
-	end 
-	return isNew
-end
+	local debugMessage = ""
+	local debugMessage2 = ""
 
-function expandEx(pos)
-	local index = {}
-	local right
-	local left
-	local i
-	local j
-	local k
-	local op
-	local const
-	for i = pos, #formulaIndex do
-		if formulaLeaf[i] and isInChain(pos, i) then
-			index[#index + 1] = i
-		end
-	end
-	if index == nil then
-		index[1] = pos
-	end
-	left = formulaLeft[pos]
-	right = formulaRight[pos]
-	if formulaValue[pos] then
-		const = getNewConstant()
-		formulaConstants[#formulaConstants + 1] = const
-	else
-		formulaConstantsUsed[pos] = formulaConstantsUsed[pos] + 1
-		if formulaConstantsUsed[pos] <= #formulaConstants then
-			const = formulaConstants[formulaConstantsUsed[pos]]	
-		else
-			const = getNewConstant()
-			formulaConstants[#formulaConstants + 1] = const
-		end
-	end
-	if string.sub(right, 1, 1) ~= formulaOpenPar then
-		right = right .. formulaClosePar
-	end
-	right = string.gsub(right, " " .. left .. " ", " " .. const .. " ")
-	right = string.gsub(right, " " .. left .. formulaSep, " " .. const .. formulaSep)
-	right = string.gsub(right, formulaSep .. left .. " ", formulaSep .. const .. " ")
-	right = string.gsub(right, formulaSep .. left .. formulaSep, formulaSep .. const .. formulaSep)
-	right = string.gsub(right, formulaSep .. left .. "%" .. formulaClosePar, formulaSep .. const .. "%" .. formulaClosePar)
-	right = string.gsub(right, " " .. left .. "%" .. formulaClosePar, " " .. const .. "%" .. formulaClosePar)
-	if string.sub(right, 1, 1) ~= formulaOpenPar then
-		right = string.sub(right, 1, string.len(right) - 1)
-	end
-	j = getOperatorPos(right)
-	op = string.sub(right, 1, j)
-	if op == opEx or op == opAll then
-		i = j + 1
-		while string.sub(right, i, i) ~= formulaOpenPar do
-			i = i + 1
-		end
-	elseif op == opNot then
-		i = j + 1
-	else
-		i = formulaFindSep(right, formulaSep)
-		if i == nil then
-			i = string.len(right)
-		end
-	end
-	if j == nil then
-		for k = 1, #index do
-			insertFormula("", "", right, index[k], pos, formulaValue[pos], true, formulaX[index[k]], formulaY[index[k]] + yStep)
-		end
-	else
-		for k = 1, #index do
-			insertFormula(string.sub(right,1,j), string.sub(right,j+2,i-1), string.sub(right,i+1,string.len(right)-2), index[k], pos, formulaValue[pos], false, formulaX[index[k]], formulaY[index[k]] + yStep)
-		end
-	end
-end
+	if subPos then
+		-- Clicou na formula da esquerda da posicao subPos
+		debugMessage = "expandSec: pos = ".. pos .. " subPos = " .. subPos -- VITOR
+		debugMessage2 = "expandSec: printNode(".. pos ..", ".. subPos ..") = " .. printNode(pos, subPos)
 
-function expandAll(pos)
-	local index = {}
-	local right
-	local left
-	local i
-	local j
-	local k
-	local op
-	local const
-	for i = pos, #formulaIndex do
-		if formulaLeaf[i] and isInChain(pos, i) then
-			index[#index + 1] = i
-		end
+		createDebugMessage("expandSec: clicou nesta: "..formulaLeft[pos][subPos])
+	else 
+		-- Clicou na unica formula a direita
+		debugMessage = "expandSec: pos = ".. pos .. " subPos = nil" -- VITOR
+		debugMessage2 = "expandSec: printNode(".. pos ..") = " .. printNode(pos)
+
+		-- Se o operador desta formula não for implicação não saberemos fazer
+		createDebugMessage("expandSec: clicou nesta: "..formulaRight[pos])
 	end
-	if index == nil then
-		index[1] = pos
-	end
-	left = formulaLeft[pos]
-	right = formulaRight[pos]
-	if not formulaValue[pos] then
-		const = getNewConstant()
-		formulaConstants[#formulaConstants + 1] = const
-	else
-		formulaConstantsUsed[pos] = formulaConstantsUsed[pos] + 1
-		if formulaConstantsUsed[pos] <= #formulaConstants then
-			const = formulaConstants[formulaConstantsUsed[pos]]	
-		else
-			const = getNewConstant()
-			formulaConstants[#formulaConstants + 1] = const
-		end
-	end
-	if string.sub(right, 1, 1) ~= formulaOpenPar then
-		right = right .. formulaClosePar
-	end
-	right = string.gsub(right, " " .. left .. " ", " " .. const .. " ")
-	right = string.gsub(right, " " .. left .. formulaSep, " " .. const .. formulaSep)
-	right = string.gsub(right, formulaSep .. left .. " ", formulaSep .. const .. " ")
-	right = string.gsub(right, formulaSep .. left .. formulaSep, formulaSep .. const .. formulaSep)
-	right = string.gsub(right, formulaSep .. left .. "%" .. formulaClosePar, formulaSep .. const .. "%" .. formulaClosePar)
-	right = string.gsub(right, " " .. left .. "%" .. formulaClosePar, " " .. const .. "%" .. formulaClosePar)
-	if string.sub(right, 1, 1) == formulaOpenPar then
-		right = string.sub(right, 1, string.len(right) - 1)
-	end
-	j = getOperatorPos(right)
-	op = string.sub(right, 1, j)
-	if op == opEx or op == opAll then
-		i = j + 1
-		while string.sub(right, i, i) ~= formulaOpenPar do
-			i = i + 1
-		end
-	elseif op == opNot then
-		i = j + 1
-	else
-		i = formulaFindSep(right, formulaSep)
-		if i == nil then
-			i = string.len(right)
-		end
-	end
-	if j == nil then
-		for k = 1, #index do
-			insertFormula("", "", right, index[k], pos, formulaValue[pos], true, formulaX[index[k]], formulaY[index[k]] + yStep)
-		end
-	else
-		for k = 1, #index do
-			insertFormula(string.sub(right,1,j), string.sub(right,j+2,i-1), string.sub(right,i+1,string.len(right)-2), index[k], pos, formulaValue[pos], false, formulaX[index[k]], formulaY[index[k]] + yStep)
-		end
-	end
+
+
+
+	-- VITOR - PAREI AQUI
+	-- printNode ta se comportando de forma nao esperada.
+	-- printNode(1,2) imprime as 2 primeiras sub formulas do lado esquerdo
+	-- printNode(1,1) imprime a primeira sub formula do lado esquerdo
+	-- printNode(1) imprime toda a formula naquela posicao
+	-- É assim que vc criou?
+	-- Roda que vc ve no Debug
+	createDebugMessage(debugMessage)
+	createDebugMessage(debugMessage2)
+
 end
 
 function composeAnd(formulae)
@@ -846,7 +398,6 @@ function readFormulae(inputFileName)
 			insertFormula(op, string.sub(formulae[i],j+2,k-1), string.sub(formulae[i],k+1,string.len(formulae[i])-1), i - 1, 0, value, false, xBegin, yBegin * i)
 		end
 	end
-	
 end
 
 function qTreeOutput(outputFileName)
@@ -1009,7 +560,7 @@ function autoTableau(outputFormat, formulaInput, formulaOutput, expansionLimit, 
 			end
 		end
 		insertFormula(op, string.sub(formulaInput,j+2,k-1), string.sub(formulaInput,k+1,string.len(formulaInput)-1), 0, 0, false, false, xBegin, yBegin)
-		
+
 	end
 	tableauSolve()
 	if formulaOutput == displayOutput then
