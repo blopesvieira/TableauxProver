@@ -13,15 +13,28 @@ require 'language'
 
 function tableauStep()
 	local stepNotFound = true
-	local tableauStepI = 1
+	local tableauStepI = #formulaExpanded
+	local tableauStepJ
+	local open
 	if #formulaIndex >= 1 then
-		while stepNotFound and tableauStepI <= #formulaExpanded do
+		while stepNotFound and tableauStepI > 0 do
 			if not formulaExpanded[tableauStepI] then
-				stepNotFound = false
-				expandFormula(tableauStepI)
-			else
-				tableauStepI = tableauStepI + 1
+				tableauStepJ = 1
+				open = true
+				while open and tableauStepJ < #formulaContradiction do
+	                                if formulaContradiction[tableauStepJ] <= tableauStepI and formulaContradiction[tableauStepJ+1] <= tableauStepI then
+        	                                if isInChain(formulaContradiction[tableauStepJ], tableauStepI) and isInChain(formulaContradiction[tableauStepJ+1], tableauStepI) then
+                	                                open = false
+                        	                end
+                                	end
+					tableauStepJ = tableauStepJ + 1
+				end
+				if open then
+					stepNotFound = false
+					expandFormula(tableauStepI)
+				end
 			end
+				tableauStepI = tableauStepI - 1
 		end
 		return not stepNotFound
 	end
