@@ -10,6 +10,7 @@ require 'TableauxProver'
 
 selectLanguage(defaultLanguage)
 love.graphics.setBackgroundColor(255, 255, 255) -- White Color
+font = love.graphics.newFont(11)
 
 indexDragging = nil
 isDragging = false
@@ -25,9 +26,9 @@ function stepButton()
 	local xLen = 55
 	local yLen = 30
 	if love.mouse.getX() >= xPos and love.mouse.getX() <= xPos + xLen and love.mouse.getY() >= yPos and love.mouse.getY() <= yPos + yLen then
-		-- Entra aqui quando o mouse esta em cima da regiao do botao
+		-- Entra aqui quando o mouse esta em cima da regiao do botao	
 		if love.mouse.isDown("l") then
-			-- Entra aqui quando além do if de cima o botao esquedo foi pressionado.
+			-- Entra aqui quando além do if de cima o botao esquedo foi pressionado.		
 			tableauStep()
 			love.timer.sleep(buttonTime)
 		end
@@ -109,13 +110,19 @@ function readFileButton()
 	local path
 	if love.mouse.getX() >= xPos and love.mouse.getX() <= xPos + xLen and love.mouse.getY() >= yPos and love.mouse.getY() <= yPos + yLen then
 		if love.mouse.isDown("l") then
+			
+			insertFormula(opSeq, {opImp .. "(c,j)", opImp .. "(b,x)"}, opImp .. "(a,c)", 0, 0, true, false, xBegin, yBegin)
+			--[[
 			isClosed = false
 			path = getPath(defaultInputFile)
 			if path == nil then
-				love.graphics.print("VITOR!!!", windowWidth - 130, windowHeight - 30) -- VITOR: Ele até desenha, mas como o refresh é muito rapido nao da tempo de ler.
+				love.graphics.print(inputFail, windowWidth - 130, windowHeight - 30) -- VITOR: Ele até desenha, mas como o refresh é muito rapido nao da tempo de ler.
 			else
-				readFormulae(path)
-			end
+				-- readFormulae(path) -- Comentei pq o parser pra sequentes ainda nao ta pronto
+				-- colocar o insert formula aqui
+				
+			end 
+			]]--
 			love.timer.sleep(buttonTime)
 		end
 		love.graphics.setColor(100, 100, 200)
@@ -236,6 +243,7 @@ function love.draw()
 	linkFormulae() -- Desenha as arestas entre os nós no canvas
 	printFormulae() -- Desenha as formulas e as bolinhas
 	testFinished()
+	printDebugMessageTable() -- Só pra debug
 end
 
 function linkFormulae()
@@ -261,28 +269,99 @@ function printFormulae()
 		love.graphics.circle("fill", formulaX[i], formulaY[i], 5, 25)
 		love.graphics.setColor(0, 0, 0, 99) -- Black 99%
 		love.graphics.circle("line", formulaX[i], formulaY[i], 6)
-		love.graphics.print(printNode(i), formulaX[i] + 20, formulaY[i] - 6)
+		love.graphics.print(printNode(i), formulaX[i] + circleSeparation, formulaY[i] - 6)
 		i = i + 1
 	end
 end
 
 function getFormulaIndex()
 	local pos = nil
+	local sub = nil
 	local i
+	local searchSub = true
+	local from = 0
 	for i = 1, #formulaOperator do
-		if love.mouse.getX() <= formulaX[i] + 6 and love.mouse.getX() >= formulaX[i] - 6 and love.mouse.getY() <= formulaY[i] + 6 and love.mouse.getY() >= formulaY[i] - 6 then
+		if love.mouse.getX() <= formulaX[i] + circleSeparation + font:getWidth(printNode(i)) and love.mouse.getX() >= formulaX[i] + circleSeparation and love.mouse.getY() <= formulaY[i] + 6 and love.mouse.getY() >= formulaY[i] - 6 then
 			pos = i
 		end
+	end
+	if pos ~= nil then
+		i = 0
+		
+		-- Vitor Inicio
+		local acabar = true
+		local k=1
+		while k <= 3 do					
+			if formulaLeft[1][k] then
+				createDebugMessage("getFormulaIndex: formulaLeft[1]["..k.."] = " .. formulaLeft[1][k])				
+				createDebugMessage("getFormulaIndex: font:getWidth(formulaLeft[1]["..k.."]) = " .. font:getWidth(formulaLeft[1][k]))				
+			end	
+			k = k + 1
+		end		
+		createDebugMessage("getFormulaIndex: font:getWidth(formulaOperator[1]) = " .. font:getWidth(formulaOperator[1]))				
+		createDebugMessage("getFormulaIndex: font:getWidth(formulaRight[1]) = " .. font:getWidth(formulaRight[1]))				
+		-- Vitor Fim
+		
+		
+		while searchSub do
+			i = i + 1
+			
+			if formulaLeft[pos][i] == nil then
+				searchSub = false -- clicou fora do lado esquerdo da formula
+				break
+			end
+			
+			from = from + font:getWidth(formulaLeft[pos][i])
+			
+			--local debugMessage = font:getWidth(printNode(i))
+			--local debugMessage2 = printNode(i)
+			
+			--createDebugMessage("getFormulaIndex: font:getWidth(printNode("..i..")) = "..debugMessage)
+			--createDebugMessage("getFormulaIndex: printNode("..i..") = " .. debugMessage2)
+			--createDebugMessage("getFormulaIndex: formulaX["..i.."] = "..formulaX[i])		
+			--createDebugMessage("getFormulaIndex: love.mouse.getX() = "..love.mouse.getX())
+			
+			
+			
+			--local posInsideFormula = formulaX[i] - love.mouse.getX()
+			
+			
+			--font:getWidth(formulaLeft[pos][i])
+			
+			-- Sempre sub ta igual a 1, algo errado aqui
+			-- Só tem uma formula no formulaX
+			-- printNode(i) retorna o tamanho de toda a formula, e só tem uma.
+			if love.mouse.getX() <= formulaX[pos] + font:getWidth(formulaOperator[pos]) + circleSeparation + from then
+				sub = i
+				searchSub = false
+			end
+		end
+		
+		if sub then 
+			createDebugMessage("getFormulaIndex: pos = ".. pos .. " sub = "..sub)
+		else
+			createDebugMessage("getFormulaIndex: pos = ".. pos .. " sub = nil")
+		end
+			
+		return pos, sub
 	end
 	return pos
 end
 
 function expandSelectedNode()
-	local pos
+	local pos = nil
+	local subPos = nil
 	if love.mouse.isDown("r") then
-		pos = getFormulaIndex()
+		pos, subPos = getFormulaIndex()
+		
+		-- VITOR DEBUG
+		if subPos then
+			local debugMessage = "expandSelectedNode: pos = " ..pos .. "subPos = "..subPos
+			createDebugMessage(debugMessage)
+		end
+				
 		if pos ~= nil then
-			expandFormula(pos)
+			expandFormula(pos, subPos)
 		end
 		love.timer.sleep(150)
 	end
@@ -352,4 +431,23 @@ function getNonNil(list)
 		end
 	end
 	return nil
+end
+
+function createDebugMessage(debugMessage)
+	MsgDebugTable[#MsgDebugTable+1] = debugMessage
+end
+
+function printDebugMessageTable()	
+	for i = 1, #MsgDebugTable do
+		local yRes = yDebug + i*15
+		
+		if yRes > windowHeight - yLim then
+			MsgDebugTable = {}
+			MsgDebugTable[1] = "Mensagens para debug:"
+			love.graphics.print(MsgDebugTable[1], xDebug, yRes)
+			break
+		else		
+			love.graphics.print(MsgDebugTable[i], xDebug, yRes)			
+		end
+	end
 end

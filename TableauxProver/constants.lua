@@ -5,10 +5,12 @@
 -- Tableaux Prover is licensed under a Creative Commons Attribution 3.0 Unported License
 
 -- Operators definitions
+-- Para todo o operador foi criado um que é pra imprimir na tela e o outro seria pra ajudar a gerar o latex
+-- Todos com final print é a representação do operador pra imprimir na tela.
 opAnd = '\\land'
-opAndPrint = '&'
-opOr = '\\lor'
-opOrPrint = '|'
+opAndPrint = '&'  
+opOr = '\\lor' 
+opOrPrint = '|'  
 opImp = '\\to'
 opImpPrint = '->'
 opNot = '\\neg'
@@ -17,6 +19,8 @@ opEx = '\\exists'
 opExPrint = 'Ex'
 opAll = '\\forall'
 opAllPrint = 'All'
+opSeq = '\\vdash'
+opSeqPrint = '=>'
 
 -- Separators definitions
 formulaSep = ","
@@ -30,9 +34,10 @@ windowHeight = 600
 xLim = 30
 yLim = 30
 xStep = 50
-yStep = 30
+yStep = -30
 xBegin = windowWidth / 2
-yBegin = 50
+yBegin = 560
+circleSeparation = 20
 
 -- Deep limit definitions
 variableExpansionLimit = 100
@@ -59,3 +64,10 @@ defaultLanguage = "en"
 
 -- Time definitions
 buttonTime = 150
+
+-- String para mensagem de erro -- VITOR: Tirar depois dos testes
+xDebug = 10
+yDebug = 10
+countDebugMsgs = 1
+MsgDebugTable = {}
+MsgDebugTable[1] = "Mensagens para debug:"
