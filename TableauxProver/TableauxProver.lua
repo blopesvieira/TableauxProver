@@ -613,7 +613,7 @@ function expandNot(pos)
 	end
 end
 
-function expandFormula(pos)
+function expandFormula(pos, subPos)
 	if not formulaExpanded[pos] then
 		if formulaOperator[pos] == opAnd then
 			expandAnd(pos)
@@ -627,8 +627,50 @@ function expandFormula(pos)
 			expandEx(pos)
 		elseif formulaOperator[pos] == opAll then
 			expandAll(pos)
+		elseif formulaOperator[pos] == opSeq then -- Adicionei
+			expandSeq(pos, subPos)
 		end
 	end
+end
+
+--[[ 
+pos é posicao da formula
+subPos é a posicao da subformula da parte esquerda
+se subPos for nil é pq ele clicou na formula da direita.
+
+]]--
+function expandSeq(pos, subPos) -- Adicionei
+	
+	local debugMessage = ""
+	local debugMessage2 = ""
+	
+	if subPos then
+		-- Clicou na formula da esquerda da posicao subPos
+		debugMessage = "expandSec: pos = ".. pos .. " subPos = " .. subPos -- VITOR
+		debugMessage2 = "expandSec: printNode(".. pos ..", ".. subPos ..") = " .. printNode(pos, subPos)
+		
+		createDebugMessage("expandSec: clicou nesta: "..formulaLeft[pos][subPos])
+	else 
+		-- Clicou na unica formula a direita
+		debugMessage = "expandSec: pos = ".. pos .. " subPos = nil" -- VITOR
+		debugMessage2 = "expandSec: printNode(".. pos ..") = " .. printNode(pos)
+		
+		-- Se o operador desta formula não for implicação não saberemos fazer
+		createDebugMessage("expandSec: clicou nesta: "..formulaRight[pos])
+	end
+	
+	
+	
+	-- VITOR - PAREI AQUI
+	-- printNode ta se comportando de forma nao esperada.
+	-- printNode(1,2) imprime as 2 primeiras sub formulas do lado esquerdo
+	-- printNode(1,1) imprime a primeira sub formula do lado esquerdo
+	-- printNode(1) imprime toda a formula naquela posicao
+	-- É assim que vc criou?
+	-- Roda que vc ve no Debug
+	createDebugMessage(debugMessage)
+	createDebugMessage(debugMessage2)
+	
 end
 
 function newConstant()
