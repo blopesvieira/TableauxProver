@@ -615,7 +615,7 @@ function expandFormula(pos, subPos)
 		elseif formulaOperator[pos] == opAll then
 			expandAll(pos)
 		elseif formulaOperator[pos] == opSeq then -- Adicionei
-			expandSec(pos, subPos)
+			expandSeq(pos, subPos)
 		end
 	end
 end
@@ -626,18 +626,27 @@ subPos é a posicao da subformula da parte esquerda
 se subPos for nil é pq ele clicou na formula da direita.
 
 ]]--
-function expandSec(pos, subPos) -- Adicionei
+function expandSeq(pos, subPos) -- Adicionei
 	
 	local debugMessage = ""
 	local debugMessage2 = ""
 	
 	if subPos then
+		-- Clicou na formula da esquerda da posicao subPos
 		debugMessage = "expandSec: pos = ".. pos .. " subPos = " .. subPos -- VITOR
 		debugMessage2 = "expandSec: printNode(".. pos ..", ".. subPos ..") = " .. printNode(pos, subPos)
-	else
+		
+		createDebugMessage("expandSec: clicou nesta: "..formulaLeft[pos][subPos])
+	else 
+		-- Clicou na unica formula a direita
 		debugMessage = "expandSec: pos = ".. pos .. " subPos = nil" -- VITOR
 		debugMessage2 = "expandSec: printNode(".. pos ..") = " .. printNode(pos)
+		
+		-- Se o operador desta formula não for implicação não saberemos fazer
+		createDebugMessage("expandSec: clicou nesta: "..formulaRight[pos])
 	end
+	
+	
 	
 	-- VITOR - PAREI AQUI
 	-- printNode ta se comportando de forma nao esperada.

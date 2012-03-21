@@ -80,12 +80,16 @@ function printNode(pos, subPos)
 	
 	leftOutput = string.sub(leftOutput, 2)	
 	if subPos ~= nil then
-		return leftOutput
+		if subPos <= #left then
+			return leftOutput
+		else
+			return right
+		end
 	end
 	if formulaOperator[pos] == opAnd or formulaOperator[pos] == opOr or formulaOperator[pos] == opImp then
 		return  operator .. " (" .. leftOutput .. "," .. right .. ")"
 	elseif formulaOperator[pos] == opSeq then -- Vitor, só mudo o print na tela
-		return  operator .. " (" .. leftOutput .. ")" .. right .. ")"
+		return  operator .. " ((" .. leftOutput .. ")" .. right .. ")"
 	elseif formulaOperator[pos] == opNot then
 		return operator .. " (" .. right .. ")"
 	else

@@ -289,6 +289,7 @@ function getFormulaIndex()
 		i = 0
 		
 		-- Vitor Inicio
+		--[[
 		local acabar = true
 		local k=1
 		while k <= 3 do					
@@ -300,6 +301,7 @@ function getFormulaIndex()
 		end		
 		createDebugMessage("getFormulaIndex: font:getWidth(formulaOperator[1]) = " .. font:getWidth(formulaOperator[1]))				
 		createDebugMessage("getFormulaIndex: font:getWidth(formulaRight[1]) = " .. font:getWidth(formulaRight[1]))				
+		]]--
 		-- Vitor Fim
 		
 		
