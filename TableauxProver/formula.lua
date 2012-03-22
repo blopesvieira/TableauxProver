@@ -3,7 +3,7 @@
 --            Pontif'icia Universidade Cat'olica do Rio de Janeiro (PUC-Rio)
 -- Author:    Bruno Lopes (bvieira@inf.puc-rio.br)
 --            Edward Hermann (hermann@inf.puc-rio.br)
---            Vitor Pinheiro
+--            Vitor Pinheiro (valmeida@inf.puc-rio.br)
 -- SequentProver is licensed under a Creative Commons Attribution 3.0 Unported License
 
 
@@ -91,7 +91,15 @@ function printNode(pos, subPos)
 	if formulaOperator[pos] == opAnd or formulaOperator[pos] == opOr or formulaOperator[pos] == opImp then
 		return  operator .. " (" .. leftOutput .. "," .. right .. ")"
 	elseif formulaOperator[pos] == opSeq then -- Vitor, só mudo o print na tela
-		return  operator .. " ((" .. leftOutput .. ")" .. right .. ")"
+		if #right == 1 and #leftOutput == 1 then
+			return  operator .. " (" .. leftOutput .. "," .. right .. ")"
+		elseif #right == 1 then -- Quando só tem um não precisa envolver com parenteses
+			return  operator .. " ((" .. leftOutput .. ")," .. right .. ")"
+		elseif #leftOutput == 1 then -- Quando só tem um não precisa envolver com parenteses
+			return  operator .. " (" .. leftOutput .. ",(" .. right .. "))"
+		else
+			return  operator .. " ((" .. leftOutput .. "),(" .. right .. "))"
+		end		
 	elseif formulaOperator[pos] == opNot then
 		return operator .. " (" .. right .. ")"
 	else

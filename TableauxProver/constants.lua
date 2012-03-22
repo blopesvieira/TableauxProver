@@ -3,7 +3,7 @@
 --            Pontif'icia Universidade Cat'olica do Rio de Janeiro (PUC-Rio)
 -- Author:    Bruno Lopes (bvieira@inf.puc-rio.br)
 --            Edward Hermann (hermann@inf.puc-rio.br)
---            Vitor Pinheiro
+--            Vitor Pinheiro (valmeida@inf.puc-rio.br)
 -- SequentProver is licensed under a Creative Commons Attribution 3.0 Unported License
 
 -- Operators definitions

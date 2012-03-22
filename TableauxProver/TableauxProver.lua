@@ -3,7 +3,7 @@
 --            Pontif'icia Universidade Cat'olica do Rio de Janeiro (PUC-Rio)
 -- Author:    Bruno Lopes (bvieira@inf.puc-rio.br)
 --            Edward Hermann (hermann@inf.puc-rio.br)
---            Vitor Pinheiro
+--            Vitor Pinheiro (valmeida@inf.puc-rio.br)
 -- Sequent Prover is licensed under a Creative Commons Attribution 3.0 Unported License
 
 
@@ -309,50 +309,67 @@ se subPos for nil é pq ele clicou na formula da direita.
 ]]--
 function expandSeq(pos, subPos) -- Adicionei
 	
-	local debugMessage = ""
 	local debugMessage2 = ""
-	
-	if subPos then
-		-- Clicou na formula da esquerda da posicao subPos
-		debugMessage = "expandSec: pos = ".. pos .. " subPos = " .. subPos -- VITOR
-		debugMessage2 = "expandSec: printNode(".. pos ..", ".. subPos ..") = " .. printNode(pos, subPos)
 		
+	if subPos then
+		-- Clicou na formula da esquerda da posicao subPos		
 		createDebugMessage("expandSec: clicou nesta: "..formulaLeft[pos][subPos])
 	else 
 		-- Clicou na unica formula a direita
-		debugMessage = "expandSec: pos = ".. pos .. " subPos = nil" -- VITOR
-		debugMessage2 = "expandSec: printNode(".. pos ..") = " .. printNode(pos)
-		
-		-- Se o operador desta formula não for implicação não saberemos fazer
+		createDebugMessage("expandSec: pos = ".. pos .. " subPos = nil")		
 		createDebugMessage("expandSec: clicou nesta: "..formulaRight[pos])
 		
-		if( formulaOperator[pos] == opImp ) then
-			-- Sempre vai ser implicacao porque Calculo de sequentes minimal. Só tem a implicacao.
+		local posSeparator
+		
+		if string.match(formulaRight[pos], opImp) == nil then
+			-- a formula da direita é atômica, não tem operador e não tem que expandir.
+			createDebugMessage("A formula ("..formulaRight[pos]..") e atomica, nao e possivel expandir.")
+			return		
+		end
+		
+		local rightSemImp = string.sub(formulaRight[pos], #opImp+1, #formulaRight[pos]) -- Retira a implicacao
+		
+		if rightSemImp == nil then
+			createDebugMessage("Erro de sintaxe na formula:("..formulaRight[pos].."). Nao possui implicacao.")
+			return
+		end
+		
+		-- Encontro a posicao da virgula
+		-- Preciso encontrara virgula certa, pode ter varias implicacoes uma dentro da outra,
+		-- tenho que encontrar a virgula da mais externa.
+		local separator
+		local retiraParenteses = 0
+		
+		-- Tenta ver se tem implicacoes em cascata
+		separator = "),"
+		posSeparator = string.find(rightSemImp, "),")
+		
+		if(posSeparator == nil) then -- Só tem uma implicacao		
+			separator = ","
+			retiraParenteses = 1
+			posSeparator = string.find(rightSemImp, ",")
+		end
+		
+		local newRight = string.sub( rightSemImp, posSeparator+ #separator, #rightSemImp -1 ) -- (-1 para tirar o parenteses do final)
+		local newFormulaLeft = string.sub( rightSemImp, 2, posSeparator - retiraParenteses) 
+		
+		createDebugMessage("expandSec: rightSemImp= "..rightSemImp)
+		createDebugMessage("expandSec: newRight= "..newRight)
+		createDebugMessage("expandSec: newFormulaLeft= "..newFormulaLeft)
+		
+		-- Criando o novo left
+		local newLeft = {}				
+		for i=1, #formulaLeft[pos] do
+			newLeft[i] = formulaLeft[pos][i] -- mantenho as formulas da esquerda
+		end				
+		newLeft[#formulaLeft[pos] +1] = newFormulaLeft -- adiciono a nova formula na esquerda	
 			
-			-- Pega a parte esquerda da implicacao
-			
-			-- Insere na lista do lado esquerdo na pos+1
-			-- Lado direito da pos+1 fica o que restou do lado direito
-			-- Operador da pos+1 é o sequente
-			
-			formulaOperator[pos+1] = opImp
-			--formulaOperator[pos]
-			
+		-- function insertFormula(operator, left, right, index, origin, value, expanded, x, y)	
+		insertFormula(opSeq, newLeft, newRight, pos, pos, true, false, formulaX[pos], formulaY[pos] + yStep)	
+		
+		createDebugMessage("expandSec: printNode(".. pos+1 ..") = " .. printNode(pos+1))
+	end	
 
-		end		
-	end
-	
-	
-	
-	-- VITOR - PAREI AQUI
-	-- printNode ta se comportando de forma nao esperada.
-	-- printNode(1,2) imprime as 2 primeiras sub formulas do lado esquerdo
-	-- printNode(1,1) imprime a primeira sub formula do lado esquerdo
-	-- printNode(1) imprime toda a formula naquela posicao
-	-- É assim que vc criou?
-	-- Roda que vc ve no Debug
-	createDebugMessage(debugMessage)
-	createDebugMessage(debugMessage2)	
 end
 
 function composeAnd(formulae)

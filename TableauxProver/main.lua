@@ -3,7 +3,7 @@
 --            Pontif'icia Universidade Cat'olica do Rio de Janeiro (PUC-Rio)
 -- Author:    Bruno Lopes (bvieira@inf.puc-rio.br)
 --            Edward Hermann (hermann@inf.puc-rio.br)
---            Vitor Pinheiro
+--            Vitor Pinheiro (valmeida@inf.puc-rio.br)
 -- SequentProver is licensed under a Creative Commons Attribution 3.0 Unported License
 
 
@@ -112,7 +112,9 @@ function readFileButton()
 	if love.mouse.getX() >= xPos and love.mouse.getX() <= xPos + xLen and love.mouse.getY() >= yPos and love.mouse.getY() <= yPos + yLen then
 		if love.mouse.isDown("l") then
 
-			insertFormula(opSeq, {opImp .. "(c,j)", opImp .. "(b,x)"}, opImp .. "(a,c)", 0, 0, true, false, xBegin, yBegin)
+--			insertFormula(opSeq, {opImp .. "(c,j)", opImp .. "(b,x)"}, opImp .. "("..opImp.."(z,x),c)", 0, 0, true, false, xBegin, yBegin)
+			insertFormula(opSeq, {opImp .. "(c,j)", opImp .. "(b,x)"}, opImp .. "(c,"..opImp.."(z,x))", 0, 0, true, false, xBegin, yBegin)
+--			insertFormula(opSeq, {opImp .. "(c,j)", opImp .. "(b,x)"}, opImp .. "(a,c)", 0, 0, true, false, xBegin, yBegin)
 			--[[
 			isClosed = false
 			path = getPath(defaultInputFile)
