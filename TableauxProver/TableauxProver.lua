@@ -793,7 +793,7 @@ function expandAll(pos)
 	end
 	if j == nil then
 		for k = 1, #index do
-			insertFormula("", "", right, index[k], pos, formulaValue[pos], true, formulaX[index[k]], formulaY[index[k]] + yStep)
+			insertFormula("", "", string.sub(right,1,string.len(right)-1), index[k], pos, formulaValue[pos], true, formulaX[index[k]], formulaY[index[k]] + yStep)
 		end
 	else
 		for k = 1, #index do
