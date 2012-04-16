@@ -7,8 +7,8 @@
 ; (To generate a new GUID, click Tools | Generate GUID inside the IDE.)
 AppId={{B281368E-BC10-4242-857D-1DDDBF0CCC24}
 AppName=TableauxProver
-AppVersion=1.2
-;AppVerName=TableauxProver 1.1-1
+AppVersion=1.3
+;AppVerName=TableauxProver 1.3
 AppPublisher=Laboratório de Tecnologia em Métodos Formais / Pontifícia Universidade Católica do Rio de Janeiro
 AppPublisherURL=http://www.tecmf.inf.puc-rio.br/TableauxProver
 AppSupportURL=http://www.tecmf.inf.puc-rio.br/TableauxProver

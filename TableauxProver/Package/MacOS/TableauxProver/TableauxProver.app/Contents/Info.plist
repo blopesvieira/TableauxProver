@@ -9,7 +9,7 @@
 	<key>CFBundleIconFile</key>
 	<string>TableauxProver.icns</string>
 	<key>CFBundleInfoDictionaryVersion</key>
-	<string>1.2</string>
+	<string>1.3</string>
 	<key>CFBundleName</key>
 	<string>TableauxProver</string>
 	<key>NSMainNibFile</key>
