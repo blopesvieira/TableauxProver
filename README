@@ -2,7 +2,7 @@ TableauxProver
 
 A theorem prover on Tableaux
 
-version 1.3
+version 1.4
 
 Copyright:
 
@@ -15,7 +15,8 @@ Licensed under a Creative Commons Attribution 3.0 Unported License
 http://creativecommons.org/licenses/by/3.0/
 
 Revision history
- * 1.3   small bug correction on ForAll Expansion
+ * 1.4   adapted to LÖVE 0.80
+ * 1.3   small bug correction on For All Expansion
  * 1.2   new auto resolution strategy and bug correction on LaTeX generation
  * 1.1-1 new FOL constant specification
  * 1.1   new color pattern and small bug correction on FOL variable substitution

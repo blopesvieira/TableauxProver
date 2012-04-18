@@ -58,4 +58,4 @@ newConst = "x"
 defaultLanguage = "en"
 
 -- Time definitions
-buttonTime = 150
+buttonTime = .15

@@ -9,11 +9,14 @@
 require 'TableauxProver'
 
 selectLanguage(defaultLanguage)
-love.graphics.setBackgroundColor(255, 255, 255) -- White Color
 
 indexDragging = nil
 isDragging = false
 isClosed = false
+
+function love.load()
+	love.graphics.setBackgroundColor(255, 255, 255) -- White Color
+end
 
 function stepButton()
 	local xPos = windowWidth - 60
@@ -38,7 +41,7 @@ function stepButton()
 	love.graphics.line(xPos + xLen, yPos, xPos + xLen, yPos + yLen)
 	love.graphics.line(xPos, yPos, xPos + xLen, yPos)
 	love.graphics.setColor(0, 0, 200)
-	love.graphics.printf(stepButtonName, xPos + 30, yPos - 5, 0, "center")
+	love.graphics.printf(stepButtonName, xPos + 25, yPos + 7, 0, "center")
 end
 
 function tableauButton()
@@ -64,7 +67,7 @@ function tableauButton()
 	love.graphics.line(xPos + xLen, yPos, xPos + xLen, yPos + yLen)
 	love.graphics.line(xPos, yPos, xPos + xLen, yPos)
 	love.graphics.setColor(0, 0, 200)
-	love.graphics.printf(tableauButtonName, xPos + 30, yPos - 5, 0, "center")
+	love.graphics.printf(tableauButtonName, xPos + 25, yPos + 7, 0, "center")
 end
 
 function undoButton()
@@ -92,7 +95,7 @@ function undoButton()
 	love.graphics.line(xPos + xLen, yPos, xPos + xLen, yPos + yLen)
 	love.graphics.line(xPos, yPos, xPos + xLen, yPos)
 	love.graphics.setColor(0, 0, 200)
-	love.graphics.printf(undoButtonName, xPos + 30, yPos - 5, 0, "center")
+	love.graphics.printf(undoButtonName, xPos + 25, yPos + 7, 0, "center")
 end
 
 function readFileButton()
@@ -125,7 +128,7 @@ function readFileButton()
 	love.graphics.line(xPos + xLen, yPos, xPos + xLen, yPos + yLen)
 	love.graphics.line(xPos, yPos, xPos + xLen, yPos)
 	love.graphics.setColor(0, 0, 200)
-	love.graphics.printf(readFileButtonName, xPos + 30, yPos - 5, 0, "center")
+	love.graphics.printf(readFileButtonName, xPos + 25, yPos + 7, 0, "center")
 end
 
 function writeLaTeXFileButton()
@@ -151,7 +154,7 @@ function writeLaTeXFileButton()
 	love.graphics.line(xPos + xLen, yPos, xPos + xLen, yPos + yLen)
 	love.graphics.line(xPos, yPos, xPos + xLen, yPos)
 	love.graphics.setColor(0, 0, 200)
-	love.graphics.printf(latexButtonName, xPos + 30, yPos - 5, 0, "center")
+	love.graphics.printf(latexButtonName, xPos + 25, yPos + 7, 0, "center")
 end
 
 function writeDotFileButton()
@@ -177,7 +180,7 @@ function writeDotFileButton()
 	love.graphics.line(xPos + xLen, yPos, xPos + xLen, yPos + yLen)
 	love.graphics.line(xPos, yPos, xPos + xLen, yPos)
 	love.graphics.setColor(0, 0, 200)
-	love.graphics.printf(dotButtonName, xPos + 30, yPos - 5, 0, "center")
+	love.graphics.printf(dotButtonName, xPos + 25, yPos + 7, 0, "center")
 end
 
 function autoDisposeButton()
@@ -203,7 +206,7 @@ function autoDisposeButton()
 	love.graphics.line(xPos + xLen, yPos, xPos + xLen, yPos + yLen)
 	love.graphics.line(xPos, yPos, xPos + xLen, yPos)
 	love.graphics.setColor(0, 0, 200)
-	love.graphics.printf(disposeButtonName, xPos + 30, yPos - 5, 0, "center")
+	love.graphics.printf(disposeButtonName, xPos + 25, yPos + 7, 0, "center")
 end
 
 function testFinished()
@@ -278,7 +281,7 @@ function expandSelectedNode()
 		if pos ~= nil then
 			expandFormula(pos)
 		end
-		love.timer.sleep(150)
+		love.timer.sleep(buttonTime)
 	end
 end
 
