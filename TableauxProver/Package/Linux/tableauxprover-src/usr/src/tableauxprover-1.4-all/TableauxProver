@@ -1,0 +1,2 @@
+#!/bin/sh
+/usr/bin/love /usr/share/TableauxProver/TableauxProver.love

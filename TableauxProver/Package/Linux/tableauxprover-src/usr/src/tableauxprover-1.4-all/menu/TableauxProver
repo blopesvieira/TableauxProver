@@ -1,0 +1,2 @@
+?package(TableauxProver):needs="X11|text|vc|wm" section="Science"\
+  title="TableauxProver" command="TableauxProver"

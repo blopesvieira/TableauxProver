@@ -3,7 +3,7 @@ Version: 1.4
 Architecture: all
 Maintainer: Bruno Lopes <bvieira@inf.puc-rio.br>
 Installed-Size: 1612
-Depends: love(>=0.8)
+Depends: love(>=0.8), zip
 Section: science
 Priority: extra
 Homepage: http://www.tecmf.inf.puc-rio.br/TableauxProver

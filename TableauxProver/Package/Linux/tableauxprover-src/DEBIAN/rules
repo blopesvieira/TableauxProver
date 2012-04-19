@@ -1,0 +1,15 @@
+#!/usr/bin/make -f
+
+build:
+	zip -u usr/src/tableauxprover-1.4-all/TableauxProver.love usr/share/tableauxprover-1.4-all/*.lua
+
+binary:
+
+clean:
+	rm usr/src/tableauxprover-1.4-all/*.love
+
+install:
+	mkdir -p /usr/share/TableauxProver/
+	mv usr/src/tableauxprover-1.4-all/*.love /usr/share/TableauxProver/
+	cp usr/src/tableauxprover-1.4-all/TableauxProver /usr/bin/
+	cp -r usr/src/tableauxprover-1.4-all/applications usr/src/tableauxprover-1.4-all/icons usr/src/tableauxprover-1.4-all/doc usr/src/tableauxprover-1.4-all/menu /usr/share

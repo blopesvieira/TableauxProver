@@ -1,0 +1,5 @@
+tableauxprover (1.4) stable; urgency=low
+
+    * adapted to LÖVE 0.80
+
+  -- Bruno Lopes <bvieira@inf.puc-rio.br>  Wed, 18 Apr 2012 13:00:00 -0300
