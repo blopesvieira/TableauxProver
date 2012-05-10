@@ -1,5 +1,5 @@
-tableauxprover (1.4) stable; urgency=low
+tableauxprover (1.5) stable; urgency=low
 
-    * adapted to LÖVE 0.80
+    * small bug correction on string treatment
 
-  -- Bruno Lopes <bvieira@inf.puc-rio.br>  Wed, 18 Apr 2012 13:00:00 -0300
+  -- Bruno Lopes <bvieira@inf.puc-rio.br>  Tue, 08 May 2012 23:38:00 -0300
